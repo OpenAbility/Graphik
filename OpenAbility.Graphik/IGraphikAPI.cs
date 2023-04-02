@@ -2,5 +2,9 @@ namespace OpenAbility.Graphik;
 
 public interface IGraphikAPI
 {
-	public void InitializeWindow(string title, int width, int height);
+	void InitializeWindow(string title, int width, int height);
+	void InitializeSystems();
+	bool WindowShouldClose();
+	void InitializeFrame();
+	void FinishFrame();
 }

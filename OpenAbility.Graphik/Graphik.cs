@@ -1,6 +1,6 @@
 namespace OpenAbility.Graphik;
 
-public static class Graphik
+public static partial class Graphik
 {
 	private static IGraphikAPI api = null!;
 
