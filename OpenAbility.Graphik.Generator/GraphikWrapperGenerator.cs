@@ -6,40 +6,10 @@ public class GraphikWrapperGenerator
 {
 	public static void Generate()
 	{
-		List<string> usedTypeNames = new List<string>();
-        List<string> usings = new List<string>();
-        
-        string GetTypeText(Type type)
-        {
-        	// TODO: Find all type keywords
-        	if (type == typeof(void))
-        		return "void";
-        	if (type == typeof(int))
-        		return "int";
-        	if (type == typeof(long))
-        		return "long";
-        	if (type == typeof(float))
-        		return "float";
-        	if (type == typeof(string))
-        		return "string";
-        
-        	if (usedTypeNames.Contains(type.Name))
-        	{
-        		return type.FullName!;
-        	}
-        
-        
-        	string useText = "using " + type.Namespace! + ";";
-        	if (!usings.Contains(useText))
-        		usings.Add(useText);
-        	
-        	usedTypeNames.Add(type.Name);
-        
-        	return type.Name;
-        
-        }
-        
-        string output = @"
+
+		GeneratorShared generatorShared = new GeneratorShared();
+
+		string output = @"
 // Auto-generated IGraphikAPI bindings!
 // These should not be modified
 {using}
@@ -57,7 +27,7 @@ public static partial class Graphik
         {
         	string line = "\tpublic static ";
         
-        	line += GetTypeText(method.ReturnType) + " ";
+        	line += generatorShared.GetTypeText(method.ReturnType) + " ";
         	line += method.Name + "(";
         
         	List<string> parameterStrings = new List<string>();
@@ -65,7 +35,7 @@ public static partial class Graphik
         	{
         		string parameterString = "";
         
-        		parameterString += GetTypeText(parameter.ParameterType) + " ";
+        		parameterString += generatorShared.GetTypeText(parameter.ParameterType) + " ";
         		parameterString += parameter.Name;
         
         		parameterStrings.Add(parameterString);
@@ -86,7 +56,7 @@ public static partial class Graphik
         }
         
         output += "}";
-        output = output.Replace("{using}", string.Join("\n", usings));
+        output = generatorShared.InlineUsings(output);
         
         Console.WriteLine(output);
 	}

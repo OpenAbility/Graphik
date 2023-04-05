@@ -6,41 +6,8 @@ public class GraphikGLApiGenerator
 {
 	public static void Generate()
 	{
-		List<string> usedTypeNames = new List<string>();
-        List<string> usings = new List<string>();
-        
-        string GetTypeText(Type type)
-        {
-        	// TODO: Find all type keywords
-        	if (type == typeof(void))
-        		return "void";
-        	if (type == typeof(int))
-        		return "int";
-        	if (type == typeof(long))
-        		return "long";
-        	if (type == typeof(float))
-        		return "float";
-        	if (type == typeof(string))
-        		return "string";
-            if (type == typeof(bool))
-	            return "bool";
-        
-        	if (usedTypeNames.Contains(type.Name))
-        	{
-        		return type.FullName!;
-        	}
-        
-        
-        	string useText = "using " + type.Namespace! + ";";
-        	if (!usings.Contains(useText))
-        		usings.Add(useText);
-        	
-        	usedTypeNames.Add(type.Name);
-        
-        	return type.Name;
-        
-        }
-        
+		GeneratorShared generatorShared = new GeneratorShared();
+
         string output = @"
 // Auto-generated from GLAPI from OpenAbility.Graphik.OpenGL
 // These should not be modified
@@ -58,7 +25,7 @@ public interface IGraphikAPI
         {
         	string line = "\t";
         
-        	line += GetTypeText(method.ReturnType) + " ";
+        	line += generatorShared.GetTypeText(method.ReturnType) + " ";
         	line += method.Name + "(";
         
         	List<string> parameterStrings = new List<string>();
@@ -66,7 +33,7 @@ public interface IGraphikAPI
         	{
         		string parameterString = "";
         
-        		parameterString += GetTypeText(parameter.ParameterType) + " ";
+        		parameterString += generatorShared.GetTypeText(parameter.ParameterType) + " ";
         		parameterString += parameter.Name;
         
         		parameterStrings.Add(parameterString);
@@ -78,7 +45,7 @@ public interface IGraphikAPI
         }
         
         output += "}";
-        output = output.Replace("{using}", string.Join("\n", usings));
+        output = generatorShared.InlineUsings(output);
         
         Console.WriteLine(output);
 	}
