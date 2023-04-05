@@ -22,6 +22,8 @@ public class GraphikGLApiGenerator
         		return "float";
         	if (type == typeof(string))
         		return "string";
+            if (type == typeof(bool))
+	            return "bool";
         
         	if (usedTypeNames.Contains(type.Name))
         	{
