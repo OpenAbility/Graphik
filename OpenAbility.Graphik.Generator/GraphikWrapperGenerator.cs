@@ -16,7 +16,8 @@ public class GraphikWrapperGenerator
 namespace OpenAbility.Graphik;
         
 public static partial class Graphik
-{";
+{
+";
         
         Type apiInterface = typeof(IGraphikAPI);
         
