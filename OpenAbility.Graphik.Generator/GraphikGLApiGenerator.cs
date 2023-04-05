@@ -54,7 +54,7 @@ public interface IGraphikAPI
         
         foreach (var method in interfaceMethods)
         {
-        	string line = "\tpublic static ";
+        	string line = "\t";
         
         	line += GetTypeText(method.ReturnType) + " ";
         	line += method.Name + "(";
