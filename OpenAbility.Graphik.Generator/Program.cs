@@ -1,86 +1,30 @@
-﻿using OpenAbility.Graphik;
-using System.Reflection;
+﻿using OpenAbility.Graphik.Generator;
 
-List<string> usedTypeNames = new List<string>();
-List<string> usings = new List<string>();
 
-string GetTypeText(Type type)
+public class Program
 {
-	// TODO: Find all type keywords
-	if (type == typeof(void))
-		return "void";
-	if (type == typeof(int))
-		return "int";
-	if (type == typeof(long))
-		return "long";
-	if (type == typeof(float))
-		return "float";
-	if (type == typeof(string))
-		return "string";
-
-	if (usedTypeNames.Contains(type.Name))
+	public static int Main(string[] args)
 	{
-		return type.FullName!;
+		Console.WriteLine("The Graphik Generator");
+		Console.WriteLine("Valid generation types:\n\twrapper - The Graphik class\n\tglapi - IGraphikAPI.cs based on the GL implementation");
+		if (args.Length == 0)
+		{
+			Console.Error.WriteLine("Nothing to generate!");
+			return 1;
+		}
+
+		if (args[0] == "wrapper")
+		{
+			GraphikWrapperGenerator.Generate();
+			return 0;
+		} else if (args[0] == "glapi")
+		{
+			GraphikGLApiGenerator.Generate();
+			return 0;
+		}
+		
+		Console.Error.WriteLine("Invalid generation target: " + args[0]);
+		return 1;
 	}
-
-
-	string useText = "using " + type.Namespace! + ";";
-	if (!usings.Contains(useText))
-		usings.Add(useText);
-	
-	usedTypeNames.Add(type.Name);
-
-	return type.Name;
-
 }
 
-string output = @"
-// Auto-generated IGraphikAPI bindings!
-// These should not be modified
-{using}
-namespace OpenAbility.Graphik;
-
-public static partial class Graphik
-{
-";
-
-Type apiInterface = typeof(IGraphikAPI);
-
-var interfaceMethods = apiInterface.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-
-foreach (var method in interfaceMethods)
-{
-	string line = "\tpublic static ";
-
-	line += GetTypeText(method.ReturnType) + " ";
-	line += method.Name + "(";
-
-	List<string> parameterStrings = new List<string>();
-	foreach (var parameter in method.GetParameters())
-	{
-		string parameterString = "";
-
-		parameterString += GetTypeText(parameter.ParameterType) + " ";
-		parameterString += parameter.Name;
-
-		parameterStrings.Add(parameterString);
-	}
-	line += string.Join(", ", parameterStrings);
-
-	line += ") => api." + method.Name + "(";
-	
-	parameterStrings.Clear();
-	foreach (var parameter in method.GetParameters())
-	{
-		parameterStrings.Add(parameter.Name ?? "");	
-	}
-	line += string.Join(", ", parameterStrings);
-	
-	line += ");\n";
-	output += line;
-}
-
-output += "}";
-output = output.Replace("{using}", string.Join("\n", usings));
-
-Console.WriteLine(output);
