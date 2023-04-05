@@ -7,4 +7,8 @@ public interface IGraphikAPI
 	bool WindowShouldClose();
 	void InitializeFrame();
 	void FinishFrame();
+	void Clear(ClearFlags clearFlags);
+	ITexture CreateTexture();
+	IMesh CreateMesh();
+	IShader CreateShader();
 }

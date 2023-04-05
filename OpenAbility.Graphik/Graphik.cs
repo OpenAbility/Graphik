@@ -12,4 +12,13 @@ public static partial class Graphik
 	{
 		api = newAPI;
 	}
+	
+	/// <summary>
+	/// Get the API used by Graphik for e.v native calls etc
+	/// </summary>
+	/// <returns>The API used</returns>
+	public static IGraphikAPI GetAPI()
+	{
+		return api;
+	}
 }
