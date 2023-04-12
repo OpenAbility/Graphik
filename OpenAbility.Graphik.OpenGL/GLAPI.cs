@@ -113,7 +113,7 @@ public unsafe class GLAPI : IGraphikAPI
 		return new GLShader();
 	}
 
-	public GLRenderTexture CreateRenderTexture()
+	public IRenderTexture CreateRenderTexture()
 	{
 		return new GLRenderTexture();
 	}
