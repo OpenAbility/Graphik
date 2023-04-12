@@ -1,3 +1,4 @@
+using OpenAbility.Graphik.OpenGL;
 using System.Reflection;
 
 namespace OpenAbility.Graphik.Generator;
@@ -17,12 +18,22 @@ public interface IGraphikAPI
 {
 ";
         
-        Type apiInterface = typeof(IGraphikAPI);
+        Type apiInterface = typeof(GLAPI);
         
         var interfaceMethods = apiInterface.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
         
         foreach (var method in interfaceMethods)
         {
+	        // No pesky object function here
+	        if(method.Name == "Equals")
+		        continue;
+	        if(method.Name == "GetType")
+		        continue;
+	        if(method.Name == "ToString")
+		        continue;
+	        if(method.Name == "GetHashCode")
+		        continue;
+	        
         	string line = "\t";
         
         	line += generatorShared.GetTypeText(method.ReturnType) + " ";
