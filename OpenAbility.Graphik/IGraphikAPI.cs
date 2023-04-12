@@ -4,8 +4,9 @@ namespace OpenAbility.Graphik;
 using OpenAbility.Graphik;
 public interface IGraphikAPI
 {
-	void InitializeWindow(string title, int width, int height);
 	void InitializeSystems();
+	void InitializeWindow(string title, int width, int height);
+	void SetErrorCallback(ErrorCallback errorCallback);
 	bool WindowShouldClose();
 	void InitializeFrame();
 	void FinishFrame();
@@ -13,4 +14,6 @@ public interface IGraphikAPI
 	ITexture CreateTexture();
 	IMesh CreateMesh();
 	IShader CreateShader();
+	IRenderTexture CreateRenderTexture();
+	void ResetTarget();
 }
