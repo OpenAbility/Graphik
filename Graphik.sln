@@ -37,4 +37,6 @@ Global
 		{F582018D-E29B-452A-8EBA-AFD3B3323990}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F582018D-E29B-452A-8EBA-AFD3B3323990}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
 EndGlobal

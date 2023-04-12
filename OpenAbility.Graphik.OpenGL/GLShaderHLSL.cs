@@ -1,23 +1,34 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using Vortice.ShaderCompiler;
+using Compiler = Vortice.ShaderCompiler.Compiler;
+using GLShaderType = OpenTK.Graphics.OpenGL.ShaderType;
+using Result = Vortice.ShaderCompiler.Result;
 
 namespace OpenAbility.Graphik.OpenGL;
 
-using GLShaderType = OpenTK.Graphics.OpenGL.ShaderType;
-
-public class GLShader : IShader
+public class GLShaderHLSL : IShader
 {
 	private ProgramHandle handle;
 	private List<ShaderHandle> shaders = new List<ShaderHandle>();
 	private List<ShaderSource> shaderSources = new List<ShaderSource>();
-	public GLShader()
+	public GLShaderHLSL()
 	{
 		handle = GL.CreateProgram();
 	}
 	
 	public void AttachSource(string source, string filename, ShaderType shaderType)
 	{
+
+		ShaderKind type = shaderType switch
+		{
+			ShaderType.ComputeShader => ShaderKind.GLSLDefaultComputeShader,
+			ShaderType.FragmentShader => ShaderKind.GLSLDefaultFragmentShader,
+			ShaderType.VertexShader => ShaderKind.GLSLDefaultVertexShader,
+			ShaderType.GeometryShader => ShaderKind.GLSLDefaultGeometryShader,
+			_ => 0
+		};
 		GLShaderType glType = shaderType switch
 		{
 			ShaderType.ComputeShader => GLShaderType.ComputeShader,
@@ -26,12 +37,21 @@ public class GLShader : IShader
 			ShaderType.GeometryShader => GLShaderType.GeometryShader,
 			_ => 0
 		};
-
+		string entry = shaderType switch
+		{
+			ShaderType.ComputeShader => "main",
+			ShaderType.FragmentShader => "frag",
+			ShaderType.VertexShader => "vert",
+			_ => "main"
+		};
+		
 		shaderSources.Add(new ShaderSource()
 		{
 			Source = source,
 			Filename = filename,
-			ShaderType = glType
+			GLShaderType = glType,
+			ShaderType = type,
+			EntryPoint = entry
 		});
 		
 		
@@ -42,12 +62,36 @@ public class GLShader : IShader
 
 		ShaderCompilationResult shaderResult = new ShaderCompilationResult();
 		shaderResult.Status = ShaderCompilationStatus.Success;
+		
+		
+		
+		Compiler compiler = new Compiler();
+		compiler.Options.SetTargetEnv(TargetEnvironment.OpenGL, 450);
+		compiler.Options.SetSourceLanguage(SourceLanguage.HLSL);
+		compiler.Options.SetGenerateDebugInfo();
+		compiler.Options.SetargetSpirv(SpirVVersion.Version_1_0);
+		compiler.Options.SetHLSLOffsets(true);
+		compiler.Options.SetHLSLIoMapping(true);
+		compiler.Options.SetHLSLFunctionality1(true);
 		foreach (var source in shaderSources)
 		{
+			Console.WriteLine("Doing " + source.ShaderType);
+			// First of all, we compile the shader
+			Result result = compiler.Compile(source.Source, source.Filename, source.ShaderType, source.EntryPoint);
+			shaderResult.ErrorCount += (int)result.ErrorsCount;
+			shaderResult.WarningCount += (int)result.WarningsCount;
+			shaderResult.Log += "SHADER_" + source.Filename + "_" + source.ShaderType + "_HLSL_LOG -- " + result.ErrorMessage + "\n";
+			if (result.Status != CompilationStatus.Success)
+			{
+				shaderResult.Status = ShaderCompilationStatus.Failure;
+				return shaderResult;
+			}
+			Span<byte> bytecode = result.GetBytecode();
+
 			// Then we create the shader and attach the binary
-			ShaderHandle shaderHandle = GL.CreateShader(source.ShaderType);
-			GL.ShaderSource(shaderHandle, source.Source);
-			GL.CompileShader(shaderHandle);
+			ShaderHandle shaderHandle = GL.CreateShader(source.GLShaderType);
+			GL.ShaderBinary(Utility.Wrap(shaderHandle), ShaderBinaryFormat.ShaderBinaryFormatSpirV, bytecode.ToArray());
+			GL.SpecializeShader(shaderHandle, source.EntryPoint, 0, Array.Empty<uint>(), Array.Empty<uint>());
 			shaders.Add(shaderHandle);
 			
 			// Finally we check for errors
@@ -60,7 +104,7 @@ public class GLShader : IShader
 				GL.GetShaderi(shaderHandle, ShaderParameterName.InfoLogLength, ref infoLogLength);
 				
 				GL.GetShaderInfoLog(shaderHandle, out string infoLog);
-				shaderResult.Log += source.Filename + " -- " + infoLog + "\n";
+				shaderResult.Log += "SHADER_" + source.Filename + "_" + source.ShaderType + "_GL_LOG -- " + infoLog + "\n";
 				
 				shaderResult.Status = ShaderCompilationStatus.Failure;
 				return shaderResult;
@@ -112,7 +156,9 @@ public class GLShader : IShader
 	{
 		public string Source;
 		public string Filename;
-		public GLShaderType ShaderType;
+		public ShaderKind ShaderType;
+		public GLShaderType GLShaderType;
+		public string EntryPoint;
 	}
 
 	private int GetUniformLocation(string name)
