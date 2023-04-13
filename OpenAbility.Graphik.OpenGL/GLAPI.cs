@@ -122,4 +122,15 @@ public unsafe class GLAPI : IGraphikAPI
 		GL.BindFramebuffer(FramebufferTarget.Framebuffer, FramebufferHandle.Zero);
 		GL.Viewport(0, 0, Width, Height);
 	}
+
+	public void SetMouseState(MouseState mouseState)
+	{
+		if(mouseState == MouseState.Free)
+			GLFW.SetInputMode(window, CursorStateAttribute.Cursor, CursorModeValue.CursorNormal);
+		if(mouseState == MouseState.Hidden)
+			GLFW.SetInputMode(window, CursorStateAttribute.Cursor, CursorModeValue.CursorHidden);
+		if(mouseState == MouseState.Captured)
+			GLFW.SetInputMode(window, CursorStateAttribute.Cursor, CursorModeValue.CursorDisabled);
+
+	}
 }
