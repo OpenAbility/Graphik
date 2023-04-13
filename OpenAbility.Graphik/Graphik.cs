@@ -1,6 +1,6 @@
 namespace OpenAbility.Graphik;
 
-public static class Graphik
+public static partial class Graphik
 {
 	private static IGraphikAPI api = null!;
 
@@ -11,5 +11,14 @@ public static class Graphik
 	public static void SetAPI(IGraphikAPI newAPI)
 	{
 		api = newAPI;
+	}
+	
+	/// <summary>
+	/// Get the API used by Graphik for e.v native calls etc
+	/// </summary>
+	/// <returns>The API used</returns>
+	public static IGraphikAPI GetAPI()
+	{
+		return api;
 	}
 }
