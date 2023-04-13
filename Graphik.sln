@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenAbility.Graphik.Test", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenAbility.Graphik.Generator", "OpenAbility.Graphik.Generator\OpenAbility.Graphik.Generator.csproj", "{F582018D-E29B-452A-8EBA-AFD3B3323990}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utility", "Utility", "{76BA0BB1-967F-4518-9AEE-3DA5B8AB4307}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,5 +40,7 @@ Global
 		{F582018D-E29B-452A-8EBA-AFD3B3323990}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{F582018D-E29B-452A-8EBA-AFD3B3323990} = {76BA0BB1-967F-4518-9AEE-3DA5B8AB4307}
+		{65C59E72-9DA2-480B-98E1-0D34419E0518} = {76BA0BB1-967F-4518-9AEE-3DA5B8AB4307}
 	EndGlobalSection
 EndGlobal
