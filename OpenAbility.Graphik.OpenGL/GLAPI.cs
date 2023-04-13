@@ -1,19 +1,15 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace OpenAbility.Graphik.OpenGL;
 
 public unsafe class GLAPI : IGraphikAPI
 {
 	private Window* window;
-	private ErrorCallback? errorCallback;
-	private GLDebugProc debugProc;
-	private GLFWCallbacks.WindowSizeCallback windowSizeCallback;
-	private int width;
-	private int height;
+
+	public int Width;
+	public int Height;
 	public void InitializeSystems()
 	{
 		GLFW.Init();
@@ -22,8 +18,8 @@ public unsafe class GLAPI : IGraphikAPI
 	public void InitializeWindow(string title, int width, int height)
 	{
 
-		this.width = width;
-		this.height = height;
+		Width = width;
+		Height = height;
 		
 		GLFW.WindowHint(WindowHintClientApi.ClientApi, ClientApi.OpenGlApi);
 		GLFW.WindowHint(WindowHintBool.Visible, true);
@@ -42,36 +38,39 @@ public unsafe class GLAPI : IGraphikAPI
 		GLFW.MakeContextCurrent(window);
 		GLLoader.LoadBindings(new GLFWBindingsContext());
 		
-		debugProc = GLDebug;
-		GL.DebugMessageCallback(debugProc, IntPtr.Zero);
-		GL.Enable(EnableCap.DebugOutput);
-
-
-		windowSizeCallback = (_, width, height) =>
-		{
-			this.width = width;
-			this.height = height;
-			GL.Viewport(0, 0, width, height);
-		};
-
-		GLFW.SetWindowSizeCallback(window, windowSizeCallback);
-	}
-	private void GLDebug(DebugSource source, DebugType type, uint id, DebugSeverity severity, int length, IntPtr message, IntPtr userparam)
-	{
-		if(errorCallback == null)
-			return;
-
-		byte[] data = new byte[length];
-		Marshal.Copy(message, data, 0, length);
-
-		errorCallback("GL_" + source + "_" + type + severity, Encoding.Default.GetString(data));
+		CallbackHandler.Initialize(this, window);
 	}
 
+	#region Callback Functions
 	public void SetErrorCallback(ErrorCallback errorCallback)
 	{
-		this.errorCallback = errorCallback;
+		CallbackHandler.ErrorCallback = errorCallback;
 	}
-
+	
+	public void SetResizeCallback(ResizeCallback resizeCallback)
+	{
+		CallbackHandler.ResizeCallback = resizeCallback;
+	}
+	
+	public void SetKeyCallback(KeyCallback keyCallback)
+	{
+		CallbackHandler.KeyCallback = keyCallback;
+	}
+	
+	public void SetMouseCallback(MouseCallback mouseCallback)
+	{
+		CallbackHandler.MouseCallback = mouseCallback;
+	}
+	
+	public void SetCursorCallback(CursorCallback cursorCallback)
+	{
+		CallbackHandler.CursorCallback = cursorCallback;
+	}
+	public void SetTypeCallback(TypeCallback typeCallback)
+	{
+		CallbackHandler.TypeCallback = typeCallback;
+	}
+	#endregion
 
 	public bool WindowShouldClose()
 	{
@@ -121,6 +120,6 @@ public unsafe class GLAPI : IGraphikAPI
 	public void ResetTarget()
 	{
 		GL.BindFramebuffer(FramebufferTarget.Framebuffer, FramebufferHandle.Zero);
-		GL.Viewport(0, 0, width, height);
+		GL.Viewport(0, 0, Width, Height);
 	}
 }
