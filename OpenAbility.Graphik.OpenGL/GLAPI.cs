@@ -133,4 +133,9 @@ public unsafe class GLAPI : IGraphikAPI
 			GLFW.SetInputMode(window, CursorStateAttribute.Cursor, CursorModeValue.CursorDisabled);
 
 	}
+
+	public IShaderObject CreateShaderObject()
+	{
+		return new GLShaderObject();
+	}
 }

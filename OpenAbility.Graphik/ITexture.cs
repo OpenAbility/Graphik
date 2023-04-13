@@ -18,4 +18,6 @@ public interface ITexture
 	public void SetData<T>(TextureFormat format, T[] imageData, int width, int height, int mipmapLevel = 0) where T : unmanaged;
 
 	public void Bind(int index = 0);
+
+	public void Dispose();
 }

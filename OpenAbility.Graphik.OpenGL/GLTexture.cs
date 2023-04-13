@@ -84,7 +84,12 @@ public class GLTexture : ITexture
 	{
 		if (index > 31)
 			throw new IndexOutOfRangeException("Max texture index is 32!");
-		GL.BindTexture(TextureTarget.Texture2d, handle);
 		GL.ActiveTexture((TextureUnit)((int)TextureUnit.Texture0 + index));
+		GL.BindTexture(TextureTarget.Texture2d, handle);
+	}
+
+	public void Dispose()
+	{
+		GL.DeleteTexture(handle);
 	}
 }

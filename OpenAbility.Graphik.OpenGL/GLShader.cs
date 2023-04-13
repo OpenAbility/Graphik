@@ -4,84 +4,32 @@ using OpenTK.Mathematics;
 
 namespace OpenAbility.Graphik.OpenGL;
 
-using GLShaderType = OpenTK.Graphics.OpenGL.ShaderType;
+
 
 public class GLShader : IShader
 {
 	private ProgramHandle handle;
-	private List<ShaderHandle> shaders = new List<ShaderHandle>();
-	private List<ShaderSource> shaderSources = new List<ShaderSource>();
+	private List<GLShaderObject> shaders = new List<GLShaderObject>();
 	public GLShader()
 	{
 		handle = GL.CreateProgram();
 	}
-	
-	public void AttachSource(string source, string filename, ShaderType shaderType)
-	{
-		GLShaderType glType = shaderType switch
-		{
-			ShaderType.ComputeShader => GLShaderType.ComputeShader,
-			ShaderType.FragmentShader => GLShaderType.FragmentShader,
-			ShaderType.VertexShader => GLShaderType.VertexShader,
-			ShaderType.GeometryShader => GLShaderType.GeometryShader,
-			_ => 0
-		};
 
-		shaderSources.Add(new ShaderSource()
-		{
-			Source = source,
-			Filename = filename,
-			ShaderType = glType
-		});
-		
-		
-	}
-	
-	public ShaderCompilationResult Compile()
+	public void Attach(IShaderObject shaderObject)
 	{
-
-		ShaderCompilationResult shaderResult = new ShaderCompilationResult();
-		shaderResult.Status = ShaderCompilationStatus.Success;
-		foreach (var source in shaderSources)
-		{
-			// Then we create the shader and attach the binary
-			ShaderHandle shaderHandle = GL.CreateShader(source.ShaderType);
-			GL.ShaderSource(shaderHandle, source.Source);
-			GL.CompileShader(shaderHandle);
-			shaders.Add(shaderHandle);
-			
-			// Finally we check for errors
-			int isCompiled = -1;
-			GL.GetShaderi(shaderHandle, ShaderParameterName.CompileStatus, ref isCompiled);
-			if (isCompiled == 0)
-			{
-				
-				int infoLogLength = -1;
-				GL.GetShaderi(shaderHandle, ShaderParameterName.InfoLogLength, ref infoLogLength);
-				
-				GL.GetShaderInfoLog(shaderHandle, out string infoLog);
-				shaderResult.Log += source.Filename + " -- " + infoLog + "\n";
-				
-				shaderResult.Status = ShaderCompilationStatus.Failure;
-				return shaderResult;
-			}
-		}
-		return shaderResult;
+		GLShaderObject glShaderObject = (GLShaderObject)shaderObject;
+		shaders.Add(glShaderObject);
+		GL.AttachShader(handle, glShaderObject.ShaderHandle);
 	}
-	
+
 	public string Link()
 	{
-		foreach (var shader in shaders)
-		{
-			GL.AttachShader(handle, shader);
-		}
 		GL.LinkProgram(handle);
 
 		GL.GetProgramInfoLog(handle, out string log);
 		foreach (var shader in shaders)
 		{
-			GL.DetachShader(handle, shader);
-			GL.DeleteShader(shader);
+			GL.DetachShader(handle, shader.ShaderHandle);
 		}
 
 		int activeCount = 0;
@@ -107,14 +55,6 @@ public class GLShader : IShader
 	{
 		GL.UseProgram(handle);
 	}
-	
-	private struct ShaderSource
-	{
-		public string Source;
-		public string Filename;
-		public GLShaderType ShaderType;
-	}
-
 	private int GetUniformLocation(string name)
 	{
 		return GL.GetUniformLocation(handle, name);
@@ -142,6 +82,16 @@ public class GLShader : IShader
 			matrix[4], matrix[5], matrix[6], matrix[7],
 			matrix[8], matrix[9], matrix[10], matrix[11],
 			matrix[12], matrix[13], matrix[14], matrix[15]));
+	}
+	
+	public void Dispose()
+	{
+		GL.DeleteProgram(handle);
+	}
+
+	public void BindAttribute(string name, int index)
+	{
+		GL.BindAttribLocation(handle, (uint)index, name);
 	}
 		
 }

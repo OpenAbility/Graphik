@@ -22,4 +22,5 @@ public interface IGraphikAPI
 	IRenderTexture CreateRenderTexture();
 	void ResetTarget();
 	void SetMouseState(MouseState state);
+	public IShaderObject CreateShaderObject();
 }

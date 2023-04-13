@@ -23,4 +23,5 @@ public static partial class Graphik
 	public static IRenderTexture CreateRenderTexture() => api.CreateRenderTexture();
 	public static void ResetTarget() => api.ResetTarget();
 	public static void SetMouseState(MouseState state) => api.SetMouseState(state);
+	public static IShaderObject CreateShaderObject() => api.CreateShaderObject();
 }

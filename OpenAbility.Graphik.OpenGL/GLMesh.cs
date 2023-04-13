@@ -33,7 +33,7 @@ public class GLMesh : IMesh
 		GL.BufferData(BufferTargetARB.ElementArrayBuffer, indices, BufferUsageARB.StaticDraw);
 	}
 	
-	public void SetVertexAttrib(uint index, int size, VertexAttribType vertexAttribType, int offset, int stride)
+	public void SetVertexAttrib(uint index, int size, VertexAttribType vertexAttribType, int stride, int offset)
 	{
 		VertexAttribPointerType vertexAttribPointerType = 0;
 		switch (vertexAttribType)
@@ -52,7 +52,7 @@ public class GLMesh : IMesh
 				break;
 		}
 		
-		GL.VertexAttribPointer(index, size, vertexAttribPointerType, false, offset, stride);
+		GL.VertexAttribPointer(index, size, vertexAttribPointerType, false, stride, offset);
 		GL.EnableVertexAttribArray(index);
 	}
 	
@@ -61,5 +61,12 @@ public class GLMesh : IMesh
 		GL.BindVertexArray(vao);
 		GL.DrawElements(PrimitiveType.Triangles, indices, DrawElementsType.UnsignedInt, offset);
 		GL.BindVertexArray(VertexArrayHandle.Zero);
+	}
+	
+	public void Dispose()
+	{
+		GL.DeleteVertexArray(vao);
+		GL.DeleteBuffer(vbo);
+		GL.DeleteBuffer(ebo);
 	}
 }
