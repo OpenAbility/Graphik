@@ -23,4 +23,7 @@ public interface IGraphikAPI
 	void ResetTarget();
 	void SetMouseState(MouseState state);
 	public IShaderObject CreateShaderObject();
+	public void SetFeature(Feature feature, bool enabled);
+	public void SetCullMode(CullFace cullFace);
+	public void SetTexturePixelAlignment(int alignment);
 }

@@ -64,9 +64,6 @@ public class GLRenderTexture : IRenderTexture
 
 	private unsafe void CreateWithColour()
 	{
-		this.width = width;
-		this.height = height;
-		
 		fbo = GL.GenFramebuffer();
 		GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
 

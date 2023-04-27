@@ -39,6 +39,8 @@ public unsafe class GLAPI : IGraphikAPI
 		GLLoader.LoadBindings(new GLFWBindingsContext());
 		
 		CallbackHandler.Initialize(this, window);
+		
+		GL.FrontFace(FrontFaceDirection.Ccw);
 	}
 
 	#region Callback Functions
@@ -137,5 +139,57 @@ public unsafe class GLAPI : IGraphikAPI
 	public IShaderObject CreateShaderObject()
 	{
 		return new GLShaderObject();
+	}
+
+	public void SetFeature(Feature feature, bool enabled)
+	{
+		if (feature == Feature.VSync)
+		{
+			GLFW.SwapInterval(enabled ? 0 : 1);
+			return;
+		}
+		
+		
+		if (enabled)
+			EnableFeature(feature);
+		else
+			DisableFeature(feature);
+	}
+
+	private void DisableFeature(Feature feature)
+	{
+		GL.Disable(GetFeatureCap(feature));	
+	}
+
+	private void EnableFeature(Feature feature)
+	{
+		GL.Enable(GetFeatureCap(feature));	
+	}
+
+	private EnableCap GetFeatureCap(Feature feature)
+	{
+		return feature switch
+		{
+			Feature.Blending => EnableCap.Blend,
+			Feature.Culling => EnableCap.CullFace,
+			Feature.DepthTesting => EnableCap.DepthTest,
+			Feature.HDR => EnableCap.FramebufferSrgb,
+			_ => 0
+		};
+	}
+
+	public void SetCullMode(CullFace cullFace)
+	{
+		if(cullFace == CullFace.Back)
+			GL.CullFace(TriangleFace.Back);
+		if(cullFace == CullFace.Front)
+			GL.CullFace(TriangleFace.Front);
+		if(cullFace == CullFace.Both)
+			GL.CullFace(TriangleFace.FrontAndBack);
+	}
+
+	public void SetTexturePixelAlignment(int alignment)
+	{
+		GL.PixelStorei(PixelStoreParameter.UnpackAlignment, alignment);
 	}
 }

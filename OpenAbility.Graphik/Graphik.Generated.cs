@@ -24,4 +24,7 @@ public static partial class Graphik
 	public static void ResetTarget() => api.ResetTarget();
 	public static void SetMouseState(MouseState state) => api.SetMouseState(state);
 	public static IShaderObject CreateShaderObject() => api.CreateShaderObject();
+	public static void SetFeature(Feature feature, bool enabled) => api.SetFeature(feature, enabled);
+	public static void SetCullMode(CullFace cullFace) => api.SetCullMode(cullFace);
+	public static void SetTexturePixelAlignment(int alignment) => api.SetTexturePixelAlignment(alignment);
 }
