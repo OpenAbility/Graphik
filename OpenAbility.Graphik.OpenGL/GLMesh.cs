@@ -56,11 +56,25 @@ public class GLMesh : IMesh
 		GL.EnableVertexAttribArray(index);
 	}
 	
-	public void Render(int indices, int offset = 0)
+	public void Render(int indices, RenderMode renderMode = RenderMode.Triangle, int offset = 0)
 	{
 		GL.BindVertexArray(vao);
-		GL.DrawElements(PrimitiveType.Triangles, indices, DrawElementsType.UnsignedInt, offset);
+		GL.DrawElements(GetPrimitiveType(renderMode), indices, DrawElementsType.UnsignedInt, offset);
 		GL.BindVertexArray(VertexArrayHandle.Zero);
+	}
+
+	private PrimitiveType GetPrimitiveType(RenderMode renderMode)
+	{
+		return renderMode switch
+		{
+			RenderMode.Line => PrimitiveType.LineStrip,
+			RenderMode.Lines => PrimitiveType.Lines,
+			RenderMode.LineLoop => PrimitiveType.LineLoop,
+			RenderMode.Point => PrimitiveType.Points,
+			RenderMode.Triangle => PrimitiveType.Triangles,
+			RenderMode.TriangleFan => PrimitiveType.TriangleFan,
+			_ => PrimitiveType.Triangles
+		};
 	}
 	
 	public void Dispose()
