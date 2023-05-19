@@ -1,10 +1,10 @@
 namespace OpenAbility.Graphik;
 
-public interface IRenderTexture
+public interface IRenderTexture  : ITexture
 {
 	public void Target();
 	public void Bind(RenderTextureComponent component, int index = 0);
-	public void Build(int width, int height, bool colour = true);
+	public void Build(int width, int height, bool colour = true, bool depth = true);
 	public void Dispose();
 }
 

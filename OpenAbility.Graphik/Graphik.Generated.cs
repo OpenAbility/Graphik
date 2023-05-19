@@ -17,7 +17,7 @@ public static partial class Graphik
 	public static void InitializeFrame() => api.InitializeFrame();
 	public static void FinishFrame() => api.FinishFrame();
 	public static void Clear(ClearFlags clearFlags) => api.Clear(clearFlags);
-	public static ITexture CreateTexture() => api.CreateTexture();
+	public static ITexture2D CreateTexture() => api.CreateTexture();
 	public static IMesh CreateMesh() => api.CreateMesh();
 	public static IShader CreateShader() => api.CreateShader();
 	public static IRenderTexture CreateRenderTexture() => api.CreateRenderTexture();
@@ -27,4 +27,5 @@ public static partial class Graphik
 	public static void SetFeature(Feature feature, bool enabled) => api.SetFeature(feature, enabled);
 	public static void SetCullMode(CullFace cullFace) => api.SetCullMode(cullFace);
 	public static void SetTexturePixelAlignment(int alignment) => api.SetTexturePixelAlignment(alignment);
+	public static void SetWindowTitle(string title) => api.SetWindowTitle(title);
 }

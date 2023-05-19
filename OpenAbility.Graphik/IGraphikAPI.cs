@@ -16,7 +16,7 @@ public interface IGraphikAPI
 	void InitializeFrame();
 	void FinishFrame();
 	void Clear(ClearFlags clearFlags);
-	ITexture CreateTexture();
+	ITexture2D CreateTexture();
 	IMesh CreateMesh();
 	IShader CreateShader();
 	IRenderTexture CreateRenderTexture();
@@ -26,4 +26,5 @@ public interface IGraphikAPI
 	public void SetFeature(Feature feature, bool enabled);
 	public void SetCullMode(CullFace cullFace);
 	public void SetTexturePixelAlignment(int alignment);
+	public void SetWindowTitle(string title);
 }

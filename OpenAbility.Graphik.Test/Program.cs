@@ -48,7 +48,7 @@ ImageResult imageResult = ImageResult.FromMemory(File.ReadAllBytes("assets/logo.
 
 byte[] imageData = imageResult.Data;
 
-ITexture texture = Graphik.CreateTexture();
+ITexture2D texture = Graphik.CreateTexture();
 texture.PrepareModifications();
 texture.SetData(TextureFormat.Rgba8, imageData, imageResult.Width, imageResult.Height);
 

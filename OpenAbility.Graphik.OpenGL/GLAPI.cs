@@ -101,7 +101,7 @@ public unsafe class GLAPI : IGraphikAPI
 		GL.Clear(clearBufferMask);
 	}
 	
-	public ITexture CreateTexture()
+	public ITexture2D CreateTexture()
 	{
 		return new GLTexture();
 	}
@@ -191,5 +191,9 @@ public unsafe class GLAPI : IGraphikAPI
 	public void SetTexturePixelAlignment(int alignment)
 	{
 		GL.PixelStorei(PixelStoreParameter.UnpackAlignment, alignment);
+	}
+	public void SetWindowTitle(string title)
+	{
+		GLFW.SetWindowTitle(window, title);
 	}
 }
