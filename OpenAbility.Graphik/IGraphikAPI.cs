@@ -16,10 +16,15 @@ public interface IGraphikAPI
 	void InitializeFrame();
 	void FinishFrame();
 	void Clear(ClearFlags clearFlags);
-	ITexture CreateTexture();
+	ITexture2D CreateTexture();
 	IMesh CreateMesh();
 	IShader CreateShader();
 	IRenderTexture CreateRenderTexture();
 	void ResetTarget();
 	void SetMouseState(MouseState state);
+	public IShaderObject CreateShaderObject();
+	public void SetFeature(Feature feature, bool enabled);
+	public void SetCullMode(CullFace cullFace);
+	public void SetTexturePixelAlignment(int alignment);
+	public void SetWindowTitle(string title);
 }

@@ -3,9 +3,10 @@ using OpenTK.Graphics.OpenGL;
 
 namespace OpenAbility.Graphik.OpenGL;
 
-public class GLTexture : ITexture
+public class GLTexture : ITexture2D
 {
 	private TextureHandle handle;
+	private InternalFormat internalFormat;
 	public GLTexture()
 	{
 		handle = GL.GenTexture();
@@ -21,7 +22,7 @@ public class GLTexture : ITexture
 	{
 
 		GL.TexImage2D(TextureTarget.Texture2d, mipmapLevel, GetInternalFormat(format), width, height, 0, GetPixelFormat(format), GetPixelType(format), imageData);
-		
+		internalFormat = GetInternalFormat(format);
 	}
 
 	private static InternalFormat GetInternalFormat(TextureFormat textureFormat)
@@ -84,7 +85,31 @@ public class GLTexture : ITexture
 	{
 		if (index > 31)
 			throw new IndexOutOfRangeException("Max texture index is 32!");
-		GL.BindTexture(TextureTarget.Texture2d, handle);
 		GL.ActiveTexture((TextureUnit)((int)TextureUnit.Texture0 + index));
+		GL.BindTexture(TextureTarget.Texture2d, handle);
+	}
+	
+	public void Dispose()
+	{
+		GL.DeleteTexture(handle);
+	}
+
+	public void CopyFrom(ITexture other)
+	{
+		GL.BindTexture(TextureTarget.Texture2d,  new TextureHandle((int)other.GetHandle()));
+
+		int width = 0;
+		int height = 0;
+		
+		GL.GetTexParameteri(TextureTarget.Texture2d, GetTextureParameter.TextureWidth, ref width);
+		GL.GetTexParameteri(TextureTarget.Texture2d, GetTextureParameter.TextureHeight, ref height);
+		
+		GL.CopyImageSubData(other.GetHandle(), CopyImageSubDataTarget.Texture2d, 0, 0, 0, 0, GetHandle(), CopyImageSubDataTarget.Texture2d,
+			0, 0, 0, 0, width, height, 0);
+	}
+
+	public uint GetHandle()
+	{
+		return (uint)handle.Handle;
 	}
 }

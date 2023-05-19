@@ -29,18 +29,17 @@ mesh.SetVertexAttrib(1, 2, VertexAttribType.Float, 5 * sizeof(float), 3 * sizeof
 mesh.SetIndices(new uint[] {0, 1, 2, 1, 3, 2});
 
 IShader shader = Graphik.CreateShader();
-shader.AttachSource(File.ReadAllText("assets/test.vert"), "test.vert", ShaderType.VertexShader);
-Thread.Sleep(100);
-shader.AttachSource(File.ReadAllText("assets/test.frag"), "test.frag", ShaderType.FragmentShader);
 
-var compileResults = shader.Compile();
+IShaderObject vertex = Graphik.CreateShaderObject();
+IShaderObject fragment = Graphik.CreateShaderObject();
+vertex.AttachSource(File.ReadAllText("assets/test.vert"), "test.vert", ShaderType.VertexShader);
+vertex.Compile();
+fragment.AttachSource(File.ReadAllText("assets/test.frag"), "test.frag", ShaderType.FragmentShader);
+fragment.Compile();
 
-Console.WriteLine($"Compilation status: {compileResults.Status}, with {compileResults.ErrorCount} errors and {compileResults.WarningCount} warnings. Log:\n{compileResults.Log}");
-
-if (compileResults.Status == ShaderCompilationStatus.Failure)
-{
-	//return 1;
-}
+shader.Attach(vertex);
+shader.Attach(fragment);
+shader.Link();
 
 Console.WriteLine("Linking log: " + shader.Link());
 
@@ -49,7 +48,7 @@ ImageResult imageResult = ImageResult.FromMemory(File.ReadAllBytes("assets/logo.
 
 byte[] imageData = imageResult.Data;
 
-ITexture texture = Graphik.CreateTexture();
+ITexture2D texture = Graphik.CreateTexture();
 texture.PrepareModifications();
 texture.SetData(TextureFormat.Rgba8, imageData, imageResult.Width, imageResult.Height);
 

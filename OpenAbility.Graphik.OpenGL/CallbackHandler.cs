@@ -50,7 +50,7 @@ internal static unsafe class CallbackHandler
 	{
 		if (TypeCallback == null)
 			return;
-		TypeCallback((char)character);
+		TypeCallback(character);
 	};
 	
 	private static readonly GLFWCallbacks.MouseButtonCallback GLFWMouseCallback = (_, button, action, _) =>
