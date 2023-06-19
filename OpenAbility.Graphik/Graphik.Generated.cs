@@ -28,4 +28,9 @@ public static partial class Graphik
 	public static void SetCullMode(CullFace cullFace) => api.SetCullMode(cullFace);
 	public static void SetTexturePixelAlignment(int alignment) => api.SetTexturePixelAlignment(alignment);
 	public static void SetWindowTitle(string title) => api.SetWindowTitle(title);
+	public static void SetScissorArea(int x, int y, int width, int height) => api.SetScissorArea(x, y, width, height);
+	public static ITexture2D FromNative(uint handle) => api.FromNative(handle);
+	public static void SetBlending(BlendMode blendMode) => api.SetBlending(blendMode);
+	public static void SetBlendFunction(BlendFactor a, BlendFactor b) => api.SetBlendFunction(a, b);
+	public static void SetDepthFunction(DepthFunction depthFunction) => api.SetDepthFunction(depthFunction);
 }

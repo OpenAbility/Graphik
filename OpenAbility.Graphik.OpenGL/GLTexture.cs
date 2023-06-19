@@ -7,6 +7,15 @@ public class GLTexture : ITexture2D
 {
 	private TextureHandle handle;
 	private InternalFormat internalFormat;
+
+	public GLTexture(uint handle)
+	{
+		this.handle = new TextureHandle()
+		{
+			Handle = (int)handle
+		};
+	}
+	
 	public GLTexture()
 	{
 		handle = GL.GenTexture();
@@ -21,6 +30,12 @@ public class GLTexture : ITexture2D
 	public void SetData<T>(TextureFormat format, T[] imageData, int width, int height, int mipmapLevel = 0) where T : unmanaged
 	{
 
+		GL.TexImage2D(TextureTarget.Texture2d, mipmapLevel, GetInternalFormat(format), width, height, 0, GetPixelFormat(format), GetPixelType(format), imageData);
+		internalFormat = GetInternalFormat(format);
+	}
+
+	public unsafe void SetData<T>(TextureFormat format, T* imageData, int width, int height, int mipmapLevel = 0) where T : unmanaged
+	{
 		GL.TexImage2D(TextureTarget.Texture2d, mipmapLevel, GetInternalFormat(format), width, height, 0, GetPixelFormat(format), GetPixelType(format), imageData);
 		internalFormat = GetInternalFormat(format);
 	}
@@ -111,5 +126,18 @@ public class GLTexture : ITexture2D
 	public uint GetHandle()
 	{
 		return (uint)handle.Handle;
+	}
+	public void SetFiltering(TextureFiltering filtering)
+	{
+		PrepareModifications();
+		if (filtering == TextureFiltering.Linear)
+		{
+			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+		} else if (filtering == TextureFiltering.Nearest)
+		{
+			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+		}
 	}
 }

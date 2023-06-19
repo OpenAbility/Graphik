@@ -9,6 +9,9 @@ public class GLMesh : IMesh
 	private readonly BufferHandle ebo;
 	private readonly VertexArrayHandle vao;
 
+	private int eboSize = 0;
+	private int vboSize = 0;
+
 	public GLMesh()
 	{
 		vbo = GL.GenBuffer();
@@ -21,45 +24,75 @@ public class GLMesh : IMesh
 		GL.BindVertexArray(vao);
 	}
 
-	public void SetVertexData(float[] data)
+	public unsafe void SetVertexData(float[] data)
 	{
-		GL.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
-		GL.BufferData(BufferTargetARB.ArrayBuffer, data, BufferUsageARB.StaticDraw);
-	}
 
-	public void SetIndices(uint[] indices)
-	{
-		GL.BindBuffer(BufferTargetARB.ElementArrayBuffer, ebo);
-		GL.BufferData(BufferTargetARB.ElementArrayBuffer, indices, BufferUsageARB.StaticDraw);
-	}
-	
-	public void SetVertexAttrib(uint index, int size, VertexAttribType vertexAttribType, int stride, int offset)
-	{
-		VertexAttribPointerType vertexAttribPointerType = 0;
-		switch (vertexAttribType)
+		if (data.Length * sizeof(float)  != vboSize)
 		{
-			case VertexAttribType.Byte:
-				vertexAttribPointerType = VertexAttribPointerType.Byte;
-				break;
-			case VertexAttribType.Double:
-				vertexAttribPointerType = VertexAttribPointerType.Double;
-				break;
-			case VertexAttribType.Float:
-				vertexAttribPointerType = VertexAttribPointerType.Float;
-				break;
-			case VertexAttribType.Int:
-				vertexAttribPointerType = VertexAttribPointerType.Int;
-				break;
+			AllocateVertexData(data.Length * sizeof(float));
 		}
 		
-		GL.VertexAttribPointer(index, size, vertexAttribPointerType, false, stride, offset);
+		GL.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
+		GL.BufferSubData(BufferTargetARB.ArrayBuffer, 0, data);
+		
+		
+	}
+
+	public unsafe void SetIndices(uint[] indices)
+	{
+		if (indices.Length * sizeof(uint) != eboSize)
+		{
+			AllocateIndexData(indices.Length * sizeof(uint));
+		}
+		
+		GL.BindBuffer(BufferTargetARB.ElementArrayBuffer, ebo);
+		GL.BufferSubData(BufferTargetARB.ElementArrayBuffer, 0, indices);
+		
+	}
+
+	public void AllocateVertexData(int size)
+	{
+		GL.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
+		GL.BufferData(BufferTargetARB.ArrayBuffer, size, IntPtr.Zero, BufferUsageARB.StaticDraw);
+		vboSize = size;
+	}
+
+	public void AllocateIndexData(int size)
+	{
+		GL.BindBuffer(BufferTargetARB.ElementArrayBuffer, ebo);
+		GL.BufferData(BufferTargetARB.ElementArrayBuffer, size, IntPtr.Zero, BufferUsageARB.StaticDraw);
+		eboSize = size;
+	}
+	
+	public int GetVertexBufferSize()
+	{
+		return vboSize;
+	}
+	public int GetIndexBufferSize()
+	{
+		return eboSize;
+	}
+
+	public void SetVertexAttrib(uint index, int size, VertexAttribType vertexAttribType, int stride, int offset, bool normalized = false)
+	{
+		VertexAttribPointerType vertexAttribPointerType = vertexAttribType switch
+		{
+			VertexAttribType.Byte => VertexAttribPointerType.Byte,
+			VertexAttribType.Double => VertexAttribPointerType.Double,
+			VertexAttribType.Float => VertexAttribPointerType.Float,
+			VertexAttribType.Int => VertexAttribPointerType.Int,
+			VertexAttribType.UnsignedByte => VertexAttribPointerType.UnsignedByte,
+			_ => 0
+		};
+
+		GL.VertexAttribPointer(index, size, vertexAttribPointerType, normalized, stride, offset);
 		GL.EnableVertexAttribArray(index);
 	}
 	
-	public void Render(int indices, RenderMode renderMode = RenderMode.Triangle, int offset = 0)
+	public void Render(int indices, RenderMode renderMode = RenderMode.Triangle, int indexOffset = 0, int vertexOffset = 0)
 	{
 		GL.BindVertexArray(vao);
-		GL.DrawElements(GetPrimitiveType(renderMode), indices, DrawElementsType.UnsignedInt, offset);
+		GL.DrawElements(GetPrimitiveType(renderMode), indices, DrawElementsType.UnsignedInt, 0);
 		GL.BindVertexArray(VertexArrayHandle.Zero);
 	}
 
