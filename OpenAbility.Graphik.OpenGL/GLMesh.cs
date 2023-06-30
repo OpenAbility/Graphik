@@ -8,6 +8,7 @@ public class GLMesh : IMesh
 	private readonly BufferHandle vbo;
 	private readonly BufferHandle ebo;
 	private readonly VertexArrayHandle vao;
+	private DrawElementsType indexType = DrawElementsType.UnsignedInt;
 
 	private int eboSize = 0;
 	private int vboSize = 0;
@@ -24,10 +25,21 @@ public class GLMesh : IMesh
 		GL.BindVertexArray(vao);
 	}
 
-	public unsafe void SetVertexData(float[] data)
+	public void SetIndexType(IndexType type)
+	{
+		indexType = type switch
+		{
+			IndexType.UnsignedInt => DrawElementsType.UnsignedInt,
+			IndexType.UnsignedByte => DrawElementsType.UnsignedByte,
+			IndexType.UnsignedShort => DrawElementsType.UnsignedShort,
+			_ => 0
+		};
+	}
+
+	public void SetVertexData<T>(T[] data, bool realloc) where T : unmanaged
 	{
 
-		if (data.Length * sizeof(float)  != vboSize)
+		if (data.Length * sizeof(float)  != vboSize && realloc)
 		{
 			AllocateVertexData(data.Length * sizeof(float));
 		}
@@ -37,30 +49,49 @@ public class GLMesh : IMesh
 		
 		
 	}
-
-	public unsafe void SetIndices(uint[] indices)
+	public void SetVertexData(IntPtr data, int size, bool realloc = true)
 	{
-		if (indices.Length * sizeof(uint) != eboSize)
+		if (size != vboSize && realloc)
+		{
+			AllocateVertexData(size);
+		}
+		GL.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
+		GL.BufferSubData(BufferTargetARB.ArrayBuffer, IntPtr.Zero, size, data);
+	}
+	
+	public void SetIndices<T>(T[] indices, bool realloc = true) where T : unmanaged
+	{
+		if (indices.Length * sizeof(uint) != eboSize && realloc)
 		{
 			AllocateIndexData(indices.Length * sizeof(uint));
 		}
 		
 		GL.BindBuffer(BufferTargetARB.ElementArrayBuffer, ebo);
 		GL.BufferSubData(BufferTargetARB.ElementArrayBuffer, 0, indices);
-		
 	}
+	
+	public void SetIndices(IntPtr data, int size, bool realloc = true)
+	{
+		if (size != eboSize && realloc)
+		{
+			AllocateIndexData(size);
+		}
+		GL.BindBuffer(BufferTargetARB.ElementArrayBuffer, ebo);
+		GL.BufferSubData(BufferTargetARB.ElementArrayBuffer, IntPtr.Zero, size, data);
+	}
+	
 
-	public void AllocateVertexData(int size)
+	public void AllocateVertexData(int size, bool quickWrite = false)
 	{
 		GL.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
-		GL.BufferData(BufferTargetARB.ArrayBuffer, size, IntPtr.Zero, BufferUsageARB.StaticDraw);
+		GL.BufferData(BufferTargetARB.ArrayBuffer, size, IntPtr.Zero, quickWrite ? BufferUsageARB.DynamicDraw : BufferUsageARB.StaticDraw);
 		vboSize = size;
 	}
 
-	public void AllocateIndexData(int size)
+	public void AllocateIndexData(int size, bool quickWrite = false)
 	{
 		GL.BindBuffer(BufferTargetARB.ElementArrayBuffer, ebo);
-		GL.BufferData(BufferTargetARB.ElementArrayBuffer, size, IntPtr.Zero, BufferUsageARB.StaticDraw);
+		GL.BufferData(BufferTargetARB.ElementArrayBuffer, size, IntPtr.Zero,  quickWrite ? BufferUsageARB.DynamicDraw : BufferUsageARB.StaticDraw);
 		eboSize = size;
 	}
 	
@@ -89,10 +120,17 @@ public class GLMesh : IMesh
 		GL.EnableVertexAttribArray(index);
 	}
 	
-	public void Render(int indices, RenderMode renderMode = RenderMode.Triangle, int indexOffset = 0, int vertexOffset = 0)
+	public void Render(int indices, RenderMode renderMode = RenderMode.Triangle, int indexOffset = 0)
 	{
 		GL.BindVertexArray(vao);
-		GL.DrawElements(GetPrimitiveType(renderMode), indices, DrawElementsType.UnsignedInt, 0);
+		GL.DrawElements(GetPrimitiveType(renderMode), indices, indexType, indexOffset);
+		GL.BindVertexArray(VertexArrayHandle.Zero);
+	}
+	
+	public void Render(int indices, int vertexOffset, RenderMode renderMode = RenderMode.Triangle, int indexOffset = 0)
+	{
+		GL.BindVertexArray(vao);
+		GL.DrawElementsBaseVertex(GetPrimitiveType(renderMode), indices, indexType, indexOffset, vertexOffset);
 		GL.BindVertexArray(VertexArrayHandle.Zero);
 	}
 

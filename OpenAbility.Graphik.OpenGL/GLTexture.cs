@@ -39,6 +39,11 @@ public class GLTexture : ITexture2D
 		GL.TexImage2D(TextureTarget.Texture2d, mipmapLevel, GetInternalFormat(format), width, height, 0, GetPixelFormat(format), GetPixelType(format), imageData);
 		internalFormat = GetInternalFormat(format);
 	}
+	public void GenerateMipMaps(int depth)
+	{
+		GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMaxLevel, depth);
+		GL.GenerateMipmap(TextureTarget.Texture2d);
+	}
 
 	private static InternalFormat GetInternalFormat(TextureFormat textureFormat)
 	{

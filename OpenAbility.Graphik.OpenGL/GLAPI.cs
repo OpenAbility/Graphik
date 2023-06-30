@@ -4,6 +4,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace OpenAbility.Graphik.OpenGL;
 
+[Serializable]
 public unsafe class GLAPI : IGraphikAPI
 {
 	private Window* window;
@@ -14,7 +15,12 @@ public unsafe class GLAPI : IGraphikAPI
 	{
 		GLFW.Init();
 	}
-
+	
+	public static void LoadAssembly()
+	{
+		
+	}
+	
 	public void InitializeWindow(string title, int width, int height)
 	{
 
@@ -73,6 +79,11 @@ public unsafe class GLAPI : IGraphikAPI
 	{
 		CallbackHandler.TypeCallback = typeCallback;
 	}
+	public void SetScrollCallback(ScrollCallback scrollCallback)
+	{
+		CallbackHandler.ScrollCallback = scrollCallback;
+	}
+
 	#endregion
 
 	public bool WindowShouldClose()

@@ -12,6 +12,7 @@ public interface IGraphikAPI
 	void SetMouseCallback(MouseCallback mouseCallback);
 	void SetCursorCallback(CursorCallback cursorCallback);
 	void SetTypeCallback(TypeCallback typeCallback);
+	void SetScrollCallback(ScrollCallback scrollCallback);
 	bool WindowShouldClose();
 	void InitializeFrame();
 	void FinishFrame();
