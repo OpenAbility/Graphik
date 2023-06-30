@@ -75,7 +75,7 @@ public class GLShaderHLSL : IShader
 		compiler.Options.SetHLSLFunctionality1(true);
 		foreach (var source in shaderSources)
 		{
-			Console.WriteLine("Doing " + source.ShaderType);
+		    Console.WriteLine("Doing " + source.ShaderType);
 			// First of all, we compile the shader
 			Result result = compiler.Compile(source.Source, source.Filename, source.ShaderType, source.EntryPoint);
 			shaderResult.ErrorCount += (int)result.ErrorsCount;

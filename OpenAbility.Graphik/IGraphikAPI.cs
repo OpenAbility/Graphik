@@ -12,6 +12,7 @@ public interface IGraphikAPI
 	void SetMouseCallback(MouseCallback mouseCallback);
 	void SetCursorCallback(CursorCallback cursorCallback);
 	void SetTypeCallback(TypeCallback typeCallback);
+	void SetScrollCallback(ScrollCallback scrollCallback);
 	bool WindowShouldClose();
 	void InitializeFrame();
 	void FinishFrame();
@@ -27,4 +28,9 @@ public interface IGraphikAPI
 	public void SetCullMode(CullFace cullFace);
 	public void SetTexturePixelAlignment(int alignment);
 	public void SetWindowTitle(string title);
+	public void SetScissorArea(int x, int y, int width, int height);
+	public ITexture2D FromNative(uint handle);
+	public void SetBlending(BlendMode blendMode);
+	public void SetBlendFunction(BlendFactor a, BlendFactor b);
+	public void SetDepthFunction(DepthFunction depthFunction);
 }

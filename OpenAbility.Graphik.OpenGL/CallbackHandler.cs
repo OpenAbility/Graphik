@@ -15,6 +15,7 @@ internal static unsafe class CallbackHandler
 	public static TypeCallback? TypeCallback;
 	public static MouseCallback? MouseCallback;
 	public static CursorCallback? CursorCallback;
+	public static ScrollCallback? ScrollCallback;
 	
 	private static readonly GLDebugProc DebugProc = (source, type, _, severity, length, message, _) =>
 	{
@@ -76,6 +77,14 @@ internal static unsafe class CallbackHandler
 
 		CursorCallback((float)x, (float)y);
 	};
+	
+	private static readonly GLFWCallbacks.ScrollCallback GLFWScrollCallback = (_, x, y) =>
+	{
+		if (ScrollCallback == null)
+			return;
+
+		ScrollCallback((float)x, (float)y);
+	};
 
 	private static InputAction GetInputAction(OpenTK.Windowing.GraphicsLibraryFramework.InputAction inputAction)
 	{
@@ -99,5 +108,6 @@ internal static unsafe class CallbackHandler
 		GLFW.SetCharCallback(window, GLFWCharCallback);
 		GLFW.SetMouseButtonCallback(window, GLFWMouseCallback);
 		GLFW.SetCursorPosCallback(window, GLFWCursorCallback);
+		GLFW.SetScrollCallback(window, GLFWScrollCallback);
 	}
 }

@@ -4,6 +4,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace OpenAbility.Graphik.OpenGL;
 
+[Serializable]
 public unsafe class GLAPI : IGraphikAPI
 {
 	private Window* window;
@@ -14,7 +15,12 @@ public unsafe class GLAPI : IGraphikAPI
 	{
 		GLFW.Init();
 	}
-
+	
+	public static void LoadAssembly()
+	{
+		
+	}
+	
 	public void InitializeWindow(string title, int width, int height)
 	{
 
@@ -39,8 +45,9 @@ public unsafe class GLAPI : IGraphikAPI
 		GLLoader.LoadBindings(new GLFWBindingsContext());
 		
 		CallbackHandler.Initialize(this, window);
-		
+
 		GL.FrontFace(FrontFaceDirection.Ccw);
+		GL.Enable(EnableCap.DebugOutput);
 	}
 
 	#region Callback Functions
@@ -72,6 +79,11 @@ public unsafe class GLAPI : IGraphikAPI
 	{
 		CallbackHandler.TypeCallback = typeCallback;
 	}
+	public void SetScrollCallback(ScrollCallback scrollCallback)
+	{
+		CallbackHandler.ScrollCallback = scrollCallback;
+	}
+
 	#endregion
 
 	public bool WindowShouldClose()
@@ -145,7 +157,7 @@ public unsafe class GLAPI : IGraphikAPI
 	{
 		if (feature == Feature.VSync)
 		{
-			GLFW.SwapInterval(enabled ? 0 : 1);
+			GLFW.SwapInterval(enabled ? 1 : 0);
 			return;
 		}
 		
@@ -158,11 +170,21 @@ public unsafe class GLAPI : IGraphikAPI
 
 	private void DisableFeature(Feature feature)
 	{
+		if (feature == Feature.Wireframe)
+		{
+			GL.PolygonMode(TriangleFace.FrontAndBack, PolygonMode.Fill);
+			return;
+		}
 		GL.Disable(GetFeatureCap(feature));	
 	}
 
 	private void EnableFeature(Feature feature)
 	{
+		if (feature == Feature.Wireframe)
+		{
+			GL.PolygonMode(TriangleFace.FrontAndBack, PolygonMode.Line);
+			return;
+		}
 		GL.Enable(GetFeatureCap(feature));	
 	}
 
@@ -174,6 +196,7 @@ public unsafe class GLAPI : IGraphikAPI
 			Feature.Culling => EnableCap.CullFace,
 			Feature.DepthTesting => EnableCap.DepthTest,
 			Feature.HDR => EnableCap.FramebufferSrgb,
+			Feature.Scissor => EnableCap.ScissorTest,
 			_ => 0
 		};
 	}
@@ -195,5 +218,70 @@ public unsafe class GLAPI : IGraphikAPI
 	public void SetWindowTitle(string title)
 	{
 		GLFW.SetWindowTitle(window, title);
+	}
+
+	public void SetScissorArea(int x, int y, int width, int height)
+	{
+		GL.Scissor(x, y, width, height);
+	}
+	public ITexture2D FromNative(uint handle)
+	{
+		return new GLTexture(handle);
+	}
+	public void SetBlending(BlendMode blendMode)
+	{
+
+		BlendEquationModeEXT blendEquationModeExt = blendMode switch
+		{
+			BlendMode.Additive => BlendEquationModeEXT.FuncAdd,
+			BlendMode.Subtractive => BlendEquationModeEXT.FuncSubtract,
+			BlendMode.Max => BlendEquationModeEXT.Max,
+			BlendMode.Min => BlendEquationModeEXT.Min,
+			_ => 0
+		};
+		
+		GL.BlendEquation(blendEquationModeExt);
+	}
+	public void SetBlendFunction(BlendFactor a, BlendFactor b)
+	{
+		GL.BlendFunc(GetBlendingFactor(a), GetBlendingFactor(b));
+	}
+	public void SetDepthFunction(DepthFunction depthFunction)
+	{
+		GL.DepthFunc(depthFunction switch
+		{
+			DepthFunction.Greater => OpenTK.Graphics.OpenGL.DepthFunction.Greater,
+			DepthFunction.Less => OpenTK.Graphics.OpenGL.DepthFunction.Less,
+			DepthFunction.GrEqual => OpenTK.Graphics.OpenGL.DepthFunction.Gequal,
+			DepthFunction.LEqual => OpenTK.Graphics.OpenGL.DepthFunction.Lequal,
+			_ => 0
+		});
+	}
+
+	private BlendingFactor GetBlendingFactor(BlendFactor factor)
+	{
+		return factor switch
+		{
+			BlendFactor.Zero => BlendingFactor.Zero,
+			BlendFactor.One => BlendingFactor.One,
+			BlendFactor.SrcColor => BlendingFactor.SrcColor,
+			BlendFactor.OneMinusSrcColor => BlendingFactor.OneMinusSrcColor,
+			BlendFactor.SrcAlpha => BlendingFactor.SrcAlpha,
+			BlendFactor.OneMinusSrcAlpha => BlendingFactor.OneMinusSrcAlpha,
+			BlendFactor.DstAlpha => BlendingFactor.DstAlpha,
+			BlendFactor.OneMinusDstAlpha => BlendingFactor.OneMinusDstAlpha,
+			BlendFactor.DstColor => BlendingFactor.DstColor,
+			BlendFactor.OneMinusDstColor => BlendingFactor.OneMinusDstColor,
+			BlendFactor.SrcAlphaSaturate => BlendingFactor.SrcAlphaSaturate,
+			BlendFactor.ConstantColor => BlendingFactor.ConstantColor,
+			BlendFactor.OneMinusConstantColor => BlendingFactor.OneMinusConstantColor,
+			BlendFactor.ConstantAlpha => BlendingFactor.ConstantAlpha,
+			BlendFactor.OneMinusConstantAlpha => BlendingFactor.OneMinusConstantAlpha,
+			BlendFactor.Src1Alpha => BlendingFactor.Src1Alpha,
+			BlendFactor.Src1Color => BlendingFactor.Src1Color,
+			BlendFactor.OneMinusSrc1Color => BlendingFactor.OneMinusSrc1Color,
+			BlendFactor.OneMinusSrc1Alpha => BlendingFactor.OneMinusSrc1Alpha,
+			_ => 0
+		};
 	}
 }

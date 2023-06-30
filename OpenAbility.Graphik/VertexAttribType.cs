@@ -5,5 +5,6 @@ public enum VertexAttribType
 	Float,
 	Int,
 	Double,
-	Byte
+	Byte,
+	UnsignedByte
 }

@@ -34,7 +34,7 @@ public class GLShader : IShader
 
 		int activeCount = 0;
 		GL.GetProgrami(handle, ProgramPropertyARB.ActiveUniforms, ref activeCount);
-		Console.WriteLine($"Program has {activeCount} active uniforms!");
+		//Console.WriteLine($"Program has {activeCount} active uniforms!");
 
 		int bufSize = 64;
 		int length = 0;
@@ -44,7 +44,7 @@ public class GLShader : IShader
 		for (int i = 0; i < activeCount; i++)
 		{
 			string name = GL.GetActiveUniform(handle, (uint)i, bufSize, ref length, ref size, ref type);
-			Console.WriteLine($"| {name}: ID: {i}, Type: {type}, Size: {size}");
+			//Console.WriteLine($"| {name}: ID: {i}, Type: {type}, Size: {size}");
 		}
 		if (!String.IsNullOrEmpty(log))
 			return log;

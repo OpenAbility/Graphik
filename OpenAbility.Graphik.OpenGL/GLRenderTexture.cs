@@ -136,4 +136,34 @@ public class GLRenderTexture : IRenderTexture
 	{
 		return (uint)colourHandle.Handle;
 	}
+	public void SetFiltering(TextureFiltering filtering)
+	{
+		if (colour)
+		{
+			GL.BindTexture(TextureTarget.Texture2d, colourHandle);
+			if (filtering == TextureFiltering.Linear)
+			{
+				GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+				GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+			} else if (filtering == TextureFiltering.Nearest)
+			{
+				GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+				GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+			}
+		}
+		
+		if (depth)
+		{			
+			GL.BindTexture(TextureTarget.Texture2d, depthHandle);
+			if (filtering == TextureFiltering.Linear)
+			{
+				GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+				GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+			} else if (filtering == TextureFiltering.Nearest)
+			{
+				GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+				GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+			}
+		}
+	}
 }

@@ -10,6 +10,7 @@ public class Program
 		new Generator(GraphikGLApiGenerator.Generate, "glapi", "GraphikAPI based on the GL implementation"),
 		new Generator(GraphikGLApiGenerator.Generate, "keylist", "Generate the Key enum based off the OpenTK keys enum"),
 		new Generator(GraphikGLApiGenerator.Generate, "glfwKeymapping", "Generate a mapping for GLFW->Graphik keys"),
+		new Generator(GraphikGLApiGenerator.Generate, "glBlendFactor", "Generate a mapping for Graphik blend factor->OpenGL blend factor"),
 	};
 	
 	
