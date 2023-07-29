@@ -257,6 +257,16 @@ public unsafe class GLAPI : IGraphikAPI
 			_ => 0
 		});
 	}
+	
+	public IController GetController(int controllerID)
+	{
+		return new GLFWController(controllerID);
+	}
+	
+	public void UnbindTextures()
+	{
+		GL.BindTexture(TextureTarget.Texture2d, TextureHandle.Zero);
+	}
 
 	private BlendingFactor GetBlendingFactor(BlendFactor factor)
 	{
@@ -283,5 +293,10 @@ public unsafe class GLAPI : IGraphikAPI
 			BlendFactor.OneMinusSrc1Alpha => BlendingFactor.OneMinusSrc1Alpha,
 			_ => 0
 		};
+	}
+
+	internal static void SetLabel(ObjectIdentifier identifier, int handle, string label)
+	{
+		GL.ObjectLabel(identifier, (uint)handle, label.Length, label);
 	}
 }

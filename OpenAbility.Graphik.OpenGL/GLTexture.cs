@@ -145,4 +145,8 @@ public class GLTexture : ITexture2D
 			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 		}
 	}
+	public void SetName(string name)
+	{
+		GLAPI.SetLabel(ObjectIdentifier.Texture, handle.Handle, name);
+	}
 }

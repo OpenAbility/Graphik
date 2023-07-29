@@ -10,34 +10,24 @@ public class GLShaderObject : IShaderObject
 	private string filename = "";
 	private GLShaderType shaderType;
 	public ShaderHandle ShaderHandle;
-	public void AttachSource(string source, string filename, ShaderType shaderType)
+
+	public ShaderBuildResult Build(CompiledShader compiledShader)
 	{
 		
-		GLShaderType glType = shaderType switch
+		ShaderBuildResult shaderBuildResult = new ShaderBuildResult();
+		
+		ShaderHandle = GL.CreateShader(compiledShader.ShaderType switch
 		{
 			ShaderType.ComputeShader => GLShaderType.ComputeShader,
 			ShaderType.FragmentShader => GLShaderType.FragmentShader,
 			ShaderType.VertexShader => GLShaderType.VertexShader,
 			ShaderType.GeometryShader => GLShaderType.GeometryShader,
 			_ => 0
-		};
-
-		this.source = source;
-		this.filename = filename;
-		this.shaderType = glType;
-
-	}
-	public ShaderCompilationResult Compile()
-	{
-		ShaderCompilationResult shaderResult = new ShaderCompilationResult();
-		shaderResult.Status = ShaderCompilationStatus.Success;
+		});
 		
-		// Then we create the shader and attach the binary
-		ShaderHandle = GL.CreateShader(shaderType);
-		GL.ShaderSource(ShaderHandle, source);
+		GL.ShaderSource(ShaderHandle, compiledShader.RawSource);
 		GL.CompileShader(ShaderHandle);
-
-		// Finally we check for errors
+		
 		int isCompiled = -1;
 		GL.GetShaderi(ShaderHandle, ShaderParameterName.CompileStatus, ref isCompiled);
 		if (isCompiled == 0)
@@ -47,12 +37,47 @@ public class GLShaderObject : IShaderObject
 			GL.GetShaderi(ShaderHandle, ShaderParameterName.InfoLogLength, ref infoLogLength);
 				
 			GL.GetShaderInfoLog(ShaderHandle, out string infoLog);
-			shaderResult.Log = infoLog + "\n";
-				
-			shaderResult.Status = ShaderCompilationStatus.Failure;
+			shaderBuildResult.Log = infoLog;
+			shaderBuildResult.Status = ShaderCompilationStatus.Failure;
 		}
+		shaderBuildResult.Status = ShaderCompilationStatus.Success;
+		return shaderBuildResult;
+	}
+	
+	private ShaderBuildResult BuildSPIRV(CompiledShader compiledShader)
+	{
 
-		return shaderResult;
+		ShaderBuildResult shaderBuildResult = new ShaderBuildResult();
+		
+		if (compiledShader.Success == false)
+			throw new ArgumentException("Cannot build shader object from non-compiled shader!", nameof(compiledShader));
+		ShaderHandle = GL.CreateShader(compiledShader.ShaderType switch
+		{
+			ShaderType.ComputeShader => GLShaderType.ComputeShader,
+			ShaderType.FragmentShader => GLShaderType.FragmentShader,
+			ShaderType.VertexShader => GLShaderType.VertexShader,
+			ShaderType.GeometryShader => GLShaderType.GeometryShader,
+			_ => 0
+		});
+		
+		GL.ShaderBinary(1, ShaderHandle, ShaderBinaryFormat.ShaderBinaryFormatSpirV, compiledShader.DataPointer, (int)compiledShader.DataLength);
+		GL.SpecializeShader(ShaderHandle, compiledShader.EntryPoint, 0, Array.Empty<uint>(), Array.Empty<uint>());
+		
+		int isCompiled = -1;
+		GL.GetShaderi(ShaderHandle, ShaderParameterName.CompileStatus, ref isCompiled);
+		if (isCompiled == 0)
+		{
+				
+			int infoLogLength = -1;
+			GL.GetShaderi(ShaderHandle, ShaderParameterName.InfoLogLength, ref infoLogLength);
+				
+			GL.GetShaderInfoLog(ShaderHandle, out string infoLog);
+			shaderBuildResult.Log = infoLog;
+			shaderBuildResult.Status = ShaderCompilationStatus.Failure;
+		}
+		shaderBuildResult.Status = ShaderCompilationStatus.Success;
+		return shaderBuildResult;
+
 	}
 	public void Dispose()
 	{

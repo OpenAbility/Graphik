@@ -32,6 +32,12 @@ public interface ITexture
 	/// </summary>
 	/// <param name="filtering">The filtering to use</param>
 	public void SetFiltering(TextureFiltering filtering);
+	
+	/// <summary>
+	/// Set the name of this texture
+	/// </summary>
+	/// <param name="name">The name to use</param>
+	public void SetName(string name);
 }
 
 public enum TextureFiltering

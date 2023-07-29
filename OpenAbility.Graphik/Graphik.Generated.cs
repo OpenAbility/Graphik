@@ -34,4 +34,6 @@ public static partial class Graphik
 	public static void SetBlendFunction(BlendFactor a, BlendFactor b) => api.SetBlendFunction(a, b);
 	public static void SetDepthFunction(DepthFunction depthFunction) => api.SetDepthFunction(depthFunction);
 	public static void SetScrollCallback(ScrollCallback scrollCallback) => api.SetScrollCallback(scrollCallback);
+	public static IController GetController(int controllerID) => api.GetController(controllerID);
+	public static void UnbindTextures() => api.UnbindTextures();
 }

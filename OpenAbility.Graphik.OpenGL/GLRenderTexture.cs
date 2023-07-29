@@ -166,4 +166,11 @@ public class GLRenderTexture : IRenderTexture
 			}
 		}
 	}
+	public void SetName(string name)
+	{
+		GLAPI.SetLabel(ObjectIdentifier.Texture, colourHandle.Handle, name + ".COLOUR");
+		GLAPI.SetLabel(ObjectIdentifier.Texture, depthHandle.Handle, name + ".DEPTH");
+		GLAPI.SetLabel(ObjectIdentifier.Renderbuffer, rbo.Handle, name + ".RBO");
+		GLAPI.SetLabel(ObjectIdentifier.Framebuffer, fbo.Handle, name + ".FBO");
+	}
 }

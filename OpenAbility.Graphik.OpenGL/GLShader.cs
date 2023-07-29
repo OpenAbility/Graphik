@@ -55,9 +55,16 @@ public class GLShader : IShader
 	{
 		GL.UseProgram(handle);
 	}
+
+	private readonly Dictionary<string, int> uniforms = new Dictionary<string, int>();
+
 	private int GetUniformLocation(string name)
 	{
-		return GL.GetUniformLocation(handle, name);
+		if (uniforms.TryGetValue(name, out int uniform))
+			return uniform;
+		uniform = GL.GetUniformLocation(handle, name);
+		uniforms[name] = uniform;
+		return uniform;
 	}
 
 	public void BindInt(string name, int value) => GL.Uniform1i(GetUniformLocation(name), value);

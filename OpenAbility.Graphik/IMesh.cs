@@ -15,5 +15,8 @@ public interface IMesh
 	public void SetVertexAttrib(uint index, int size, VertexAttribType vertexAttribType, int stride, int offset, bool normalized = false);
 	public void Render(int indices, int vertexOffset, RenderMode renderMode = RenderMode.Triangle, int indexOffset = 0);
 	public void Render(int indices, RenderMode renderMode = RenderMode.Triangle, int indexOffset = 0);
+	public void RenderInstanced(int indices, int instances, RenderMode renderMode = RenderMode.Triangle, int indexOffset = 0);
 	public void Dispose();
+	public void SetName(string name);
 }
+

@@ -23,14 +23,16 @@ public interface IGraphikAPI
 	IRenderTexture CreateRenderTexture();
 	void ResetTarget();
 	void SetMouseState(MouseState state);
-	public IShaderObject CreateShaderObject();
-	public void SetFeature(Feature feature, bool enabled);
-	public void SetCullMode(CullFace cullFace);
-	public void SetTexturePixelAlignment(int alignment);
-	public void SetWindowTitle(string title);
-	public void SetScissorArea(int x, int y, int width, int height);
-	public ITexture2D FromNative(uint handle);
-	public void SetBlending(BlendMode blendMode);
-	public void SetBlendFunction(BlendFactor a, BlendFactor b);
-	public void SetDepthFunction(DepthFunction depthFunction);
+	 IShaderObject CreateShaderObject();
+	 void SetFeature(Feature feature, bool enabled);
+	 void SetCullMode(CullFace cullFace);
+	 void SetTexturePixelAlignment(int alignment);
+	 void SetWindowTitle(string title);
+	 void SetScissorArea(int x, int y, int width, int height);
+	 ITexture2D FromNative(uint handle);
+	 void SetBlending(BlendMode blendMode);
+	 void SetBlendFunction(BlendFactor a, BlendFactor b);
+	void SetDepthFunction(DepthFunction depthFunction);
+	IController GetController(int controllerID);
+	void UnbindTextures();
 }

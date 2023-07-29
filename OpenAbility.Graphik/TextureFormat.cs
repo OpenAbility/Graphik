@@ -10,11 +10,11 @@ public enum TextureFormat
 	/// </summary>
 	R8,
 	/// <summary>
-	/// 3 bytes representing a red, a green and a blue channel
+	/// A red and green channel with 3 bytes each, and a blue channel with 2 bytes
 	/// </summary>
 	Rgb8, 
 	/// <summary>
-	/// 4 bytes representing a red, a green, a blue and an alpha channel
+	/// A red, a green, a blue and an alpha channel with 2 bytes each
 	/// </summary>
 	Rgba8,
 	
@@ -23,7 +23,7 @@ public enum TextureFormat
 	/// </summary>
 	R32, 
 	/// <summary>
-	/// 3 unsigned 32-bit integers representing a red, a green and a blue channel
+	/// A red, a green and a blue channel each represented by a 32-bit integer
 	/// </summary>
 	Rgb32,
 	/// <summary>
@@ -42,5 +42,5 @@ public enum TextureFormat
 	/// <summary>
 	/// A 32-bit float representing a red, a green a blue and an alpha channel
 	/// </summary>
-	Rgbaf
+	Rgbaf,
 }
