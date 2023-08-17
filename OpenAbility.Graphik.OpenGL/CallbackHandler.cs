@@ -27,6 +27,14 @@ internal static unsafe class CallbackHandler
 
 		ErrorCallback("GL_" + source + "_" + type + severity, Encoding.Default.GetString(data));
 	};
+
+	private static readonly GLFWCallbacks.ErrorCallback GLFWErrorCallback = (error, description) =>
+	{
+		if (ErrorCallback == null)
+			return;
+
+		ErrorCallback("GLFW_" + error + "", description);
+	};
 	
 	private static readonly GLFWCallbacks.WindowSizeCallback GLFWWindowSizeCallback = (_, width, height) =>
 	{
@@ -109,5 +117,6 @@ internal static unsafe class CallbackHandler
 		GLFW.SetMouseButtonCallback(window, GLFWMouseCallback);
 		GLFW.SetCursorPosCallback(window, GLFWCursorCallback);
 		GLFW.SetScrollCallback(window, GLFWScrollCallback);
+		GLFW.SetErrorCallback(GLFWErrorCallback);
 	}
 }

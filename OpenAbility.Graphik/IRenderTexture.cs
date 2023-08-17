@@ -4,7 +4,7 @@ public interface IRenderTexture  : ITexture
 {
 	public void Target();
 	public void Bind(RenderTextureComponent component, int index = 0);
-	public void Build(int width, int height, bool colour = true, bool depth = true);
+	public void Build(int width, int height, bool colour = true, bool depth = true, bool normal = true);
 	public void Dispose();
 }
 
@@ -12,5 +12,6 @@ public interface IRenderTexture  : ITexture
 public enum RenderTextureComponent
 {
 	Colour,
-	Depth
+	Depth,
+	Normal
 }

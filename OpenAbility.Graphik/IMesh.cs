@@ -18,5 +18,6 @@ public interface IMesh
 	public void RenderInstanced(int indices, int instances, RenderMode renderMode = RenderMode.Triangle, int indexOffset = 0);
 	public void Dispose();
 	public void SetName(string name);
+	public void Bind();
 }
 
