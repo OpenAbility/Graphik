@@ -1,6 +1,7 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using System.Numerics;
 
 namespace OpenAbility.Graphik.OpenGL;
 
@@ -175,6 +176,12 @@ public unsafe class GLAPI : IGraphikAPI
 			GL.PolygonMode(TriangleFace.FrontAndBack, PolygonMode.Fill);
 			return;
 		}
+		if (feature == Feature.DebugOutput)
+		{
+			GL.Disable(EnableCap.DebugOutput);
+			GL.Disable(EnableCap.DebugOutputSynchronous);
+			return;
+		}
 		GL.Disable(GetFeatureCap(feature));	
 	}
 
@@ -183,6 +190,12 @@ public unsafe class GLAPI : IGraphikAPI
 		if (feature == Feature.Wireframe)
 		{
 			GL.PolygonMode(TriangleFace.FrontAndBack, PolygonMode.Line);
+			return;
+		}
+		if (feature == Feature.DebugOutput)
+		{
+			GL.Enable(EnableCap.DebugOutput);
+			GL.Enable(EnableCap.DebugOutputSynchronous);
 			return;
 		}
 		GL.Enable(GetFeatureCap(feature));	
@@ -257,6 +270,21 @@ public unsafe class GLAPI : IGraphikAPI
 			_ => 0
 		});
 	}
+	
+	public IController GetController(int controllerID)
+	{
+		return new GLFWController(controllerID);
+	}
+	
+	public void UnbindTextures()
+	{
+		GL.BindTexture(TextureTarget.Texture2d, TextureHandle.Zero);
+	}
+	public Vector2 ContentScale()
+	{
+		GLFW.GetWindowContentScale(window, out float x, out float y);
+		return new Vector2(x, y);
+	}
 
 	private BlendingFactor GetBlendingFactor(BlendFactor factor)
 	{
@@ -283,5 +311,10 @@ public unsafe class GLAPI : IGraphikAPI
 			BlendFactor.OneMinusSrc1Alpha => BlendingFactor.OneMinusSrc1Alpha,
 			_ => 0
 		};
+	}
+
+	internal static void SetLabel(ObjectIdentifier identifier, int handle, string label)
+	{
+		GL.ObjectLabel(identifier, (uint)handle, label.Length, label);
 	}
 }

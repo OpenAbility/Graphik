@@ -32,4 +32,8 @@ public enum Feature
 	/// Should we do scissor testing?
 	/// </summary>
 	Scissor,
+	/// <summary>
+	/// Should we print errors etc?
+	/// </summary>
+	DebugOutput
 }

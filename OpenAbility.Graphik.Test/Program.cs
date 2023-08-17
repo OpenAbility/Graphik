@@ -32,10 +32,8 @@ IShader shader = Graphik.CreateShader();
 
 IShaderObject vertex = Graphik.CreateShaderObject();
 IShaderObject fragment = Graphik.CreateShaderObject();
-vertex.AttachSource(File.ReadAllText("assets/test.vert"), "test.vert", ShaderType.VertexShader);
-vertex.Compile();
-fragment.AttachSource(File.ReadAllText("assets/test.frag"), "test.frag", ShaderType.FragmentShader);
-fragment.Compile();
+vertex.Build(ShaderCompiler.Compile(File.ReadAllText("assets/test.vert"), "test.vert", ShaderType.VertexShader));
+fragment.Build(ShaderCompiler.Compile(File.ReadAllText("assets/test.frag"), "test.frag", ShaderType.FragmentShader));
 
 shader.Attach(vertex);
 shader.Attach(fragment);

@@ -1,10 +1,8 @@
 namespace OpenAbility.Graphik;
 
-public struct ShaderCompilationResult
+public struct ShaderBuildResult
 {
 	public ShaderCompilationStatus Status;
-	public int WarningCount;
-	public int ErrorCount;
 	public string Log;
 }
 

@@ -9,23 +9,26 @@ public class GLRenderTexture : IRenderTexture
 	private RenderbufferHandle rbo;
 	private TextureHandle colourHandle;
 	private TextureHandle depthHandle;
+	private TextureHandle normalHandle;
 
 	private int width;
 	private int height;
 	private bool colour;
 	private bool depth;
+	private bool normal;
 
 	public GLRenderTexture()
 	{
 		
 	}
 
-	public unsafe void Build(int _width, int _height, bool _colour, bool _depth)
+	public unsafe void Build(int _width, int _height, bool _colour, bool _depth, bool _normal)
 	{
 		width = _width;
 		height = _height;
 		colour = _colour;
 		depth = _depth;
+		normal = _normal;
 		
 		fbo = GL.GenFramebuffer();
 		GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
@@ -56,6 +59,8 @@ public class GLRenderTexture : IRenderTexture
 			GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, InternalFormat.Depth32fStencil8, width, height);
 			GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, RenderbufferTarget.Renderbuffer, rbo);
 		}
+
+		List<DrawBufferMode> drawBufferModes = new List<DrawBufferMode>();
 		
 		if(colour) {
 			colourHandle = GL.GenTexture();
@@ -70,10 +75,30 @@ public class GLRenderTexture : IRenderTexture
 			
 			GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2d, colourHandle, 0);
 			
-			GL.DrawBuffers(new DrawBufferMode[]
-			{
-				DrawBufferMode.ColorAttachment0,
-			});
+			
+			drawBufferModes.Add(DrawBufferMode.ColorAttachment0);
+		}
+		if (depth)
+		{
+			depthHandle = GL.GenTexture();
+			GL.BindTexture(TextureTarget.Texture2d, depthHandle);
+
+			GL.TexImage2D(TextureTarget.Texture2d, 0, InternalFormat.Rgb32f, width, height, 0, PixelFormat.Rgb, PixelType.Float, null);
+
+			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+			
+			GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2d, depthHandle, 0);
+			
+			
+			drawBufferModes.Add(DrawBufferMode.ColorAttachment1);
+		}
+
+		if (drawBufferModes.Count != 0)
+		{
+			GL.DrawBuffers(drawBufferModes.ToArray());
 		}
 		else
 		{
@@ -110,14 +135,24 @@ public class GLRenderTexture : IRenderTexture
 				GL.ActiveTexture((TextureUnit)((int)TextureUnit.Texture0 + index));
 				GL.BindTexture(TextureTarget.Texture2d, depthHandle);
 				break;
+			case RenderTextureComponent.Normal when normal:
+				GL.ActiveTexture((TextureUnit)((int)TextureUnit.Texture0 + index));
+				GL.BindTexture(TextureTarget.Texture2d, normalHandle);
+				break;
 			default:
 				throw new ArgumentException("Component is invalid value!", nameof(component));
 		}
 
 	}
+
 	public void Bind(int index = 0)
 	{
 		Bind(RenderTextureComponent.Colour, index);
+	}
+	
+	public void PrepareModifications()
+	{
+		
 	}
 	public void Dispose()
 	{
@@ -165,5 +200,60 @@ public class GLRenderTexture : IRenderTexture
 				GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 			}
 		}
+		
+		if (normal)
+		{			
+			GL.BindTexture(TextureTarget.Texture2d, normalHandle);
+			if (filtering == TextureFiltering.Linear)
+			{
+				GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+				GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+			} else if (filtering == TextureFiltering.Nearest)
+			{
+				GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+				GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+			}
+		}
+	}
+	public void SetRepetition(TextureRepetition repetition)
+	{
+		int repeat = repetition switch
+		{
+			TextureRepetition.Repeat => (int)TextureWrapMode.Repeat,
+			TextureRepetition.ClampToBorder => (int)TextureWrapMode.ClampToBorder,
+			TextureRepetition.ClampToEdge => (int)TextureWrapMode.ClampToEdge,
+			_ => 0
+		};
+		
+		if (colour)
+		{
+			GL.BindTexture(TextureTarget.Texture2d, colourHandle);
+			
+            GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, repeat);
+            GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, repeat);
+		}
+		
+		if (depth)
+		{			
+			GL.BindTexture(TextureTarget.Texture2d, depthHandle);
+			
+            GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, repeat);
+            GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, repeat);
+		}
+		
+		if (normal)
+		{			
+			GL.BindTexture(TextureTarget.Texture2d, normalHandle);
+			
+            GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, repeat);
+            GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, repeat);
+		}
+	}
+	public void SetName(string name)
+	{
+		GLAPI.SetLabel(ObjectIdentifier.Texture, colourHandle.Handle, name + ".COLOUR");
+		GLAPI.SetLabel(ObjectIdentifier.Texture, depthHandle.Handle, name + ".DEPTH");
+		GLAPI.SetLabel(ObjectIdentifier.Renderbuffer, rbo.Handle, name + ".RBO");
+		GLAPI.SetLabel(ObjectIdentifier.Framebuffer, fbo.Handle, name + ".FBO");
 	}
 }

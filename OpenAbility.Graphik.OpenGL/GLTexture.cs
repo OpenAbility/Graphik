@@ -145,4 +145,22 @@ public class GLTexture : ITexture2D
 			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 		}
 	}
+	public void SetRepetition(TextureRepetition repetition)
+	{
+		int repeat = repetition switch
+		{
+			TextureRepetition.Repeat => (int)TextureWrapMode.Repeat,
+			TextureRepetition.ClampToBorder => (int)TextureWrapMode.ClampToBorder,
+			TextureRepetition.ClampToEdge => (int)TextureWrapMode.ClampToEdge,
+			_ => 0
+		};
+
+        GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, repeat);
+        GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, repeat);
+		
+	}
+	public void SetName(string name)
+	{
+		GLAPI.SetLabel(ObjectIdentifier.Texture, handle.Handle, name);
+	}
 }

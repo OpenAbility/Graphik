@@ -1,4 +1,5 @@
 ﻿using OpenTK.Audio.OpenAL;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace OpenAbility.Graphik.Audio.OpenAL;
@@ -6,8 +7,6 @@ namespace OpenAbility.Graphik.Audio.OpenAL;
 [Serializable]
 public unsafe class OpenAlAPI : IGraphikAudioAPI
 {
-	private readonly int source;
-	private readonly int[] audioBuffers = new int[2];
 	private readonly ALDevice device;
 	private readonly ALContext context;
 
@@ -31,71 +30,72 @@ public unsafe class OpenAlAPI : IGraphikAudioAPI
 		if(floatSupported == false)
 			throw new Exception("AL_EXT_float32 not supported!");
 		
-		source = AL.GenSource();
-		AL.Source(source, ALSourceb.Looping, false);
-
-		audioBuffers = AL.GenBuffers(audioBuffers.Length);
-		ErrorCheck("GenBuffers");
-
-		foreach (var buffer in audioBuffers)
-		{
-			AL.BufferData(buffer, ALFormat.StereoFloat32Ext, Array.Empty<float>(), 44100);
-			ErrorCheck("BufferData " + buffer);
-		}
-		
-		AL.DistanceModel(ALDistanceModel.InverseDistanceClamped);
-		AL.Listener(ALListenerfv.Orientation, new float[] {0, 0, 0, 0, 1, 0});
-		
-		AL.Source(source, ALSourcef.ReferenceDistance, 10.0f);
-		AL.Source(source, ALSourcef.MaxDistance, 50.0f);
-		AL.Source(source, ALSourcef.RolloffFactor, 2.0f);
-		AL.Source(source, ALSource3f.Position, 0, 0, 0);
-		
-		AL.SourceQueueBuffers(source, audioBuffers);
-		ErrorCheck("QueueBuffers");
-		AL.SourcePlay(source);
-		ErrorCheck("SourcePlay");
 	}
 
-	private void ErrorCheck(string loc)
+	public IAudioBuffer GenerateBuffer()
 	{
-		ALError error = AL.GetError();
-		if (error != ALError.NoError)
-		{
-			Console.Error.WriteLine("AL ERROR: " + error + ": " + AL.GetErrorString(error) + " at " + loc);
-		}
+		return new ALAudioBuffer();
 	}
-
 	public void Close()
 	{
-		ALC.CloseDevice(device);
 		ALC.DestroyContext(context);
-		ErrorCheck("Close");
+		ALC.CloseDevice(device);
 	}
-
-	public void EnqueueData(float[] data, int sampleFrequency)
+	public Vector3 ListenerPosition
 	{
-		int buffer = AL.SourceUnqueueBuffer(source);
-		AL.BufferData(buffer, ALFormat.StereoFloat32Ext, data, sampleFrequency);
-		AL.SourceQueueBuffer(source, buffer);
-		AL.GetSource(source, ALGetSourcei.BuffersQueued, out int queue);
-		ResumePlayback();
+		get
+		{
+			AL.GetListener(ALListener3f.Position, out OpenTK.Mathematics.Vector3 value);
+			return new Vector3(value.X, value.Y, value.Z);
+		}
+		set
+		{
+			AL.Listener(ALListener3f.Position, value.X, value.Y, value.Z);
+		}
+	}
+	public ListenerOrientation ListenerOrientation
+	{
+		get
+		{
+			AL.GetListener(ALListenerfv.Orientation, out OpenTK.Mathematics.Vector3 fwd, out OpenTK.Mathematics.Vector3 up);
+			return new ListenerOrientation(new Vector3(fwd.X, fwd.Y, fwd.Z), new Vector3(up.X, up.Y, up.Z));
+		}
+		set
+		{
+			AL.Listener(ALListenerfv.Orientation, new float[]
+			{
+				value.Forward.X, value.Forward.Y, value.Forward.Z,
+				value.Up.X, value.Up.Y, value.Up.Z
+			});
+		}
+	}
+	public Vector3 ListenerVelocity
+	{
+		get
+		{
+			AL.GetListener(ALListener3f.Velocity, out OpenTK.Mathematics.Vector3 value);
+			return new Vector3(value.X, value.Y, value.Z);
+		}
+		set
+		{
+			AL.Listener(ALListener3f.Velocity, value.X, value.Y, value.Z);
+		}
+	}
+	public float ListenerGain
+	{
+		get
+		{
+			AL.GetListener(ALListenerf.Gain, out float value);
+			return value;
+		}
+		set
+		{
+			AL.Listener(ALListenerf.Gain, value);
+		}
 	}
 	
-	public void PausePlayback()
+	public IAudioSource GenerateSource()
 	{
-		AL.SourcePause(source);
-	}
-	
-	public void ResumePlayback()
-	{
-		if(AL.GetSourceState(source) != ALSourceState.Playing)
-			AL.SourcePlay(source);
-	}
-
-	public bool RequiresNewData()
-	{
-		AL.GetSource(source, ALGetSourcei.BuffersProcessed, out int p);
-		return p > 0;
+		return new ALAudioSource();
 	}
 }

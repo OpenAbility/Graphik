@@ -9,6 +9,11 @@ public interface ITexture
 	/// </summary>
 	/// <param name="index">The index to bind to, should be limited to 32</param>
 	public void Bind([Range(0, 32)] int index = 0);
+
+	/// <summary>
+	/// Prepare this texture for modification
+	/// </summary>
+	public void PrepareModifications();
 	
 	/// <summary>
 	/// Delete the texture
@@ -32,10 +37,29 @@ public interface ITexture
 	/// </summary>
 	/// <param name="filtering">The filtering to use</param>
 	public void SetFiltering(TextureFiltering filtering);
+	
+	/// <summary>
+	/// Set the texture repetition, default is <see cref="TextureRepetition.Repeat"/>
+	/// </summary>
+	/// <param name="repetition">The repetition to use</param>
+	public void SetRepetition(TextureRepetition repetition);
+	
+	/// <summary>
+	/// Set the name of this texture
+	/// </summary>
+	/// <param name="name">The name to use</param>
+	public void SetName(string name);
 }
 
 public enum TextureFiltering
 {
 	Nearest,
 	Linear
+}
+
+public enum TextureRepetition
+{
+	ClampToBorder,
+	ClampToEdge,
+	Repeat
 }

@@ -26,6 +26,9 @@ public interface IShader
 	public void BindDouble3(string name, double x, double y, double z);
 	public void BindDouble4(string name, double x, double y, double z, double w);
 	public void BindMatrix4(string name, bool transpose, float[] matrix);
+
+	private static readonly float[] PreAllocatedMatrixData = new float[16];
+	
 	public void BindMatrix4(string name, bool transpose, float[,] matrix)
 	{
 		if (matrix.GetLength(0) < 4)
@@ -33,15 +36,16 @@ public interface IShader
 		if (matrix.GetLength(1) < 4)
 			throw new ArgumentException("Matrix is less than 4 height", nameof(matrix));
 
-		float[] data =
+		for (int i = 0; i < 4; i++)
 		{
-			matrix[0, 0], matrix[0, 1], matrix[0, 2], matrix[0, 3],
-			matrix[1, 0], matrix[1, 1], matrix[1, 2], matrix[1, 3],
-			matrix[2, 0], matrix[2, 1], matrix[2, 2], matrix[2, 3],
-			matrix[3, 0], matrix[3, 1], matrix[3, 2], matrix[3, 3]
-		};
+			PreAllocatedMatrixData[i * 4 + 0] = matrix[i, 0];
+			PreAllocatedMatrixData[i * 4 + 1] = matrix[i, 1];
+			PreAllocatedMatrixData[i * 4 + 2] = matrix[i, 2];
+			PreAllocatedMatrixData[i * 4 + 3] = matrix[i, 3];
+		}
 		
-		BindMatrix4(name, transpose, data);
+
+		BindMatrix4(name, transpose, PreAllocatedMatrixData);
 	}
 
 	public void BindAttribute(string name, int index);
