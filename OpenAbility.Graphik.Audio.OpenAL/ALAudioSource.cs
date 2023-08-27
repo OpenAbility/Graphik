@@ -16,14 +16,14 @@ public class ALAudioSource : IAudioSource
 		return (uint)handle;
 	}
 	
-	public void SetBuffer(IAudioBuffer buffer)
+	public void SetBuffer(IAudioBuffer? buffer)
 	{
-		AL.Source(handle, ALSourcei.Buffer, (int)buffer.GetHandle());
+		AL.Source(handle, ALSourcei.Buffer, (int?)buffer?.GetHandle() ?? 0);
 	}
 	
-	public void EnqueueBuffer(IAudioBuffer buffer)
+	public void EnqueueBuffer(IAudioBuffer? buffer)
 	{
-		AL.SourceQueueBuffer(handle, (int)buffer.GetHandle());
+		AL.SourceQueueBuffer(handle, (int?)buffer?.GetHandle() ?? 0);
 	}
 	
 	public IAudioBuffer DequeueBuffer()
@@ -182,5 +182,19 @@ public class ALAudioSource : IAudioSource
 			AL.GetSource(handle, ALGetSourcei.BuffersProcessed, out int value);
 			return value;
 		}
+	}
+	
+	public int EnqueuedBuffers
+	{
+		get
+		{
+			AL.GetSource(handle, ALGetSourcei.BuffersQueued, out int value);
+			return value;
+		}
+	}
+	
+	public void Dispose()
+	{
+		AL.DeleteSource(handle);
 	}
 }

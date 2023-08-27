@@ -28,4 +28,8 @@ public class ALAudioBuffer : IAudioBuffer
 	{
 		return (uint)handle;
 	}
+	public void Dispose()
+	{
+		AL.DeleteBuffer(handle);
+	}
 }

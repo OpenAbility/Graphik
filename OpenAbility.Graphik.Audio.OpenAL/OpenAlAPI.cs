@@ -1,6 +1,5 @@
 ﻿using OpenTK.Audio.OpenAL;
 using System.Numerics;
-using System.Runtime.InteropServices;
 
 namespace OpenAbility.Graphik.Audio.OpenAL;
 
@@ -12,6 +11,7 @@ public unsafe class OpenAlAPI : IGraphikAudioAPI
 
 	public OpenAlAPI()
 	{
+		
 		device = ALC.OpenDevice(null);
 		context = ALC.CreateContext(device, (int*)null);
 		

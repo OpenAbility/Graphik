@@ -13,12 +13,12 @@ public interface IAudioSource
 	/// Set the buffer of this source
 	/// </summary>
 	/// <param name="buffer">The buffer to set it to</param>
-	public void SetBuffer(IAudioBuffer buffer);
+	public void SetBuffer(IAudioBuffer? buffer);
 	/// <summary>
 	/// Enqueue a buffer for playback
 	/// </summary>
 	/// <param name="buffer">The buffer to enqueue</param>
-	public void EnqueueBuffer(IAudioBuffer buffer);
+	public void EnqueueBuffer(IAudioBuffer? buffer);
 	/// <summary>
 	/// Dequeue a buffer
 	/// </summary>
@@ -85,4 +85,12 @@ public interface IAudioSource
 	/// How many buffers has the source finished?
 	/// </summary>
 	public int FinishedBuffers { get; }
+	/// <summary>
+	/// How many buffers are enqueued?
+	/// </summary>
+	public int EnqueuedBuffers { get; }
+	/// <summary>
+	/// Destroy the source
+	/// </summary>
+	public void Dispose();
 }

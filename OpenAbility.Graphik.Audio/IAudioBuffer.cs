@@ -16,4 +16,8 @@ public interface IAudioBuffer
 	/// </summary>
 	/// <returns>The underlying buffer handle</returns>
 	public uint GetHandle();
+	/// <summary>
+	/// Destroy the buffer
+	/// </summary>
+	public void Dispose();
 }
