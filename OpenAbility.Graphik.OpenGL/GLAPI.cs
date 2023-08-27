@@ -162,7 +162,6 @@ public unsafe class GLAPI : IGraphikAPI
 			return;
 		}
 		
-		
 		if (enabled)
 			EnableFeature(feature);
 		else

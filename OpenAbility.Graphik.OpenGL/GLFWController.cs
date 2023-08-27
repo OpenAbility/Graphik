@@ -43,6 +43,14 @@ public unsafe class GLFWController : IController
 		}
 	}
 	
+	public string Brand
+	{
+		get
+		{
+			return "xbox";
+		}
+	}
+
 	public GLFWController(int id)
 	{
 		this.id = id;

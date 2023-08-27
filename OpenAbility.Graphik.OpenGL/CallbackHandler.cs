@@ -1,5 +1,6 @@
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -25,7 +26,9 @@ internal static unsafe class CallbackHandler
 		byte[] data = new byte[length];
 		Marshal.Copy(message, data, 0, length);
 
-		ErrorCallback("GL_" + source + "_" + type + severity, Encoding.Default.GetString(data));
+		StackTrace stackTrace = new StackTrace(true);
+
+		ErrorCallback("GL_" + source + "_" + type + severity, Encoding.Default.GetString(data) + "\n" + stackTrace);
 	};
 
 	private static readonly GLFWCallbacks.ErrorCallback GLFWErrorCallback = (error, description) =>

@@ -54,7 +54,10 @@ public interface ITexture
 public enum TextureFiltering
 {
 	Nearest,
-	Linear
+	Linear,
+	[Obsolete("Trilinear filtering is not fully implemented and tested on the GL branch yet!")]
+	// TODO: look through the GL-side implementation for this shit
+	Trilinear
 }
 
 public enum TextureRepetition

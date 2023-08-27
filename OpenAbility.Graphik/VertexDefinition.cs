@@ -78,11 +78,12 @@ public class VertexDefinition
 			totalSize += GetSize(attrib);
 		}
 
-		int stride = 0;
+		int offset = 0;
+		mesh.PrepareModifications();
 		foreach (var attrib in vertexAttribs)
 		{
-			mesh.SetVertexAttrib(attrib.Index, attrib.Size, attrib.VertexAttribType, stride, totalSize, attrib.Normalized);
-			stride += GetSize(attrib);
+			mesh.SetVertexAttrib(attrib.Index, attrib.Size, attrib.VertexAttribType, totalSize, offset, attrib.Normalized);
+			offset += GetSize(attrib);
 		}
 
 		return this;

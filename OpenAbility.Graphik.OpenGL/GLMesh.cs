@@ -38,44 +38,44 @@ public class GLMesh : IMesh
 		};
 	}
 
-	public unsafe void SetVertexData<T>(T[] data, bool realloc) where T : unmanaged
+	public unsafe void SetVertexData<T>(T[] data, bool realloc = true, bool preferQuickwrite = false) where T : unmanaged
 	{
 		fixed (T* ptr = data)
 		{
-			SetVertexData(new IntPtr(ptr), data.Length * sizeof(T), realloc);
+			SetVertexData(new IntPtr(ptr), data.Length * sizeof(T), realloc, preferQuickwrite);
 		}
 		
 		
 	}
-	public void SetVertexData(IntPtr data, int size, bool realloc = true)
+	public void SetVertexData(IntPtr data, int size, bool realloc = true, bool preferQuickwrite = false)
 	{
 		if (size != vboSize && realloc)
 		{
-			AllocateVertexData(size);
+			AllocateVertexData(size, preferQuickwrite);
 		} else if (size > vboSize)
 		{
-			AllocateVertexData(size);
+			AllocateVertexData(size, preferQuickwrite);
 		}
 		GL.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
 		GL.BufferSubData(BufferTargetARB.ArrayBuffer, IntPtr.Zero, size, data);
 	}
 	
-	public unsafe void SetIndices<T>(T[] indices, bool realloc = true) where T : unmanaged
+	public unsafe void SetIndices<T>(T[] indices, bool realloc = true, bool preferQuickwrite = false) where T : unmanaged
 	{
 		fixed (T* ptr = indices)
 		{
-			SetIndices(new IntPtr(ptr), indices.Length * sizeof(T), realloc);
+			SetIndices(new IntPtr(ptr), indices.Length * sizeof(T), realloc, preferQuickwrite);
 		}
 	}
 	
-	public void SetIndices(IntPtr data, int size, bool realloc = true)
+	public void SetIndices(IntPtr data, int size, bool realloc = true, bool preferQuickwrite = false)
 	{
 		if (size != eboSize && realloc)
 		{
-			AllocateIndexData(size);
+			AllocateIndexData(size, preferQuickwrite);
 		} else if (size > eboSize)
 		{
-			AllocateIndexData(size);
+			AllocateIndexData(size, preferQuickwrite);
 		}
 		GL.BindBuffer(BufferTargetARB.ElementArrayBuffer, ebo);
 		GL.BufferSubData(BufferTargetARB.ElementArrayBuffer, IntPtr.Zero, size, data);
@@ -84,16 +84,24 @@ public class GLMesh : IMesh
 
 	public void AllocateVertexData(int size, bool quickWrite = false)
 	{
+		if(vboSize > 0)
+			GC.RemoveMemoryPressure(vboSize);
 		GL.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
-		GL.BufferData(BufferTargetARB.ArrayBuffer, size, IntPtr.Zero, quickWrite ? BufferUsageARB.DynamicDraw : BufferUsageARB.StaticDraw);
+		GL.BufferData(BufferTargetARB.ArrayBuffer, size, IntPtr.Zero, quickWrite ? BufferUsageARB.StreamDraw : BufferUsageARB.StaticDraw);
 		vboSize = size;
+		if(vboSize > 0)
+			GC.AddMemoryPressure(vboSize);
 	}
 
 	public void AllocateIndexData(int size, bool quickWrite = false)
 	{
+		if(eboSize > 0)
+			GC.RemoveMemoryPressure(eboSize);
 		GL.BindBuffer(BufferTargetARB.ElementArrayBuffer, ebo);
-		GL.BufferData(BufferTargetARB.ElementArrayBuffer, size, IntPtr.Zero,  quickWrite ? BufferUsageARB.DynamicDraw : BufferUsageARB.StaticDraw);
+		GL.BufferData(BufferTargetARB.ElementArrayBuffer, size, IntPtr.Zero,  quickWrite ? BufferUsageARB.StreamDraw : BufferUsageARB.StaticDraw);
 		eboSize = size;
+		if(eboSize > 0)
+			GC.AddMemoryPressure(eboSize);
 	}
 	
 	public int GetVertexBufferSize()
@@ -160,6 +168,9 @@ public class GLMesh : IMesh
 		GL.DeleteVertexArray(vao);
 		GL.DeleteBuffer(vbo);
 		GL.DeleteBuffer(ebo);
+		
+		GC.RemoveMemoryPressure(vboSize);
+		GC.RemoveMemoryPressure(eboSize);
 	}
 
 	public void SetName(string name)

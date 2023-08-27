@@ -6,8 +6,6 @@ public class GeneratorShared
 	private List<string> usings = new List<string>();
 	public string GetTypeText(Type type)
 	{
-
-		// TODO: Find all type keywords
 		if (type == typeof(void))
 			return "void";
 		if (type == typeof(sbyte))

@@ -18,6 +18,10 @@ public interface IController
 	/// The controller mapping name
 	/// </summary>
 	public string Mapping { get; }
+    /// <summary>
+    /// The controller brand
+    /// </summary>
+	public string Brand { get; }
 	
 	/// <summary>
 	/// Get a controller axis
@@ -46,6 +50,10 @@ public enum ControllerAxis
 	RightY = 3,
 	L2 = 4,
 	R2 = 5,
+	
+
+	TouchpadX = 6,
+	TouchpadY = 7,
 	Last = R2
 }
 
@@ -58,6 +66,7 @@ public enum ControllerButton
 	L1 = 4,
 	R1 = 5,
 	Back = 6,
+	View = 6,
 	Start = 7,
 	Guide = 8,
 	L3 = 9,
@@ -72,5 +81,12 @@ public enum ControllerButton
 	Square = X,
 	Triangle = Y,
 	
+	Share = Back,
+	Ps = Guide,
+	Options = Start,
+	
+	Touchpad = 15,
+	
 	Last = Left
 }
+

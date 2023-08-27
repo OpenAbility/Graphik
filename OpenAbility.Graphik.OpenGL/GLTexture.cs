@@ -20,8 +20,7 @@ public class GLTexture : ITexture2D
 	{
 		handle = GL.GenTexture();
 		PrepareModifications();
-		
-		// TODO: Add functions to set these variables
+        
 		GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
 		GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
 		GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
@@ -143,6 +142,11 @@ public class GLTexture : ITexture2D
 		{
 			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
 			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+		}
+		else if (filtering == TextureFiltering.Trilinear)
+		{
+			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 		}
 	}
 	public void SetRepetition(TextureRepetition repetition)
