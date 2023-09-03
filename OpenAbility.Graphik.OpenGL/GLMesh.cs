@@ -57,6 +57,7 @@ public class GLMesh : IMesh
 			AllocateVertexData(size, preferQuickwrite);
 		}
 		GL.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
+		
 		GL.BufferSubData(BufferTargetARB.ArrayBuffer, IntPtr.Zero, size, data);
 	}
 	
@@ -87,7 +88,7 @@ public class GLMesh : IMesh
 		if(vboSize > 0)
 			GC.RemoveMemoryPressure(vboSize);
 		GL.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
-		GL.BufferData(BufferTargetARB.ArrayBuffer, size, IntPtr.Zero, quickWrite ? BufferUsageARB.StreamDraw : BufferUsageARB.StaticDraw);
+		GL.BufferData(BufferTargetARB.ArrayBuffer, size, IntPtr.Zero, quickWrite ? BufferUsageARB.StreamDraw : BufferUsageARB.DynamicDraw);
 		vboSize = size;
 		if(vboSize > 0)
 			GC.AddMemoryPressure(vboSize);
@@ -98,7 +99,7 @@ public class GLMesh : IMesh
 		if(eboSize > 0)
 			GC.RemoveMemoryPressure(eboSize);
 		GL.BindBuffer(BufferTargetARB.ElementArrayBuffer, ebo);
-		GL.BufferData(BufferTargetARB.ElementArrayBuffer, size, IntPtr.Zero,  quickWrite ? BufferUsageARB.StreamDraw : BufferUsageARB.StaticDraw);
+		GL.BufferData(BufferTargetARB.ElementArrayBuffer, size, IntPtr.Zero,  quickWrite ? BufferUsageARB.StreamDraw : BufferUsageARB.DynamicDraw);
 		eboSize = size;
 		if(eboSize > 0)
 			GC.AddMemoryPressure(eboSize);
