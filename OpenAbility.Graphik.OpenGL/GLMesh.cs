@@ -5,20 +5,13 @@ namespace OpenAbility.Graphik.OpenGL;
 
 public class GLMesh : IMesh
 {
-	private readonly BufferHandle vbo;
-	private readonly BufferHandle ebo;
-	private readonly VertexArrayHandle vao;
+	private readonly BufferHandle vbo = GL.GenBuffer();
+	private readonly BufferHandle ebo = GL.GenBuffer();
+	private readonly VertexArrayHandle vao = GL.GenVertexArray();
 	private DrawElementsType indexType = DrawElementsType.UnsignedInt;
 
-	private int eboSize = 0;
-	private int vboSize = 0;
-
-	public GLMesh()
-	{
-		vbo = GL.GenBuffer();
-		ebo = GL.GenBuffer();
-		vao = GL.GenVertexArray();
-	}
+	private int eboSize;
+	private int vboSize;
 
 	public void PrepareModifications()
 	{

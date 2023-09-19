@@ -40,4 +40,6 @@ public interface IGraphikAPI
 	IController GetController(int controllerID);
 	void UnbindTextures();
 	Vector2 ContentScale();
+	void LineWidth(float width);
+	void PointSize(float size);
 }

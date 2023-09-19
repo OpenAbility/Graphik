@@ -34,11 +34,11 @@ public enum RenderMode
 	/// </summary>
 	Point,
 	/// <summary>
-	/// Draw a set of lines, where each index is connected to the one before.
+	/// Draw a set of lines, where each pair of indices is treated as its own line
 	/// </summary>
 	Lines,
 	/// <summary>
-	/// Draw a set of lines, where each pair of indices is treated as its own line
+	/// Draw a set of lines, where each index is connected to the one before.
 	/// </summary>
 	Line,
 	/// <summary>

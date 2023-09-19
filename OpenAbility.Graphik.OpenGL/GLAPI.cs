@@ -284,6 +284,15 @@ public unsafe class GLAPI : IGraphikAPI
 		GLFW.GetWindowContentScale(window, out float x, out float y);
 		return new Vector2(x, y);
 	}
+	
+	public void LineWidth(float width)
+	{
+		GL.LineWidth(width);
+	}
+	public void PointSize(float size)
+	{
+		GL.PointSize(size);
+	}
 
 	private BlendingFactor GetBlendingFactor(BlendFactor factor)
 	{

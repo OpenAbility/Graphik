@@ -39,4 +39,6 @@ public static partial class Graphik
 	public static IController GetController(int controllerID) => api.GetController(controllerID);
 	public static void UnbindTextures() => api.UnbindTextures();
 	public static Vector2 ContentScale() => api.ContentScale();
+	public static void LineWidth(float width) => api.LineWidth(width);
+	public static void PointSize(float size) => api.PointSize(size);
 }

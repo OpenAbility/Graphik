@@ -78,10 +78,10 @@ public class GLRenderTexture : IRenderTexture
 			
 			drawBufferModes.Add(DrawBufferMode.ColorAttachment0);
 		}
-		if (depth)
+		if (normal)
 		{
-			depthHandle = GL.GenTexture();
-			GL.BindTexture(TextureTarget.Texture2d, depthHandle);
+			normalHandle = GL.GenTexture();
+			GL.BindTexture(TextureTarget.Texture2d, normalHandle);
 
 			GL.TexImage2D(TextureTarget.Texture2d, 0, InternalFormat.Rgb32f, width, height, 0, PixelFormat.Rgb, PixelType.Float, null);
 
@@ -90,10 +90,7 @@ public class GLRenderTexture : IRenderTexture
 			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
 			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 			
-			GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2d, depthHandle, 0);
-			
-			
-			drawBufferModes.Add(DrawBufferMode.ColorAttachment1);
+			GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2d, normalHandle, 0);
 		}
 
 		if (drawBufferModes.Count != 0)
