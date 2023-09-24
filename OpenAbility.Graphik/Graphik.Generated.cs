@@ -41,4 +41,5 @@ public static partial class Graphik
 	public static Vector2 ContentScale() => api.ContentScale();
 	public static void LineWidth(float width) => api.LineWidth(width);
 	public static void PointSize(float size) => api.PointSize(size);
+	public static IShaderBuffer CreateShaderBuffer() => api.CreateShaderBuffer();
 }

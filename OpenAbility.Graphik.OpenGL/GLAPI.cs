@@ -293,6 +293,10 @@ public unsafe class GLAPI : IGraphikAPI
 	{
 		GL.PointSize(size);
 	}
+	public IShaderBuffer CreateShaderBuffer()
+	{
+		return new GLShaderBuffer();
+	}
 
 	private BlendingFactor GetBlendingFactor(BlendFactor factor)
 	{

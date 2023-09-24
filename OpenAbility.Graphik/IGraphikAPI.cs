@@ -42,4 +42,5 @@ public interface IGraphikAPI
 	Vector2 ContentScale();
 	void LineWidth(float width);
 	void PointSize(float size);
+	IShaderBuffer CreateShaderBuffer();
 }
