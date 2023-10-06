@@ -44,7 +44,7 @@ public class GLTexture : ITexture2D
 		GL.GenerateMipmap(TextureTarget.Texture2d);
 	}
 
-	private static InternalFormat GetInternalFormat(TextureFormat textureFormat)
+	public static InternalFormat GetInternalFormat(TextureFormat textureFormat)
 	{
 		return textureFormat switch
 		{
@@ -61,7 +61,7 @@ public class GLTexture : ITexture2D
 		};
 	}
 
-	private PixelFormat GetPixelFormat(TextureFormat textureFormat)
+	public static PixelFormat GetPixelFormat(TextureFormat textureFormat)
 	{
 		return textureFormat switch
 		{
@@ -78,7 +78,7 @@ public class GLTexture : ITexture2D
 		};
 	}
 	
-	private PixelType GetPixelType(TextureFormat textureFormat)
+	public static PixelType GetPixelType(TextureFormat textureFormat)
 	{
 		return textureFormat switch
 		{

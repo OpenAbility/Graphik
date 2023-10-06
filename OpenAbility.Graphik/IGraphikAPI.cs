@@ -43,4 +43,5 @@ public interface IGraphikAPI
 	void LineWidth(float width);
 	void PointSize(float size);
 	IShaderBuffer CreateShaderBuffer();
+	ICubemapTexture CreateCubemap();
 }

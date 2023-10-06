@@ -329,4 +329,9 @@ public unsafe class GLAPI : IGraphikAPI
 	{
 		GL.ObjectLabel(identifier, (uint)handle, label.Length, label);
 	}
+
+	public ICubemapTexture CreateCubemap()
+	{
+		return new GLCubemap();
+	}
 }

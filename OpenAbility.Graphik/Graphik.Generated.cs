@@ -42,4 +42,5 @@ public static partial class Graphik
 	public static void LineWidth(float width) => api.LineWidth(width);
 	public static void PointSize(float size) => api.PointSize(size);
 	public static IShaderBuffer CreateShaderBuffer() => api.CreateShaderBuffer();
+	public static ICubemapTexture CreateCubemap() => api.CreateCubemap();
 }
