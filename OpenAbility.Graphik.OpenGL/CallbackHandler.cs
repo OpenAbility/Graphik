@@ -1,5 +1,6 @@
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -11,6 +12,7 @@ internal static unsafe class CallbackHandler
 	private static GLAPI glapi = null!;
 	
 	public static ErrorCallback? ErrorCallback;
+	public static DebugCallback? DebugCallback;
 	public static KeyCallback? KeyCallback;
 	public static ResizeCallback? ResizeCallback;
 	public static TypeCallback? TypeCallback;
@@ -18,17 +20,24 @@ internal static unsafe class CallbackHandler
 	public static CursorCallback? CursorCallback;
 	public static ScrollCallback? ScrollCallback;
 	
-	private static readonly GLDebugProc DebugProc = (source, type, _, severity, length, message, _) =>
+	private static readonly GLDebugProc DebugProc = (source, type, _, severity, messageLength, messagePointer, _) =>
 	{
-		if(ErrorCallback == null)
-			return;
 
-		byte[] data = new byte[length];
-		Marshal.Copy(message, data, 0, length);
+		byte[] messageReadBuffer = ArrayPool<byte>.Shared.Rent(messageLength);
+		Marshal.Copy(messagePointer, messageReadBuffer, 0, messageLength);
 
-		StackTrace stackTrace = new StackTrace(true);
+		string message = Encoding.Default.GetString(messageReadBuffer);
 
-		ErrorCallback("GL_" + source + "_" + type + severity, Encoding.Default.GetString(data) + "\n" + stackTrace);
+		ArrayPool<byte>.Shared.Return(messageReadBuffer);
+		
+		if (type == DebugType.DebugTypeError)
+		{
+			ErrorCallback($"[GL ERROR, T: {type}, S: {severity}]", message);
+		}
+		else
+		{
+			DebugCallback($"[GL MESSAGE, T: {type}, S: {severity}]", message);
+		}
 	};
 
 	private static readonly GLFWCallbacks.ErrorCallback GLFWErrorCallback = (error, description) =>

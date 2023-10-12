@@ -15,6 +15,7 @@ public class GLShaderObject : IShaderObject
 	{
 		
 		ShaderBuildResult shaderBuildResult = new ShaderBuildResult();
+		shaderBuildResult.Status = ShaderCompilationStatus.Success;
 		
 		ShaderHandle = GL.CreateShader(compiledShader.ShaderType switch
 		{
@@ -28,19 +29,12 @@ public class GLShaderObject : IShaderObject
 		GL.ShaderSource(ShaderHandle, compiledShader.RawSource);
 		GL.CompileShader(ShaderHandle);
 		
-		int isCompiled = -1;
-		GL.GetShaderi(ShaderHandle, ShaderParameterName.CompileStatus, ref isCompiled);
-		if (isCompiled == 0)
+		GL.GetShaderInfoLog(ShaderHandle, out string infoLog);
+		if (!String.IsNullOrEmpty(infoLog))
 		{
-				
-			int infoLogLength = -1;
-			GL.GetShaderi(ShaderHandle, ShaderParameterName.InfoLogLength, ref infoLogLength);
-				
-			GL.GetShaderInfoLog(ShaderHandle, out string infoLog);
 			shaderBuildResult.Log = infoLog;
 			shaderBuildResult.Status = ShaderCompilationStatus.Failure;
 		}
-		shaderBuildResult.Status = ShaderCompilationStatus.Success;
 		return shaderBuildResult;
 	}
 	

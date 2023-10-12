@@ -32,7 +32,7 @@ public unsafe class GLAPI : IGraphikAPI
 		GLFW.WindowHint(WindowHintBool.Visible, true);
 		GLFW.WindowHint(WindowHintInt.ContextVersionMajor, 4);
 		GLFW.WindowHint(WindowHintInt.ContextVersionMinor, 6);
-		GLFW.WindowHint(WindowHintOpenGlProfile.OpenGlProfile, OpenGlProfile.Core);
+		GLFW.WindowHint(WindowHintOpenGlProfile.OpenGlProfile, OpenGlProfile.Compat);
 		
 #if DEBUG
 		GLFW.WindowHint(WindowHintBool.OpenGLDebugContext, true);
@@ -55,6 +55,10 @@ public unsafe class GLAPI : IGraphikAPI
 	public void SetErrorCallback(ErrorCallback errorCallback)
 	{
 		CallbackHandler.ErrorCallback = errorCallback;
+	}
+	public void SetDebugCallback(DebugCallback debugCallback)
+	{
+		CallbackHandler.DebugCallback = debugCallback;
 	}
 	
 	public void SetResizeCallback(ResizeCallback resizeCallback)

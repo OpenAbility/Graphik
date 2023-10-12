@@ -10,6 +10,7 @@ public static partial class Graphik
 	public static void InitializeSystems() => api.InitializeSystems();
 	public static void InitializeWindow(string title, int width, int height) => api.InitializeWindow(title, width, height);
 	public static void SetErrorCallback(ErrorCallback errorCallback) => api.SetErrorCallback(errorCallback);
+	public static void SetDebugCallback(DebugCallback debugCallback) => api.SetDebugCallback(debugCallback);
 	public static void SetResizeCallback(ResizeCallback resizeCallback) => api.SetResizeCallback(resizeCallback);
 	public static void SetKeyCallback(KeyCallback keyCallback) => api.SetKeyCallback(keyCallback);
 	public static void SetMouseCallback(MouseCallback mouseCallback) => api.SetMouseCallback(mouseCallback);

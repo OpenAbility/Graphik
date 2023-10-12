@@ -11,6 +11,7 @@ public interface IGraphikAPI
 	void InitializeSystems();
 	void InitializeWindow(string title, int width, int height);
 	void SetErrorCallback(ErrorCallback errorCallback);
+	void SetDebugCallback(DebugCallback debugCallback);
 	void SetResizeCallback(ResizeCallback resizeCallback);
 	void SetKeyCallback(KeyCallback keyCallback);
 	void SetMouseCallback(MouseCallback mouseCallback);
