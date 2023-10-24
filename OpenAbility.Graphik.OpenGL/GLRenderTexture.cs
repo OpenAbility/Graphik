@@ -5,6 +5,9 @@ namespace OpenAbility.Graphik.OpenGL;
 
 public class GLRenderTexture : IRenderTexture
 {
+	
+	public static GLRenderTexture? Bound;
+	
 	private FramebufferHandle fbo;
 	private RenderbufferHandle rbo;
 	private TextureHandle colourHandle;
@@ -114,7 +117,7 @@ public class GLRenderTexture : IRenderTexture
 	{
 		GL.Viewport(0, 0, width, height);
 		GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
-		
+		Bound = this;
 	}
 	
 	public void Bind(RenderTextureComponent component, int index = 0)

@@ -140,6 +140,7 @@ public unsafe class GLAPI : IGraphikAPI
 	{
 		GL.BindFramebuffer(FramebufferTarget.Framebuffer, FramebufferHandle.Zero);
 		GL.Viewport(0, 0, Width, Height);
+		GLRenderTexture.Bound = null;
 	}
 
 	public void SetMouseState(MouseState mouseState)
@@ -337,5 +338,9 @@ public unsafe class GLAPI : IGraphikAPI
 	public ICubemapTexture CreateCubemap()
 	{
 		return new GLCubemap();
+	}
+	public IRenderTexture? GetBoundTarget()
+	{
+		return GLRenderTexture.Bound;
 	}
 }

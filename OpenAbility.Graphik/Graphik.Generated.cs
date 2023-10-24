@@ -44,4 +44,7 @@ public static partial class Graphik
 	public static void PointSize(float size) => api.PointSize(size);
 	public static IShaderBuffer CreateShaderBuffer() => api.CreateShaderBuffer();
 	public static ICubemapTexture CreateCubemap() => api.CreateCubemap();
+#nullable enable
+	public static IRenderTexture? GetBoundTarget() => api.GetBoundTarget();
+#nullable disable
 }

@@ -45,4 +45,5 @@ public interface IGraphikAPI
 	void PointSize(float size);
 	IShaderBuffer CreateShaderBuffer();
 	ICubemapTexture CreateCubemap();
+	IRenderTexture? GetBoundTarget();
 }
