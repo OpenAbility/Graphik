@@ -7,10 +7,17 @@ Graphik.InitializeSystems();
 
 Graphik.SetErrorCallback((id, message) =>
 {
+	Console.Error.WriteLine(id + ": " + message);
+});
+
+Graphik.SetDebugCallback((id, message) =>
+{
 	Console.WriteLine(id + ": " + message);
 });
 
 Graphik.InitializeWindow("Hello, World Graphik!", 1280, 720);
+
+Graphik.SetFeature(Feature.Culling, false);
 
 float[] vertices =
 {
@@ -32,12 +39,30 @@ IShader shader = Graphik.CreateShader();
 
 IShaderObject vertex = Graphik.CreateShaderObject();
 IShaderObject fragment = Graphik.CreateShaderObject();
-vertex.Build(ShaderCompiler.Compile(File.ReadAllText("assets/test.vert"), "test.vert", ShaderType.VertexShader));
-fragment.Build(ShaderCompiler.Compile(File.ReadAllText("assets/test.frag"), "test.frag", ShaderType.FragmentShader));
+
+var vertexResult = ShaderCompiler.Compile(File.ReadAllText("assets/test.hlsl"), "test.vert", 
+	ShaderType.VertexShader, "vertex");
+
+if (!vertexResult.Success)
+{
+	Console.Error.WriteLine("Vertex Error: " + vertexResult.Message);
+	return 1;
+}
+
+var fragmentResult = ShaderCompiler.Compile(File.ReadAllText("assets/test.hlsl"), "test.frag", 
+	ShaderType.FragmentShader, "fragment");
+
+if (!fragmentResult.Success)
+{
+	Console.Error.WriteLine("Fragment Error: " + fragmentResult.Message);
+	return 1;
+}
+	
+vertex.Build(vertexResult);
+fragment.Build(fragmentResult);
 
 shader.Attach(vertex);
 shader.Attach(fragment);
-shader.Link();
 
 Console.WriteLine("Linking log: " + shader.Link());
 
@@ -58,18 +83,7 @@ while (!Graphik.WindowShouldClose())
 	Graphik.InitializeFrame();
 	Graphik.Clear(ClearFlags.Colour | ClearFlags.Depth);
 	
-	renderTexture.Target();
-	Graphik.Clear(ClearFlags.Colour | ClearFlags.Depth);
 	shader.Use();
-	texture.Bind();
-	shader.BindInt("tex", 0);
-	mesh.Render(6);
-	
-	Graphik.ResetTarget();
-	Graphik.Clear(ClearFlags.Colour | ClearFlags.Depth);
-	shader.Use();
-	renderTexture.Bind(RenderTextureComponent.Colour);
-	shader.BindInt("tex", 0);
 	mesh.Render(6);
 	
 	Graphik.FinishFrame();

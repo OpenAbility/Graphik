@@ -9,7 +9,8 @@ namespace OpenAbility.Graphik.OpenGL;
 public unsafe class GLAPI : IGraphikAPI
 {
 	private Window* window;
-
+	private HLSLCompiler compiler = new HLSLCompiler();
+	
 	public int Width;
 	public int Height;
 	public void InitializeSystems()
@@ -342,5 +343,9 @@ public unsafe class GLAPI : IGraphikAPI
 	public IRenderTexture? GetBoundTarget()
 	{
 		return GLRenderTexture.Bound;
+	}
+	public IShaderCompiler GetCompiler()
+	{
+		return compiler;
 	}
 }

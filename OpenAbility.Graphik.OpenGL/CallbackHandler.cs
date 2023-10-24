@@ -32,12 +32,16 @@ internal static unsafe class CallbackHandler
 		
 		if (type == DebugType.DebugTypeError)
 		{
-			ErrorCallback($"[GL ERROR, T: {type}, S: {severity}]", message);
+			if (ErrorCallback != null)
+			{
+				ErrorCallback($"[GL ERROR, T: {type}, S: {severity}]", message);
+				return;
+			}
 		}
-		else
-		{
+
+		if(DebugCallback != null)
 			DebugCallback($"[GL MESSAGE, T: {type}, S: {severity}]", message);
-		}
+		
 	};
 
 	private static readonly GLFWCallbacks.ErrorCallback GLFWErrorCallback = (error, description) =>

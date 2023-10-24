@@ -22,4 +22,8 @@
       <PackageReference Include="StbImageSharp" Version="2.27.13" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ClCompile Include="assets\test.hlsl" />
+    </ItemGroup>
+
 </Project>

@@ -13,7 +13,7 @@
 
     <ItemGroup>
       <PackageReference Include="OpenTK" Version="5.0.0-pre.8" />
-      <PackageReference Include="Vortice.ShaderCompiler" Version="1.7.0" />
+      <PackageReference Include="Silk.NET.Shaderc" Version="2.18.0" />
     </ItemGroup>
 
 </Project>

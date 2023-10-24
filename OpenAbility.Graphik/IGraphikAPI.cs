@@ -46,4 +46,5 @@ public interface IGraphikAPI
 	IShaderBuffer CreateShaderBuffer();
 	ICubemapTexture CreateCubemap();
 	IRenderTexture? GetBoundTarget();
+	IShaderCompiler GetCompiler();
 }
