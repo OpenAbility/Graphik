@@ -11,11 +11,10 @@ public class GLShaderObject : IShaderObject
 	private GLShaderType shaderType;
 	public ShaderHandle ShaderHandle;
 
-	public unsafe ShaderBuildResult Build(CompiledShader compiledShader)
+	public ShaderBuildResult Build(CompiledShader compiledShader)
 	{
 
-		SPIRVResult compilationResult = (SPIRVResult)compiledShader.Data;
-		
+		GLSLResult compilationResult = (GLSLResult)compiledShader.Data;
 		
 		ShaderBuildResult shaderBuildResult = new ShaderBuildResult();
 		shaderBuildResult.Status = ShaderCompilationStatus.Success;
@@ -29,9 +28,8 @@ public class GLShaderObject : IShaderObject
 			_ => 0
 		});
 		
-		GL.ShaderBinary(new [] { ShaderHandle }, ShaderBinaryFormat.ShaderBinaryFormatSpirV,
-			compilationResult.Binary, (int)compilationResult.BinaryLength);
-		GL.SpecializeShader(ShaderHandle, compilationResult.Entry, 0, Array.Empty<uint>(), Array.Empty<uint>());
+		GL.ShaderSource(ShaderHandle, compilationResult.GLSL);
+		GL.CompileShader(ShaderHandle);
 		
 		GL.GetShaderInfoLog(ShaderHandle, out string infoLog);
 		if (!String.IsNullOrEmpty(infoLog))

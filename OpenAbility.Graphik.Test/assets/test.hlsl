@@ -1,4 +1,4 @@
-#define UNIFORMS cbuffer SHADER_GLOBALS_BUFFER : register(b0)
+#define UNIFORM_BUFFER(__name) cbuffer __name
 
 struct VS_INPUT
 {
@@ -8,19 +8,20 @@ struct VS_INPUT
 
 struct VS_OUTPUT
 {
-    float4 Position : POSITION;
+    float4 Position : SV_POSITION;
     float2 UV : TEXCOORD0;
 };
 
 struct FS_OUTPUT
 {
-    float4 Color : COLOR0;
+    float4 Color : SV_TARGET;
 };
 
-UNIFORMS
+UNIFORM_BUFFER(my_buffer)
 {
-    float someValue;
+    float hi;
 }
+
 
 VS_OUTPUT vertex(VS_INPUT input)
 {
@@ -35,6 +36,6 @@ VS_OUTPUT vertex(VS_INPUT input)
 FS_OUTPUT fragment(VS_OUTPUT input)
 {
     FS_OUTPUT output;
-    output.Color = float4(0, 1, 0, 1);
+    output.Color = float4(1, 1, 1, 1);
     return output;
 }

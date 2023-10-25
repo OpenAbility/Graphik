@@ -43,6 +43,8 @@ IShaderObject fragment = Graphik.CreateShaderObject();
 var vertexResult = ShaderCompiler.Compile(File.ReadAllText("assets/test.hlsl"), "test.vert", 
 	ShaderType.VertexShader, "vertex");
 
+Console.WriteLine(vertexResult);
+
 if (!vertexResult.Success)
 {
 	Console.Error.WriteLine("Vertex Error: " + vertexResult.Message);
@@ -52,14 +54,29 @@ if (!vertexResult.Success)
 var fragmentResult = ShaderCompiler.Compile(File.ReadAllText("assets/test.hlsl"), "test.frag", 
 	ShaderType.FragmentShader, "fragment");
 
+Console.WriteLine(fragmentResult);
+
 if (!fragmentResult.Success)
 {
 	Console.Error.WriteLine("Fragment Error: " + fragmentResult.Message);
 	return 1;
 }
 	
-vertex.Build(vertexResult);
-fragment.Build(fragmentResult);
+ShaderBuildResult vertexBuildResult = vertex.Build(vertexResult);
+
+if (vertexBuildResult.Status != ShaderCompilationStatus.Success)
+{
+	Console.Error.WriteLine(vertexBuildResult.Log);
+	return 1;
+}
+
+ShaderBuildResult fragmentBuildResult = fragment.Build(fragmentResult);
+
+if (fragmentBuildResult.Status != ShaderCompilationStatus.Success)
+{
+	Console.Error.WriteLine(fragmentBuildResult.Log);
+	return 1;
+}
 
 shader.Attach(vertex);
 shader.Attach(fragment);

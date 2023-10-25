@@ -47,4 +47,6 @@ public interface IGraphikAPI
 	ICubemapTexture CreateCubemap();
 	IRenderTexture? GetBoundTarget();
 	IShaderCompiler GetCompiler();
+	string[] GetSupportedLanguages();
+	bool IsExtensionSupported(string extension);
 }

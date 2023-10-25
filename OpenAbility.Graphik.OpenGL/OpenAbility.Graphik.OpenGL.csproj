@@ -14,6 +14,8 @@
     <ItemGroup>
       <PackageReference Include="OpenTK" Version="5.0.0-pre.8" />
       <PackageReference Include="Silk.NET.Shaderc" Version="2.18.0" />
+      <PackageReference Include="Silk.NET.SPIRV.Cross" Version="2.18.0" />
+      <PackageReference Include="Silk.NET.SPIRV.Cross.Native" Version="2.18.0" />
     </ItemGroup>
 
 </Project>

@@ -348,4 +348,26 @@ public unsafe class GLAPI : IGraphikAPI
 	{
 		return compiler;
 	}
+
+	private static readonly string[] SupportedLanguages = new string[]
+	{
+		"glsl"
+	};
+	
+	public string[] GetSupportedLanguages()
+	{
+		return SupportedLanguages;
+	}
+	public bool IsExtensionSupported(string extension)
+	{
+		switch (extension)
+		{
+			case ".glsl":
+			case ".vert":
+			case ".frag":
+				return true;
+			default:
+				return false;
+		}
+	}
 }
