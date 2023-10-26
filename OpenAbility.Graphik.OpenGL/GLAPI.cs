@@ -181,6 +181,11 @@ public unsafe class GLAPI : IGraphikAPI
 			GL.PolygonMode(TriangleFace.FrontAndBack, PolygonMode.Fill);
 			return;
 		}
+		if (feature == Feature.DepthWrite)
+		{
+			GL.DepthMask(false);
+			return;
+		}
 		if (feature == Feature.DebugOutput)
 		{
 			GL.Disable(EnableCap.DebugOutput);
@@ -192,18 +197,22 @@ public unsafe class GLAPI : IGraphikAPI
 
 	private void EnableFeature(Feature feature)
 	{
-		if (feature == Feature.Wireframe)
+		switch (feature)
 		{
-			GL.PolygonMode(TriangleFace.FrontAndBack, PolygonMode.Line);
-			return;
+			case Feature.Wireframe:
+				GL.PolygonMode(TriangleFace.FrontAndBack, PolygonMode.Line);
+				return;
+			case Feature.DepthWrite:
+				GL.DepthMask(true);
+				break;
+			case Feature.DebugOutput:
+				GL.Enable(EnableCap.DebugOutput);
+				GL.Enable(EnableCap.DebugOutputSynchronous);
+				return;
+			default:
+				GL.Enable(GetFeatureCap(feature));
+				return;
 		}
-		if (feature == Feature.DebugOutput)
-		{
-			GL.Enable(EnableCap.DebugOutput);
-			GL.Enable(EnableCap.DebugOutputSynchronous);
-			return;
-		}
-		GL.Enable(GetFeatureCap(feature));	
 	}
 
 	private EnableCap GetFeatureCap(Feature feature)

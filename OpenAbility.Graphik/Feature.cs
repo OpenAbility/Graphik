@@ -9,6 +9,10 @@ public enum Feature
 	/// </summary>
 	DepthTesting,
 	/// <summary>
+	/// Should the depth buffer be written to?
+	/// </summary>
+	DepthWrite,
+	/// <summary>
 	/// Should blending be done?
 	/// </summary>
 	Blending,
