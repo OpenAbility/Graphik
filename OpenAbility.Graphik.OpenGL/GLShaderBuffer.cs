@@ -5,23 +5,19 @@ namespace OpenAbility.Graphik.OpenGL;
 
 public class GLShaderBuffer : IShaderBuffer
 {
+	private long pushedSize;
 
 	private readonly BufferHandle buffer = GL.GenBuffer();
 
-	public void PushData<T>(Span<T> data) where T : unmanaged
+	public long GetDataSize()
 	{
-		GL.BindBuffer(BufferTargetARB.ShaderStorageBuffer, buffer);
-		GL.BufferData(BufferTargetARB.ShaderStorageBuffer, (ReadOnlySpan<T>)data, BufferUsageARB.DynamicDraw);
+		return pushedSize;
 	}
-
-	public unsafe void PushData<T>(T* data, int size) where T : unmanaged
-	{
-		GL.BindBuffer(BufferTargetARB.ShaderStorageBuffer, buffer);
-		GL.BufferData(BufferTargetARB.ShaderStorageBuffer, new IntPtr(size), data, BufferUsageARB.DynamicDraw);
-	}
-
+	
 	public unsafe void PushData(void* data, int size)
 	{
+		pushedSize = size;
+		
 		GL.BindBuffer(BufferTargetARB.ShaderStorageBuffer, buffer);
 		GL.BufferData(BufferTargetARB.ShaderStorageBuffer, new IntPtr(size), data, BufferUsageARB.DynamicDraw);
 	}
