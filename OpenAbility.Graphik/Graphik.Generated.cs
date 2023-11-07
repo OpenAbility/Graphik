@@ -47,4 +47,5 @@ public static partial class Graphik
 #nullable enable
 	public static IRenderTexture? GetBoundTarget() => api.GetBoundTarget();
 #nullable disable
+	public static void SetWindowIcons(params WindowIcon[] icons) => api.SetWindowIcons(icons);
 }

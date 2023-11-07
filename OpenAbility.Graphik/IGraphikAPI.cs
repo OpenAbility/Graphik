@@ -49,4 +49,5 @@ public interface IGraphikAPI
 	IShaderCompiler GetCompiler();
 	string[] GetSupportedLanguages();
 	bool IsExtensionSupported(string extension);
+	void SetWindowIcons(params WindowIcon[] icons);
 }

@@ -379,4 +379,15 @@ public unsafe class GLAPI : IGraphikAPI
 				return false;
 		}
 	}
+
+	public void SetWindowIcons(params WindowIcon[] icons)
+	{
+		Image[] images = new Image[icons.Length];
+		for (int i = 0; i < icons.Length; i++)
+		{
+			fixed (byte* dataPointer = icons[i].WindowData)
+				images[i] = new Image(icons[i].Width, icons[i].Height, dataPointer);
+		}
+		GLFW.SetWindowIcon(window, images);
+	}
 }
