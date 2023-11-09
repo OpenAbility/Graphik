@@ -1,7 +1,10 @@
+using OpenAbility.Graphik.Selection;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Numerics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace OpenAbility.Graphik.OpenGL;
 
@@ -390,4 +393,35 @@ public unsafe class GLAPI : IGraphikAPI
 		}
 		GLFW.SetWindowIcon(window, images);
 	}
+	
+
+#pragma warning disable CA2255
+	[ModuleInitializer]
+#pragma warning restore CA2255
+	
+	internal static void InitializeModule()
+	{
+		GraphikAPIProvider graphikAPIProvider = new GraphikAPIProvider(Create, Rate, Specifier, 20);
+		GraphikAPISelector.RegisterProvider(graphikAPIProvider);
+	}
+	private static APISpecification Specifier()
+	{
+		Dictionary<string, string> spec = new Dictionary<string, string>();
+
+		spec["name"] = "OpenAbility.Graphik.OpenGL";
+		spec["description"] = "The original OpenGL backend for Graphik";
+		spec["version"] = "2.0.0";
+		spec["author"] = "OpenAbility";
+		spec["api"] = "opengl";
+		spec["stability"] = "stable";
+		
+		return new APISpecification(spec);
+	}
+	
+	private static ulong Rate(APIRequest request)
+	{
+		return 1;
+	}
+
+	private static IGraphikAPI Create() => new GLAPI();
 }

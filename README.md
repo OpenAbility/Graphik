@@ -37,6 +37,14 @@ while (!Graphik.WindowShouldClose())
 Most objects needed, e.g IMesh, IShader or ITexture can be created using
 the `Graphik.Create` APIs, and should be fairly well-documented.
 
+## Backend Selection
+We recently added a new way of selecting your API of preference, accessible
+via the `GraphikAPISelector` class. This class features methods of interest to most users.
+```csharp
+GraphikAPISelector.CreateSelection(APIRequest request); // Select a backend based on a request
+GraphikAPISelector.Select(APISelector selector); // Let yourself decide upon a backed based on specs it provides 
+```
+Documentation for how to implement and use selection is available in [SELECTION.md](SELECTION.md)
 
 # Shaders
 Shaders in Graphik are(as of right now) written in the native shader language, however
