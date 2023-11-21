@@ -49,12 +49,14 @@ namespace OpenAbility.Graphik
 				{
 					currentPriority = provider.Priority;
 					bestAPIRating = providerRating;
+					bestCreator = provider.Creator;
 					continue;
 				}
 
 				if (provider.Priority <= currentPriority)
 					continue;
 
+				bestCreator = provider.Creator;
 				currentPriority = provider.Priority;
 				bestAPIRating = providerRating;
 			}

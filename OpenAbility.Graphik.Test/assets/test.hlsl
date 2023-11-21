@@ -1,27 +1,7 @@
-#define UNIFORM_BUFFER(__name) cbuffer __name
+#include "defaults.hlsl"
 
-struct VS_INPUT
-{
-    float3 Position;
-    float2 UV;
-};
-
-struct VS_OUTPUT
-{
-    float4 Position : SV_POSITION;
-    float2 UV : TEXCOORD0;
-};
-
-struct FS_OUTPUT
-{
-    float4 Color : SV_TARGET;
-};
-
-UNIFORM_BUFFER(my_buffer)
-{
-    float hi;
-}
-
+Texture2D my_texture;
+SSBO<float> aa;
 
 VS_OUTPUT vertex(VS_INPUT input)
 {
@@ -36,6 +16,6 @@ VS_OUTPUT vertex(VS_INPUT input)
 FS_OUTPUT fragment(VS_OUTPUT input)
 {
     FS_OUTPUT output;
-    output.Color = float4(1, 1, 1, 1);
+    output.Color = tex2D(my_texture, input.UV) * aa[0];
     return output;
 }

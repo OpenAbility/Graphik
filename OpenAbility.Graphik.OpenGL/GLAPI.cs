@@ -2,9 +2,11 @@ using OpenAbility.Graphik.Selection;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Silk.NET.Shaderc;
 using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace OpenAbility.Graphik.OpenGL;
 
@@ -51,7 +53,7 @@ public unsafe class GLAPI : IGraphikAPI
 		
 		CallbackHandler.Initialize(this, window);
 
-		GL.FrontFace(FrontFaceDirection.Ccw);
+		GL.FrontFace(FrontFaceDirection.Cw);
 		GL.Enable(EnableCap.DebugOutput);
 	}
 
@@ -195,6 +197,7 @@ public unsafe class GLAPI : IGraphikAPI
 			GL.Disable(EnableCap.DebugOutputSynchronous);
 			return;
 		}
+        
 		GL.Disable(GetFeatureCap(feature));	
 	}
 
@@ -211,6 +214,8 @@ public unsafe class GLAPI : IGraphikAPI
 			case Feature.DebugOutput:
 				GL.Enable(EnableCap.DebugOutput);
 				GL.Enable(EnableCap.DebugOutputSynchronous);
+				return;
+			case Feature.Culling:
 				return;
 			default:
 				GL.Enable(GetFeatureCap(feature));
@@ -363,7 +368,8 @@ public unsafe class GLAPI : IGraphikAPI
 
 	private static readonly string[] SupportedLanguages = new string[]
 	{
-		"glsl"
+		"glsl",
+		"hlsl"
 	};
 	
 	public string[] GetSupportedLanguages()
@@ -377,6 +383,7 @@ public unsafe class GLAPI : IGraphikAPI
 			case ".glsl":
 			case ".vert":
 			case ".frag":
+			case ".hlsl":
 				return true;
 			default:
 				return false;
@@ -393,7 +400,44 @@ public unsafe class GLAPI : IGraphikAPI
 		}
 		GLFW.SetWindowIcon(window, images);
 	}
+
+	private static IncludeResult includeResult;
+	private static byte[] includeDataBuffer = Array.Empty<byte>();
 	
+	public void SetIncludeCallback(OpenAbility.Graphik.IncludeCallback includeCallback)
+	{
+		HLSLCompiler.IncludeResolve = (data, source, type, requestingSource, depth) =>
+		{
+			string sourcePath = Utility.GetString(requestingSource);
+			string requestedPath = Utility.GetString(source);
+
+			includeResult = new IncludeResult();
+
+			Include result = includeCallback(requestedPath, sourcePath);
+			includeDataBuffer = new byte[result.ResultingPath.Length + result.Code.Length];
+			
+			result.Code.EncodeInto(includeDataBuffer, false);
+			result.ResultingPath.EncodeInto(includeDataBuffer.AsSpan()[result.Code.Length..], false);
+
+			fixed (byte* dataPtr = includeDataBuffer)
+			{
+				includeResult.Content = dataPtr;
+				includeResult.SourceName = dataPtr + result.Code.Length;
+					
+				includeResult.ContentLength = new UIntPtr((uint)result.Code.Length);
+				includeResult.SourceNameLength = new UIntPtr((uint)result.ResultingPath.Length);
+			}
+			
+			fixed(IncludeResult* ptr = &includeResult)
+				return ptr;
+		};
+
+		HLSLCompiler.Releaser = (data, result) =>
+		{
+
+		};
+	}
+
 
 #pragma warning disable CA2255
 	[ModuleInitializer]
@@ -401,6 +445,7 @@ public unsafe class GLAPI : IGraphikAPI
 	
 	internal static void InitializeModule()
 	{
+		Console.WriteLine("Loaded the Graphik OpenGL backend");
 		GraphikAPIProvider graphikAPIProvider = new GraphikAPIProvider(Create, Rate, Specifier, 20);
 		GraphikAPISelector.RegisterProvider(graphikAPIProvider);
 	}

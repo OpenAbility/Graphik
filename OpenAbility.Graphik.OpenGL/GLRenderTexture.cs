@@ -78,7 +78,6 @@ public class GLRenderTexture : IRenderTexture
 			
 			GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2d, colourHandle, 0);
 			
-			
 			drawBufferModes.Add(DrawBufferMode.ColorAttachment0);
 		}
 		if (normal)
@@ -94,6 +93,8 @@ public class GLRenderTexture : IRenderTexture
 			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 			
 			GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2d, normalHandle, 0);
+			
+			drawBufferModes.Add(DrawBufferMode.ColorAttachment1);
 		}
 
 		if (drawBufferModes.Count != 0)
@@ -162,16 +163,68 @@ public class GLRenderTexture : IRenderTexture
 		GL.DeleteFramebuffer(fbo);
 		GL.DeleteRenderbuffer(rbo);
 	}
+
+	public void CopyChannelFrom(RenderTextureComponent sourceChannel, RenderTextureComponent targetChannel, IRenderTexture other)
+	{
+
+		GLRenderTexture source = (GLRenderTexture)other;
+		
+		GL.BindTexture(TextureTarget.Texture2d, source.GetHandle(sourceChannel));
+
+		int width = 0;
+		int height = 0;
+		
+		GL.GetTexParameteri(TextureTarget.Texture2d, GetTextureParameter.TextureWidth, ref width);
+		GL.GetTexParameteri(TextureTarget.Texture2d, GetTextureParameter.TextureHeight, ref height);
+		
+		GL.CopyImageSubData((uint)source.GetHandle(sourceChannel).Handle, 
+			CopyImageSubDataTarget.Texture2d, 0, 0, 0, 0, 
+			(uint)GetHandle(targetChannel).Handle, CopyImageSubDataTarget.Texture2d, 0, 0, 0, 0, width, height, 0);
+	}
+
+	public void CopyChannelFrom(RenderTextureComponent component, ITexture other)
+	{
+		if (other is IRenderTexture renderTexture)
+		{
+			CopyChannelFrom(component, component, renderTexture);
+		}
+		
+		
+		GL.BindTexture(TextureTarget.Texture2d, new TextureHandle((int)other.GetHandle()));
+
+		int width = 0;
+		int height = 0;
+		
+		GL.GetTexParameteri(TextureTarget.Texture2d, GetTextureParameter.TextureWidth, ref width);
+		GL.GetTexParameteri(TextureTarget.Texture2d, GetTextureParameter.TextureHeight, ref height);
+		
+		GL.CopyImageSubData(other.GetHandle(), 
+			CopyImageSubDataTarget.Texture2d, 0, 0, 0, 0, 
+			(uint)GetHandle(component).Handle, CopyImageSubDataTarget.Texture2d, 0, 0, 0, 0, width, height, 0);
+		
+	}
 	
 	public void CopyFrom(ITexture other)
 	{
-		// We can't copy.
+		CopyChannelFrom(RenderTextureComponent.Colour, other);
 	}
 	
 	public uint GetHandle()
 	{
 		return (uint)colourHandle.Handle;
 	}
+
+	internal TextureHandle GetHandle(RenderTextureComponent component)
+	{
+		return component switch
+		{
+			RenderTextureComponent.Colour => colourHandle,
+			RenderTextureComponent.Depth => depthHandle,
+			RenderTextureComponent.Normal => normalHandle,
+			_ => colourHandle
+		};
+	}
+	
 	public void SetFiltering(TextureFiltering filtering)
 	{
 		

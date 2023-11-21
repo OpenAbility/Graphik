@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ClCompile Include="assets\defaults.hlsl" />
       <ClCompile Include="assets\test.hlsl" />
     </ItemGroup>
 

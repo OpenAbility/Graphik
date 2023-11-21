@@ -15,6 +15,14 @@ Graphik.SetDebugCallback((id, message) =>
 	Console.WriteLine(id + ": " + message);
 });
 
+Graphik.SetIncludeCallback((to,from ) =>
+{
+	string fromDirectory = Path.GetDirectoryName(from) ?? ".";
+	string path = fromDirectory + "/" + to;
+	Console.WriteLine("Including " + path + " from " + from + " target " + to);
+	return new Include(File.ReadAllText("assets/" + path), path);
+});
+
 Graphik.InitializeWindow("Hello, World Graphik!", 1280, 720);
 
 Graphik.SetFeature(Feature.Culling, false);
@@ -40,7 +48,7 @@ IShader shader = Graphik.CreateShader();
 IShaderObject vertex = Graphik.CreateShaderObject();
 IShaderObject fragment = Graphik.CreateShaderObject();
 
-var vertexResult = ShaderCompiler.Compile(File.ReadAllText("assets/test.hlsl"), "test.vert", 
+var vertexResult = ShaderCompiler.Compile(File.ReadAllText("assets/test.hlsl"), "test.hlsl", 
 	ShaderType.VertexShader, "vertex");
 
 Console.WriteLine(vertexResult);
@@ -51,7 +59,7 @@ if (!vertexResult.Success)
 	return 1;
 }
 
-var fragmentResult = ShaderCompiler.Compile(File.ReadAllText("assets/test.hlsl"), "test.frag", 
+var fragmentResult = ShaderCompiler.Compile(File.ReadAllText("assets/test.hlsl"), "test.hlsl", 
 	ShaderType.FragmentShader, "fragment");
 
 Console.WriteLine(fragmentResult);
@@ -99,8 +107,10 @@ while (!Graphik.WindowShouldClose())
 {
 	Graphik.InitializeFrame();
 	Graphik.Clear(ClearFlags.Colour | ClearFlags.Depth);
-	
+
 	shader.Use();
+	texture.Bind();
+	shader.BindInt("my_texture", 0);
 	mesh.Render(6);
 	
 	Graphik.FinishFrame();

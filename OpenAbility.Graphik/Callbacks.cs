@@ -8,3 +8,16 @@ public delegate void CursorCallback(float cursorX, float cursorY);
 public delegate void ScrollCallback(float cursorX, float cursorY);
 public delegate void ErrorCallback(string errorID, string errorMessage);
 public delegate void DebugCallback(string debugID, string message);
+public delegate Include IncludeCallback(string requested, string requester);
+
+public struct Include
+{
+	public string Code;
+	public string ResultingPath;
+
+	public Include(string code, string resultingPath)
+	{
+		Code = code;
+		ResultingPath = resultingPath;
+	}
+}

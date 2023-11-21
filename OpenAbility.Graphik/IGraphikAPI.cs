@@ -50,4 +50,5 @@ public interface IGraphikAPI
 	string[] GetSupportedLanguages();
 	bool IsExtensionSupported(string extension);
 	void SetWindowIcons(params WindowIcon[] icons);
+	void SetIncludeCallback(IncludeCallback includeCallback);
 }

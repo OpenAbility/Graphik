@@ -3,6 +3,9 @@ using Silk.NET.Core.Native;
 using Silk.NET.Shaderc;
 using Silk.NET.SPIRV;
 using Silk.NET.SPIRV.Cross;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
 using Compiler = Silk.NET.Shaderc.Compiler;
 using SourceLanguage = Silk.NET.Shaderc.SourceLanguage;
 
@@ -43,7 +46,8 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 		shaderc.CompileOptionsSetPreserveBindings(options, new Bool32(true));
 		shaderc.CompileOptionsSetOptimizationLevel(options, OptimizationLevel.Performance);
 		shaderc.CompileOptionsSetGenerateDebugInfo(options);
-		shaderc.CompileOptionsSetHlslFunctionality1(options, new Bool32(1));
+		shaderc.CompileOptionsSetAutoMapLocations(options, new Bool32(true));
+		shaderc.CompileOptionsSetHlslFunctionality1(options, new Bool32(true));
 		shaderc.CompileOptionsSetAutoCombinedImageSampler(options, new Bool32(true));
 		shaderc.CompileOptionsSetHlslIoMapping(options, new Bool32(true));
 		shaderc.CompileOptionsSetIncludeCallbacks(options, IncludeResolveFn,
@@ -81,6 +85,22 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 			"", glslResult, delegate {  });
 
 		return compiledShader;
+	}
+	
+	
+	private static byte[] GetHash(string inputString)
+	{
+		using (HashAlgorithm algorithm = SHA256.Create())
+			return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
+	}
+	
+	private static string GetHashString(string inputString)
+	{
+		StringBuilder sb = new StringBuilder();
+		foreach (byte b in GetHash(inputString))
+			sb.Append(b.ToString("X2"));
+
+		return sb.ToString();
 	}
 	
 
@@ -201,6 +221,37 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 			}
 
 			glsl = strings[0];
+			
+			// Time for a foul hack!!!
+			Regex uniformDeclarationRegex = new Regex(@"layout\(.*\) uniform (.*)\n{\n(.*)\n} (_\d*);", RegexOptions.Multiline);
+
+			while (uniformDeclarationRegex.IsMatch(glsl))
+			{
+				Match match = uniformDeclarationRegex.Match(glsl);
+				string typeHash = GetHashString(match.Groups[1].Value);
+				string structName = "_struct_" + typeHash;
+				string replacement = "struct " + structName + "\n{\n" + match.Groups[2] + 
+				                     "\n};\n\nuniform _struct_" + typeHash + " " + match.Groups[1] + 
+				                     ";" + "\n#define " + match.Groups[3] + " " + match.Groups[1];
+
+				glsl = glsl.Replace(match.Value, replacement);
+				
+			}
+			
+			/*
+			Regex ssboDeclarationRegex = new Regex(@"layout\((.*)\) buffer (.*)\n{\n(.*)\n} (.*);", RegexOptions.Multiline);
+
+			while (ssboDeclarationRegex.IsMatch(glsl))
+			{
+				Match match = ssboDeclarationRegex.Match(glsl);
+				
+				string replacement = "layout(" + match.Groups[1] + ") buffer " +
+				                     match.Groups[2] + "\n{\n" + match.Groups[3] + "\n};";
+				
+				glsl = glsl.Replace(match.Value, replacement);
+				glsl = glsl.Replace(match.Groups[4].Value,  match.Groups[2].Value);
+			}
+			*/
 		}
 		spirv_done:
 		

@@ -208,4 +208,9 @@ public static partial class Graphik
 	/// </summary>
 	/// <param name="icons">The window icons</param>
 	public static void SetWindowIcons(params WindowIcon[] icons) => api.SetWindowIcons(icons);
+	/// <summary>
+	/// Set the include callback
+	/// </summary>
+	/// <param name="includeCallback">The include callback</param>
+	public static void SetIncludeCallback(IncludeCallback includeCallback) => api.SetIncludeCallback(includeCallback);
 }

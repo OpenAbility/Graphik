@@ -1,6 +1,7 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using System.Reflection.Metadata;
 
 namespace OpenAbility.Graphik.OpenGL;
 
@@ -46,9 +47,9 @@ public class GLShader : IShader
 			string name = GL.GetActiveUniform(handle, (uint)i, bufSize, ref length, ref size, ref type);
 			//Console.WriteLine($"| {name}: ID: {i}, Type: {type}, Size: {size}");
 		}
-		if (!String.IsNullOrEmpty(log))
-			return log;
-		return String.Empty;
+		
+		return !String.IsNullOrEmpty(log) ? log : String.Empty;
+
 	}
 
 	public void Use()
@@ -67,18 +68,18 @@ public class GLShader : IShader
 		return uniform;
 	}
 
-	public void BindInt(string name, int value) => GL.Uniform1i(GetUniformLocation(name), value);
-	public void BindInt2(string name, int x, int y) => GL.Uniform2i(GetUniformLocation(name), x, y);
-	public void BindInt3(string name, int x, int y, int z) => GL.Uniform3i(GetUniformLocation(name), x, y, z);
-	public void BindInt4(string name, int x, int y, int z, int w) => GL.Uniform4i(GetUniformLocation(name), x, y, z, w);
-	public void BindFloat(string name, float value)  => GL.Uniform1f(GetUniformLocation(name), value);
-	public void BindFloat2(string name, float x, float y) => GL.Uniform2f(GetUniformLocation(name), x, y);
-	public void BindFloat3(string name, float x, float y, float z) => GL.Uniform3f(GetUniformLocation(name), x, y, z);
-	public void BindFloat4(string name, float x, float y, float z, float w) => GL.Uniform4f(GetUniformLocation(name), x, y, z, w);
-	public void BindDouble(string name, double value)  => GL.Uniform1d(GetUniformLocation(name), value);
-	public void BindDouble2(string name, double x, double y) => GL.Uniform2d(GetUniformLocation(name), x, y);
-	public void BindDouble3(string name, double x, double y, double z) => GL.Uniform3d(GetUniformLocation(name), x, y, z);
-	public void BindDouble4(string name, double x, double y, double z, double w) => GL.Uniform4d(GetUniformLocation(name), x, y, z, w);
+	public void BindInt(string name, int value) => GL.ProgramUniform1i(handle, GetUniformLocation(name), value);
+	public void BindInt2(string name, int x, int y) => GL.ProgramUniform2i(handle, GetUniformLocation(name), x, y);
+	public void BindInt3(string name, int x, int y, int z) => GL.ProgramUniform3i(handle, GetUniformLocation(name), x, y, z);
+	public void BindInt4(string name, int x, int y, int z, int w) => GL.ProgramUniform4i(handle, GetUniformLocation(name), x, y, z, w);
+	public void BindFloat(string name, float value)  => GL.ProgramUniform1f(handle, GetUniformLocation(name), value);
+	public void BindFloat2(string name, float x, float y) => GL.ProgramUniform2f(handle, GetUniformLocation(name), x, y);
+	public void BindFloat3(string name, float x, float y, float z) => GL.ProgramUniform3f(handle, GetUniformLocation(name), x, y, z);
+	public void BindFloat4(string name, float x, float y, float z, float w) => GL.ProgramUniform4f(handle, GetUniformLocation(name), x, y, z, w);
+	public void BindDouble(string name, double value)  => GL.ProgramUniform1d(handle, GetUniformLocation(name), value);
+	public void BindDouble2(string name, double x, double y) => GL.ProgramUniform2d(handle, GetUniformLocation(name), x, y);
+	public void BindDouble3(string name, double x, double y, double z) => GL.ProgramUniform3d(handle, GetUniformLocation(name), x, y, z);
+	public void BindDouble4(string name, double x, double y, double z, double w) => GL.ProgramUniform4d(handle, GetUniformLocation(name), x, y, z, w);
 	public void BindMatrix4(string name, bool transpose, float[] matrix)
 	{
 		if (matrix.Length < 16)
