@@ -3,20 +3,20 @@ namespace OpenAbility.Graphik;
 // Basically, an SSBO
 public unsafe interface IShaderBuffer
 {
-	public virtual void PushData<T>(ReadOnlySpan<T> data) where T : unmanaged
+	public void PushData<T>(ReadOnlySpan<T> data) where T : unmanaged
 	{
 		fixed(T* pointer = data)
 			PushData(pointer, data.Length);
 	}
 
-	public virtual void PushData<T>(Span<T> data) where T : unmanaged
+	public void PushData<T>(Span<T> data) where T : unmanaged
 	{
 		PushData((ReadOnlySpan<T>)data);
 	}
 	
-	public virtual void PushData<T>(T* data, int size) where T : unmanaged
+	public void PushData<T>(T* data, int length) where T : unmanaged
 	{
-		PushData((void*)data, size);
+		PushData((void*)data, length * sizeof(T));
 	}
 	public long GetDataSize<T>() where T : unmanaged
 	{
