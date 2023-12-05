@@ -51,4 +51,13 @@ public interface IShader
 	public void BindAttribute(string name, int index);
 	
 	public void Dispose();
+	/// <summary>
+	/// Get if a uniform exists
+	/// </summary>
+	/// <param name="name">The name of the uniform</param>
+	/// <returns>If it exists. Unsupported defaults to true</returns>
+	public virtual bool UniformExists(string name)
+	{
+		return true;
+	}
 }

@@ -68,6 +68,11 @@ public class GLShader : IShader
 		return uniform;
 	}
 
+	public bool UniformExists(string name)
+	{
+		return GetUniformLocation(name) != -1;
+	}
+
 	public void BindInt(string name, int value) => GL.ProgramUniform1i(handle, GetUniformLocation(name), value);
 	public void BindInt2(string name, int x, int y) => GL.ProgramUniform2i(handle, GetUniformLocation(name), x, y);
 	public void BindInt3(string name, int x, int y, int z) => GL.ProgramUniform3i(handle, GetUniformLocation(name), x, y, z);
