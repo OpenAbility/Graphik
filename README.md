@@ -70,6 +70,8 @@ Graphik.Audio is a system to play back sound through whatever backend the system
 
 The library aims to provide an OOP approach to an OpenAL-like API.
 
+It is currently not under maintenance.
+
 ## Heads-up
 Currently the only implementation of Graphik.Audio is for OpenAL, and it uses `AL_EXT_float32`, which only appears to 
 be available if you have OpenAL Soft installed.  
