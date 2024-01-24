@@ -2,6 +2,9 @@ namespace OpenAbility.Graphik;
 
 public static partial class Graphik
 {
+	public static string ApplicationName = "Graphik Application";
+	public static Version ApplicationVersion = new Version(1, 0, 0);
+	
 	private static IGraphikAPI api = null!;
 	/// <summary>
 	/// The global file read handler and include handler

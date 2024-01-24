@@ -213,4 +213,18 @@ public static partial class Graphik
 	/// </summary>
 	/// <param name="includeCallback">The include callback</param>
 	public static void SetIncludeCallback(IncludeCallback includeCallback) => api.SetIncludeCallback(includeCallback);
+
+	/// <summary>
+	/// Invoke a custom function specified within the API.
+	/// </summary>
+	/// <param name="function">The function name</param>
+	/// <param name="parameters">The parameters to the function</param>
+	public static object? InvokeLibraryFunction(string function, params object[] parameters) =>
+		api.InvokeLibraryFunction(function, parameters);
+
+	/// <summary>
+	/// Get a string identifying the library
+	/// </summary>
+	/// <returns>The library identifier</returns>
+	public static string GetLibraryIdentifier() => api.GetLibraryIdentifier();
 }

@@ -309,4 +309,16 @@ public class GLRenderTexture : IRenderTexture
 		GLAPI.SetLabel(ObjectIdentifier.Renderbuffer, rbo.Handle, name + ".RBO");
 		GLAPI.SetLabel(ObjectIdentifier.Framebuffer, fbo.Handle, name + ".FBO");
 	}
+
+	private static readonly float[] borderBuffer = new float[4];
+	public unsafe void SetBorder(float r, float g, float b, float a = 1)
+	{
+		borderBuffer[0] = r;
+		borderBuffer[1] = g;
+		borderBuffer[2] = b;
+		borderBuffer[3] = a;
+		fixed(float* ptr = borderBuffer)
+			GL.TextureParameterfv(colourHandle, TextureParameterName.TextureBorderColor, ptr);
+	}
+	
 }

@@ -437,6 +437,16 @@ public unsafe class GLAPI : IGraphikAPI
 
 		};
 	}
+	
+	public object? InvokeLibraryFunction(string function, object[] parameters)
+	{
+		return null;
+	}
+	
+	public string GetLibraryIdentifier()
+	{
+		return "OpenAbility.Graphik.OpenGL";
+	}
 
 
 #pragma warning disable CA2255

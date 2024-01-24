@@ -167,4 +167,15 @@ public class GLTexture : ITexture2D
 	{
 		GLAPI.SetLabel(ObjectIdentifier.Texture, handle.Handle, name);
 	}
+
+	private static readonly float[] borderBuffer = new float[4];
+	public unsafe void SetBorder(float r, float g, float b, float a = 1)
+	{
+		borderBuffer[0] = r;
+		borderBuffer[1] = g;
+		borderBuffer[2] = b;
+		borderBuffer[3] = a;
+		fixed(float* ptr = borderBuffer)
+			GL.TextureParameterfv(handle, TextureParameterName.TextureBorderColor, ptr);
+	}
 }

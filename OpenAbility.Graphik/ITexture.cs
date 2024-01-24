@@ -49,6 +49,15 @@ public interface ITexture
 	/// </summary>
 	/// <param name="name">The name to use</param>
 	public void SetName(string name);
+
+	/// <summary>
+	/// Set the border colour of this texture
+	/// </summary>
+	/// <param name="r">The red value(0-1 range. Go above for HDR)</param>
+	/// <param name="g">The green value(0-1 range. Go above for HDR)</param>
+	/// <param name="b">The blue value(0-1 range. Go above for HDR)</param>
+	/// <param name="a">The alpha value(0-1 range. Go above for HDR)</param>
+	public void SetBorder(float r, float g, float b, float a = 1.0f);
 }
 
 public enum TextureFiltering

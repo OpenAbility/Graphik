@@ -1,10 +1,6 @@
-// Auto-generated from GLAPI from OpenAbility.Graphik.OpenGL
-// These should not be modified
-
 using System.Numerics;
 
 namespace OpenAbility.Graphik;
-using OpenAbility.Graphik;
 
 public interface IGraphikAPI
 {
@@ -51,4 +47,6 @@ public interface IGraphikAPI
 	bool IsExtensionSupported(string extension);
 	void SetWindowIcons(params WindowIcon[] icons);
 	void SetIncludeCallback(IncludeCallback includeCallback);
+	object? InvokeLibraryFunction(string function, object[] parameters);
+	string GetLibraryIdentifier();
 }
