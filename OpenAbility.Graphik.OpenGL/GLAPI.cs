@@ -23,11 +23,6 @@ public unsafe class GLAPI : IGraphikAPI
 		GLFW.Init();
 	}
 	
-	public static void LoadAssembly()
-	{
-		
-	}
-	
 	public void InitializeWindow(string title, int width, int height)
 	{
 
@@ -448,13 +443,16 @@ public unsafe class GLAPI : IGraphikAPI
 		return "OpenAbility.Graphik.OpenGL";
 	}
 
-
+	private static bool loaded = false;
+	
 #pragma warning disable CA2255
 	[ModuleInitializer]
 #pragma warning restore CA2255
-	
-	internal static void InitializeModule()
+	public static void LoadAssembly()
 	{
+		if (loaded)
+			return;
+		loaded = true;
 		Console.WriteLine("Loaded the Graphik OpenGL backend");
 		GraphikAPIProvider graphikAPIProvider = new GraphikAPIProvider(Create, Rate, Specifier, 20);
 		GraphikAPISelector.RegisterProvider(graphikAPIProvider);
