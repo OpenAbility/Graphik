@@ -4,9 +4,17 @@ public interface IMesh
 {
 	public void PrepareModifications();
 	public void SetIndexType(IndexType type);
-	public void SetVertexData<T>(T[] data, bool reallocate = true, bool preferQuickWrite = false) where T : unmanaged;
+	public void SetVertexData<T>(T[] data, bool reallocate = true, bool preferQuickWrite = false) where T : unmanaged
+	{
+		SetVertexData((Span<T>)data, reallocate, preferQuickWrite);
+	}
+	public void SetVertexData<T>(Span<T> data, bool reallocate = true, bool preferQuickWrite = false) where T : unmanaged;
 	public void SetVertexData(IntPtr data, int size, bool reallocate = true, bool preferQuickWrite = false);
-	public void SetIndices<T>(T[] indices, bool reallocate = true, bool preferQuickWrite = false) where T : unmanaged;
+	public void SetIndices<T>(T[] data, bool reallocate = true, bool preferQuickWrite = false) where T : unmanaged
+	{
+		SetIndices((Span<T>)data, reallocate, preferQuickWrite);
+	}
+	public void SetIndices<T>(Span<T> indices, bool reallocate = true, bool preferQuickWrite = false) where T : unmanaged;
 	public void SetIndices(IntPtr data, int size, bool reallocate = true, bool preferQuickWrite = false);
 	public void AllocateVertexData(int size, bool quickWrite = false);
 	public void AllocateIndexData(int size, bool quickWrite = false);

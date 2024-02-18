@@ -31,7 +31,7 @@ public class GLMesh : IMesh
 		};
 	}
 
-	public unsafe void SetVertexData<T>(T[] data, bool realloc = true, bool preferQuickwrite = false) where T : unmanaged
+	public unsafe void SetVertexData<T>(Span<T> data, bool realloc = true, bool preferQuickwrite = false) where T : unmanaged
 	{
 		fixed (T* ptr = data)
 		{
@@ -54,7 +54,7 @@ public class GLMesh : IMesh
 		GL.BufferSubData(BufferTargetARB.ArrayBuffer, IntPtr.Zero, size, data);
 	}
 	
-	public unsafe void SetIndices<T>(T[] indices, bool realloc = true, bool preferQuickwrite = false) where T : unmanaged
+	public unsafe void SetIndices<T>(Span<T> indices, bool realloc = true, bool preferQuickwrite = false) where T : unmanaged
 	{
 		fixed (T* ptr = indices)
 		{
