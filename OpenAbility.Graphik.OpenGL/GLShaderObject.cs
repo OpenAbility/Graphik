@@ -11,15 +11,9 @@ public class GLShaderObject : IShaderObject
 	private GLShaderType shaderType;
 	public ShaderHandle ShaderHandle;
 
-	public ShaderBuildResult Build(CompiledShader compiledShader)
+	public GLShaderObject(ShaderType type)
 	{
-
-		GLSLResult compilationResult = (GLSLResult)compiledShader.Data;
-		
-		ShaderBuildResult shaderBuildResult = new ShaderBuildResult();
-		shaderBuildResult.Status = ShaderCompilationStatus.Success;
-		
-		ShaderHandle = GL.CreateShader(compilationResult.ShaderType switch
+		ShaderHandle = GL.CreateShader(type switch
 		{
 			ShaderType.ComputeShader => GLShaderType.ComputeShader,
 			ShaderType.FragmentShader => GLShaderType.FragmentShader,
@@ -27,6 +21,15 @@ public class GLShaderObject : IShaderObject
 			ShaderType.GeometryShader => GLShaderType.GeometryShader,
 			_ => 0
 		});
+	}
+
+	public ShaderBuildResult Build(CompiledShader compiledShader)
+	{
+
+		GLSLResult compilationResult = (GLSLResult)compiledShader.Data;
+		
+		ShaderBuildResult shaderBuildResult = new ShaderBuildResult();
+		shaderBuildResult.Status = ShaderCompilationStatus.Success;
 		
 		GL.ShaderSource(ShaderHandle, compilationResult.GLSL);
 		GL.CompileShader(ShaderHandle);
@@ -43,5 +46,9 @@ public class GLShaderObject : IShaderObject
 	public void Dispose()
 	{
 		GL.DeleteShader(ShaderHandle);
+	}
+	public void SetName(string name)
+	{
+		GLAPI.SetLabel(ObjectIdentifier.Shader, ShaderHandle.Handle, name);
 	}
 }

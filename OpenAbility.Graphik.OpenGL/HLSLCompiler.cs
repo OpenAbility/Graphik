@@ -44,7 +44,7 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 		shaderc.CompileOptionsSetSourceLanguage(options, SourceLanguage.Hlsl);
 		shaderc.CompileOptionsSetTargetEnv(options, TargetEnv.Opengl, (int)EnvVersion.Opengl45);
 		shaderc.CompileOptionsSetPreserveBindings(options, new Bool32(true));
-		shaderc.CompileOptionsSetOptimizationLevel(options, OptimizationLevel.Performance);
+		shaderc.CompileOptionsSetOptimizationLevel(options, OptimizationLevel.Zero);
 		shaderc.CompileOptionsSetGenerateDebugInfo(options);
 		shaderc.CompileOptionsSetAutoMapLocations(options, new Bool32(true));
 		shaderc.CompileOptionsSetHlslFunctionality1(options, new Bool32(true));
@@ -222,7 +222,25 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 
 			glsl = strings[0];
 			
-			// Time for a foul hack!!!
+			// Move everything OUT of _Global
+			Regex globalRegex = new Regex(@"layout\(binding = 0, std140\) uniform _Global\n{\n((?:.|\n|)*)\n} (_\d*);");
+			if (globalRegex.IsMatch(glsl))
+			{
+				Match match = globalRegex.Match(glsl);
+
+				string[] declarations = match.Groups[1].Value.Split("\n", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+				string replacement = "";
+				foreach (var declaration in declarations)
+				{
+					replacement += "uniform " + declaration.Replace("row_major", "").Replace("column_major", "").Replace("layout()", "") + "\n";
+				}
+				
+				glsl = glsl.Replace(match.Value, replacement);
+				glsl = glsl.Replace(match.Groups[2].Value + ".", "");
+			}
+			
+			
+			// Uniform redeclaration
 			Regex uniformDeclarationRegex = new Regex(@"layout\(.*\) uniform (.*)\n{\n(.*)\n} (_\d*);", RegexOptions.Multiline);
 
 			while (uniformDeclarationRegex.IsMatch(glsl))

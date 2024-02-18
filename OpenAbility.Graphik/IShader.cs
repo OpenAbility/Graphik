@@ -13,6 +13,7 @@ public interface IShader
 	/// Bind a shader for usage
 	/// </summary>
 	public void Use();
+	public void BindUInt(string name, uint value);
 	public void BindInt(string name, int value);
 	public void BindInt2(string name, int x, int y);
 	public void BindInt3(string name, int x, int y, int z);
@@ -49,6 +50,7 @@ public interface IShader
 	}
 
 	public void BindAttribute(string name, int index);
+	public void DispatchCompute(int x, int y, int z);
 	
 	public void Dispose();
 	/// <summary>
@@ -60,4 +62,5 @@ public interface IShader
 	{
 		return true;
 	}
+	public void SetName(string name);
 }

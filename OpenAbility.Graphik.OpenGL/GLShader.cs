@@ -72,7 +72,11 @@ public class GLShader : IShader
 	{
 		return GetUniformLocation(name) != -1;
 	}
-
+	public void SetName(string name)
+	{
+		GLAPI.SetLabel(ObjectIdentifier.Program, handle.Handle, name);
+	}
+	public void BindUInt(string name, uint value) => GL.ProgramUniform1ui(handle, GetUniformLocation(name), value);
 	public void BindInt(string name, int value) => GL.ProgramUniform1i(handle, GetUniformLocation(name), value);
 	public void BindInt2(string name, int x, int y) => GL.ProgramUniform2i(handle, GetUniformLocation(name), x, y);
 	public void BindInt3(string name, int x, int y, int z) => GL.ProgramUniform3i(handle, GetUniformLocation(name), x, y, z);
@@ -96,7 +100,12 @@ public class GLShader : IShader
 			matrix[8], matrix[9], matrix[10], matrix[11],
 			matrix[12], matrix[13], matrix[14], matrix[15]));
 	}
-	
+
+	public void DispatchCompute(int x, int y, int z)
+	{
+		Use();
+		GL.DispatchCompute((uint)x, (uint)y, (uint)z);
+	}
 	public void Dispose()
 	{
 		GL.DeleteProgram(handle);

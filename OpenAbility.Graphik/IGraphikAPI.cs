@@ -24,7 +24,7 @@ public interface IGraphikAPI
 	IRenderTexture CreateRenderTexture();
 	void ResetTarget();
 	void SetMouseState(MouseState state);
-	IShaderObject CreateShaderObject();
+	IShaderObject CreateShaderObject(ShaderType type);
 	void SetFeature(Feature feature, bool enabled);
 	void SetCullMode(CullFace cullFace);
 	void SetTexturePixelAlignment(int alignment);

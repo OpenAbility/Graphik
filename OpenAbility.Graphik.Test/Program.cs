@@ -45,8 +45,8 @@ mesh.SetIndices(new uint[] {0, 1, 2, 1, 3, 2});
 
 IShader shader = Graphik.CreateShader();
 
-IShaderObject vertex = Graphik.CreateShaderObject();
-IShaderObject fragment = Graphik.CreateShaderObject();
+IShaderObject vertex = Graphik.CreateShaderObject(ShaderType.VertexShader);
+IShaderObject fragment = Graphik.CreateShaderObject(ShaderType.FragmentShader);
 
 var vertexResult = ShaderCompiler.Compile(File.ReadAllText("assets/test.hlsl"), "test.hlsl", 
 	ShaderType.VertexShader, "vertex");
@@ -103,6 +103,9 @@ texture.SetData(TextureFormat.Rgba8, imageData, imageResult.Width, imageResult.H
 IRenderTexture renderTexture = Graphik.CreateRenderTexture();
 renderTexture.Build(512, 512);
 
+IShaderBuffer shaderBuffer = Graphik.CreateShaderBuffer();
+shaderBuffer.PushData<float>(new float[] { 0.5f });
+
 while (!Graphik.WindowShouldClose())
 {
 	Graphik.InitializeFrame();
@@ -111,6 +114,7 @@ while (!Graphik.WindowShouldClose())
 	shader.Use();
 	texture.Bind();
 	shader.BindInt("my_texture", 0);
+	shaderBuffer.Bind(1);
 	mesh.Render(6);
 	
 	Graphik.FinishFrame();

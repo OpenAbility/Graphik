@@ -26,7 +26,7 @@ internal static unsafe class CallbackHandler
 		byte[] messageReadBuffer = ArrayPool<byte>.Shared.Rent(messageLength);
 		Marshal.Copy(messagePointer, messageReadBuffer, 0, messageLength);
 
-		string message = Encoding.Default.GetString(messageReadBuffer);
+		string message = Encoding.Default.GetString(messageReadBuffer, 0, messageLength);
 
 		ArrayPool<byte>.Shared.Return(messageReadBuffer);
 		

@@ -155,9 +155,9 @@ public unsafe class GLAPI : IGraphikAPI
 
 	}
 
-	public IShaderObject CreateShaderObject()
+	public IShaderObject CreateShaderObject(ShaderType type)
 	{
-		return new GLShaderObject();
+		return new GLShaderObject(type);
 	}
 
 	public void SetFeature(Feature feature, bool enabled)
@@ -445,9 +445,6 @@ public unsafe class GLAPI : IGraphikAPI
 
 	private static bool loaded = false;
 	
-#pragma warning disable CA2255
-	[ModuleInitializer]
-#pragma warning restore CA2255
 	public static void LoadAssembly()
 	{
 		if (loaded)

@@ -8,4 +8,5 @@ public interface IShaderObject
 	/// <param name="compiledShader">The compiled shader</param>
 	public ShaderBuildResult Build(CompiledShader compiledShader);
 	public void Dispose();
+	public void SetName(string name);
 }

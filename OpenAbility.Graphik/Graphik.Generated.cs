@@ -102,8 +102,9 @@ public static partial class Graphik
 	/// <summary>
 	/// Create a shader obect(for program linking)
 	/// </summary>
+	/// <param name="type">The shader type/kind to create</param>
 	/// <returns>The shader object object</returns>
-	public static IShaderObject CreateShaderObject() => api.CreateShaderObject();
+	public static IShaderObject CreateShaderObject(ShaderType type) => api.CreateShaderObject(type);
 	/// <summary>
 	/// Set a graphics feature usage
 	/// </summary>
