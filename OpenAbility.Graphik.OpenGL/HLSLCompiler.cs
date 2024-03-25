@@ -44,7 +44,7 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 		shaderc.CompileOptionsSetSourceLanguage(options, SourceLanguage.Hlsl);
 		shaderc.CompileOptionsSetTargetEnv(options, TargetEnv.Opengl, (int)EnvVersion.Opengl45);
 		shaderc.CompileOptionsSetPreserveBindings(options, new Bool32(true));
-		shaderc.CompileOptionsSetOptimizationLevel(options, OptimizationLevel.Zero);
+		shaderc.CompileOptionsSetOptimizationLevel(options, OptimizationLevel.Performance);
 		shaderc.CompileOptionsSetGenerateDebugInfo(options);
 		shaderc.CompileOptionsSetAutoMapLocations(options, new Bool32(true));
 		shaderc.CompileOptionsSetHlslFunctionality1(options, new Bool32(true));
