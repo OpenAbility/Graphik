@@ -474,4 +474,10 @@ public unsafe class GLAPI : IGraphikAPI
 	}
 
 	private static IGraphikAPI Create() => new GLAPI();
+
+	private static uint MarkerID = 0;
+	public void LogMarker(string marker)
+	{
+		GL.DebugMessageInsert(DebugSource.DebugSourceApplication, DebugType.DebugTypeMarker, MarkerID++, DebugSeverity.DebugSeverityNotification, marker.Length, marker);
+	}
 }

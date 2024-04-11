@@ -49,4 +49,5 @@ public interface IGraphikAPI
 	void SetIncludeCallback(IncludeCallback includeCallback);
 	object? InvokeLibraryFunction(string function, object[] parameters);
 	string GetLibraryIdentifier();
+	void LogMarker(string marker);
 }

@@ -26,11 +26,10 @@ public class GLTexture : ITexture2D
 		GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
 		GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 	}
-	public void SetData<T>(TextureFormat format, T[] imageData, int width, int height, int mipmapLevel = 0) where T : unmanaged
+	public unsafe void SetData<T>(TextureFormat format, T[] imageData, int width, int height, int mipmapLevel = 0) where T : unmanaged
 	{
-
-		GL.TexImage2D(TextureTarget.Texture2d, mipmapLevel, GetInternalFormat(format), width, height, 0, GetPixelFormat(format), GetPixelType(format), imageData);
-		internalFormat = GetInternalFormat(format);
+		fixed(T* p = imageData)
+			SetData(format, p, width, height, mipmapLevel);
 	}
 
 	public unsafe void SetData<T>(TextureFormat format, T* imageData, int width, int height, int mipmapLevel = 0) where T : unmanaged
@@ -57,6 +56,7 @@ public class GLTexture : ITexture2D
 			TextureFormat.Rgba8 => InternalFormat.Rgba8,
 			TextureFormat.Rgba32 => InternalFormat.Rgba32i,
 			TextureFormat.Rgbaf => InternalFormat.Rgba32f,
+			TextureFormat.Bgr8 => InternalFormat.Rgb8,
 			_ => 0
 		};
 	}
@@ -74,6 +74,7 @@ public class GLTexture : ITexture2D
 			TextureFormat.Rgba8 => PixelFormat.Rgba,
 			TextureFormat.Rgba32 => PixelFormat.Rgba,
 			TextureFormat.Rgbaf => PixelFormat.Rgba,
+			TextureFormat.Bgr8 => PixelFormat.Bgr,
 			_ => 0
 		};
 	}
@@ -91,6 +92,7 @@ public class GLTexture : ITexture2D
 			TextureFormat.Rgba8 => PixelType.UnsignedByte,
 			TextureFormat.Rgba32 => PixelType.UnsignedInt,
 			TextureFormat.Rgbaf => PixelType.Float,
+			TextureFormat.Bgr8 => PixelType.UnsignedByte,
 			_ => 0
 		};
 	}

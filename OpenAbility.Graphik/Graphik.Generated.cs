@@ -228,4 +228,9 @@ public static partial class Graphik
 	/// </summary>
 	/// <returns>The library identifier</returns>
 	public static string GetLibraryIdentifier() => api.GetLibraryIdentifier();
+	/// <summary>
+	/// Log a debug marker message. Might feedback into the Graphik debug loop.
+	/// </summary>
+	/// <param name="marker">The marker text</param>
+	public static void LogMarker(string marker) => api.LogMarker(marker);
 }

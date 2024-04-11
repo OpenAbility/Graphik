@@ -169,17 +169,9 @@ public class GLRenderTexture : IRenderTexture
 
 		GLRenderTexture source = (GLRenderTexture)other;
 		
-		GL.BindTexture(TextureTarget.Texture2d, source.GetHandle(sourceChannel));
-
-		int width = 0;
-		int height = 0;
-		
-		GL.GetTexParameteri(TextureTarget.Texture2d, GetTextureParameter.TextureWidth, ref width);
-		GL.GetTexParameteri(TextureTarget.Texture2d, GetTextureParameter.TextureHeight, ref height);
-		
 		GL.CopyImageSubData((uint)source.GetHandle(sourceChannel).Handle, 
 			CopyImageSubDataTarget.Texture2d, 0, 0, 0, 0, 
-			(uint)GetHandle(targetChannel).Handle, CopyImageSubDataTarget.Texture2d, 0, 0, 0, 0, width, height, 0);
+			(uint)GetHandle(targetChannel).Handle, CopyImageSubDataTarget.Texture2d, 0, 0, 0, 0, source.width, source.height, 0);
 	}
 
 	public void CopyChannelFrom(RenderTextureComponent component, ITexture other)
