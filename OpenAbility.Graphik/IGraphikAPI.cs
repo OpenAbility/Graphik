@@ -48,6 +48,7 @@ public interface IGraphikAPI
 	void SetWindowIcons(params WindowIcon[] icons);
 	void SetIncludeCallback(IncludeCallback includeCallback);
 	object? InvokeLibraryFunction(string function, object[] parameters);
+	object? GetLibraryValue(string value);
 	string GetLibraryIdentifier();
 	void LogMarker(string marker);
 }

@@ -222,6 +222,9 @@ public static partial class Graphik
 	/// <param name="parameters">The parameters to the function</param>
 	public static object? InvokeLibraryFunction(string function, params object[] parameters) =>
 		api.InvokeLibraryFunction(function, parameters);
+	
+	public static object? GetLibraryValue(string value) =>
+		api.GetLibraryValue(value);
 
 	/// <summary>
 	/// Get a string identifying the library

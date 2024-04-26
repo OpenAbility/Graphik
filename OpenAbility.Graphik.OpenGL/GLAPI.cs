@@ -438,6 +438,16 @@ public unsafe class GLAPI : IGraphikAPI
 		return null;
 	}
 	
+	public object? GetLibraryValue(string value)
+	{
+		return value switch
+		{
+			"threaded" => false,
+			_ => null
+		};
+
+	}
+	
 	public string GetLibraryIdentifier()
 	{
 		return "OpenAbility.Graphik.OpenGL";

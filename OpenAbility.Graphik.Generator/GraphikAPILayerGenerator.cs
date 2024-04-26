@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace OpenAbility.Graphik.Generator;
 
-public static class GraphikWrapperGenerator
+public static class GraphikAPILayerGenerator
 {
 	public static void Generate()
 	{
@@ -15,7 +15,7 @@ public static class GraphikWrapperGenerator
 {using}
 namespace OpenAbility.Graphik;
         
-public static partial class Graphik
+public partial class APILayer : IGraphikAPI
 {
 ";
         
@@ -25,7 +25,7 @@ public static partial class Graphik
         
         foreach (var method in interfaceMethods)
         {
-        	string line = "\tpublic static ";
+        	string line = "\tpublic virtual ";
         
         	line += generatorShared.GetTypeText(method.ReturnType) + " ";
         	line += method.Name + "(";
@@ -41,10 +41,17 @@ public static partial class Graphik
         		parameterStrings.Add(parameterString);
         	}
         	line += string.Join(", ", parameterStrings);
-        
-        	line += ") => api." + method.Name + "(";
+
+	        line += ") => ";
+
+	        if (method.ReturnType != typeof(void))
+		        line += "(" + generatorShared.GetTypeText(method.ReturnType) + ")";
+	        
+	        line += "Intercept(";
         	
         	parameterStrings.Clear();
+	        parameterStrings.Add("\"" + method.Name + "\"");
+	        parameterStrings.Add("underlying." + method.Name);
         	foreach (var parameter in method.GetParameters())
         	{
         		parameterStrings.Add(parameter.Name ?? "");	

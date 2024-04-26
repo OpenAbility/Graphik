@@ -81,13 +81,21 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 		
 		
 		GLSLResult glslResult = new GLSLResult(shader, type);
-		CompiledShader compiledShader = new CompiledShader(true, 
-			"", glslResult, delegate {  });
+		CompiledShader compiledShader = new GLSLCompiledShader(true, 
+			"", glslResult);
 
 		return compiledShader;
 	}
 	
-	
+	public CompiledShader LoadCache(byte[] cached)
+	{
+		string cache = Encoding.UTF8.GetString(cached);
+		string[] parts = cache.Split("@$;", 2);
+
+		return new GLSLCompiledShader(true, "", new GLSLResult(parts[1], Enum.Parse<ShaderType>(parts[0])));
+	}
+
+
 	private static byte[] GetHash(string inputString)
 	{
 		using (HashAlgorithm algorithm = SHA256.Create())
@@ -274,8 +282,27 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 		spirv_done:
 		
 		
-		return new CompiledShader( success, message, new GLSLResult(glsl, type), _ => { });
+		return new GLSLCompiledShader( success, message, new GLSLResult(glsl, type));
 
+	}
+}
+
+
+internal class GLSLCompiledShader : CompiledShader
+{
+	private ShaderType shaderType;
+	public GLSLCompiledShader(bool success, string message, GLSLResult data) : base(success, message, data)
+	{
+	}
+
+	public override byte[] GetCache()
+	{
+		return Encoding.UTF8.GetBytes(((GLSLResult)Data).ShaderType + "@$;" + ((GLSLResult)Data).GLSL);
+	}
+
+	protected override void Free()
+	{
+		
 	}
 }
 

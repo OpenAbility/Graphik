@@ -5,6 +5,11 @@ namespace OpenAbility.Graphik;
 public static class ShaderCompiler
 {
 
+	public static CompiledShader? LoadCached(byte[] cached)
+	{
+		return Graphik.GetAPI().GetCompiler().LoadCache(cached);
+	}
+
 	public static CompiledShader Compile(string shader, string filename, ShaderType type, string entry = "main")
 	{
 		if (Graphik.GetAPI().IsExtensionSupported(Path.GetExtension(filename)))
@@ -27,19 +32,17 @@ public static class ShaderCompiler
 }
 
 
-public class CompiledShader
+public abstract class CompiledShader
 {
 	public readonly object Data;
 	public readonly bool Success;
 	public readonly string Message;
-	private readonly Action<CompiledShader> onFree;
 	
-	public CompiledShader(bool success, string message, object data, Action<CompiledShader> onFree)
+	public CompiledShader(bool success, string message, object data)
 	{
 		Success = success;
 		Message = message;
 		Data = data;
-		this.onFree = onFree;
 	}
 
 	public override string ToString()
@@ -47,8 +50,12 @@ public class CompiledShader
 		return $"CompiledShader, Success: {Success}, Data: ''{Data}'', Message: ''{Message}''";
 	}
 
+	public virtual byte[]? GetCache() => null;
+
+	protected abstract void Free();
+
 	~CompiledShader()
 	{
-		onFree(this);
+		Free();
 	}
 }

@@ -7,6 +7,7 @@ public class Program
 	private static readonly Generator[] Generators = new Generator[]
 	{
 		new Generator(GraphikWrapperGenerator.Generate, "wrapper", "Generate the Graphik class"),
+		new Generator(GraphikAPILayerGenerator.Generate, "layer", "Generate the APIWrapper class"),
 		new Generator(GraphikGLApiGenerator.Generate, "glapi", "GraphikAPI based on the GL implementation"),
 		new Generator(GraphikGLApiGenerator.Generate, "keylist", "Generate the Key enum based off the OpenTK keys enum"),
 		new Generator(GraphikGLApiGenerator.Generate, "glfwKeymapping", "Generate a mapping for GLFW->Graphik keys"),
