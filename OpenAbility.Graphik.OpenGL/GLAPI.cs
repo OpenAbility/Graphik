@@ -4,9 +4,6 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Silk.NET.Shaderc;
 using System.Numerics;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace OpenAbility.Graphik.OpenGL;
 
@@ -23,7 +20,7 @@ public unsafe class GLAPI : IGraphikAPI
 		GLFW.Init();
 	}
 	
-	public void InitializeWindow(string title, int width, int height)
+	public IGraphikWindow InitializeWindow(string title, int width, int height)
 	{
 
 		Width = width;
@@ -50,6 +47,20 @@ public unsafe class GLAPI : IGraphikAPI
 
 		GL.FrontFace(FrontFaceDirection.Cw);
 		GL.Enable(EnableCap.DebugOutput);
+
+		GL.Enable(EnableCap.PolygonSmooth);
+		GL.Hint(HintTarget.PolygonSmoothHint, HintMode.DontCare);
+		GL.Hint(HintTarget.LineSmoothHint, HintMode.DontCare);
+
+		return new GLWindow()
+		{
+			handle = window
+		};
+	}
+	public void SetWindowCurrent(IGraphikWindow window)
+	{
+		this.window = ((GLWindow)window).handle;
+		GLFW.MakeContextCurrent(this.window);
 	}
 
 	#region Callback Functions
@@ -435,6 +446,13 @@ public unsafe class GLAPI : IGraphikAPI
 	
 	public object? InvokeLibraryFunction(string function, object[] parameters)
 	{
+		if (function == "set_clipboard_str")
+		{
+			GLFW.SetClipboardString(window, (string)parameters[0]);
+		} else if (function == "get_clipboard_str")
+		{
+			return GLFW.GetClipboardString(window);
+		}
 		return null;
 	}
 	
@@ -489,5 +507,9 @@ public unsafe class GLAPI : IGraphikAPI
 	public void LogMarker(string marker)
 	{
 		GL.DebugMessageInsert(DebugSource.DebugSourceApplication, DebugType.DebugTypeMarker, MarkerID++, DebugSeverity.DebugSeverityNotification, marker.Length, marker);
+	}
+	public void ClearColour(float r, float g, float b, float a)
+	{
+		GL.ClearColor(r, g, b, a);
 	}
 }

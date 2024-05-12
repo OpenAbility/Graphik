@@ -8,7 +8,8 @@ namespace OpenAbility.Graphik;
 public partial class APILayer : IGraphikAPI
 {
         public virtual void InitializeSystems() => Intercept("InitializeSystems", Underlying.InitializeSystems);
-        public virtual void InitializeWindow(String title, int width, int height) => Intercept("InitializeWindow", Underlying.InitializeWindow, title, width, height);
+        public virtual IGraphikWindow InitializeWindow(String title, int width, int height) => (IGraphikWindow)Intercept("InitializeWindow", Underlying.InitializeWindow, title, width, height);
+        public void SetWindowCurrent(IGraphikWindow window) => Intercept("SetWindowCurrent", Underlying.SetWindowCurrent, window);
         public virtual void SetErrorCallback(ErrorCallback errorCallback) => Intercept("SetErrorCallback", Underlying.SetErrorCallback, errorCallback);
         public virtual void SetDebugCallback(DebugCallback debugCallback) => Intercept("SetDebugCallback", Underlying.SetDebugCallback, debugCallback);
         public virtual void SetResizeCallback(ResizeCallback resizeCallback) => Intercept("SetResizeCallback", Underlying.SetResizeCallback, resizeCallback);
@@ -54,4 +55,5 @@ public partial class APILayer : IGraphikAPI
         public virtual System.Object GetLibraryValue(System.String value) => (System.Object)Intercept("GetLibraryValue", Underlying.GetLibraryValue, value);
         public virtual System.String GetLibraryIdentifier() => (System.String)Intercept("GetLibraryIdentifier", Underlying.GetLibraryIdentifier);
         public virtual void LogMarker(System.String marker) => Intercept("LogMarker", Underlying.LogMarker, marker);
+        public void ClearColour(float r, float g, float b, float a) => Intercept("ClearColour", Underlying.ClearColour, r, g, b, a);
 }

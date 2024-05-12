@@ -5,7 +5,8 @@ namespace OpenAbility.Graphik;
 public interface IGraphikAPI
 {
 	void InitializeSystems();
-	void InitializeWindow(string title, int width, int height);
+	IGraphikWindow InitializeWindow(string title, int width, int height);
+	void SetWindowCurrent(IGraphikWindow window);
 	void SetErrorCallback(ErrorCallback errorCallback);
 	void SetDebugCallback(DebugCallback debugCallback);
 	void SetResizeCallback(ResizeCallback resizeCallback);
@@ -51,4 +52,6 @@ public interface IGraphikAPI
 	object? GetLibraryValue(string value);
 	string GetLibraryIdentifier();
 	void LogMarker(string marker);
+	void ClearColour(float r, float g, float b, float a);
+	
 }

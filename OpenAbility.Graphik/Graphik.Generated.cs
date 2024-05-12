@@ -70,6 +70,7 @@ public static partial class Graphik
 	/// </summary>
 	/// <param name="clearFlags">What to clear</param>
 	public static void Clear(ClearFlags clearFlags) => api.Clear(clearFlags);
+	public static void ClearColour(float r, float g, float b, float a = 1.0f) => api.ClearColour(r, g, b, a);
 	/// <summary>
 	/// Create a 2D texture
 	/// </summary>
