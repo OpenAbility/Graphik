@@ -452,6 +452,9 @@ public unsafe class GLAPI : IGraphikAPI
 		} else if (function == "get_clipboard_str")
 		{
 			return GLFW.GetClipboardString(window);
+		} else if (function == "finish_processing")
+		{
+			GL.Finish();
 		}
 		return null;
 	}
