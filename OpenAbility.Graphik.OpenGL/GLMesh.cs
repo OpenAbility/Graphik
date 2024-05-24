@@ -163,8 +163,10 @@ public class GLMesh : IMesh
 		GL.DeleteBuffer(vbo);
 		GL.DeleteBuffer(ebo);
 		
-		GC.RemoveMemoryPressure(vboSize);
-		GC.RemoveMemoryPressure(eboSize);
+		if(vboSize > 0)
+			GC.RemoveMemoryPressure(vboSize);
+		if(eboSize > 0)
+			GC.RemoveMemoryPressure(eboSize);
 	}
 
 	public void SetName(string name)
