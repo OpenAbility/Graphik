@@ -312,5 +312,9 @@ public class GLRenderTexture : IRenderTexture
 		fixed(float* ptr = borderBuffer)
 			GL.TextureParameterfv(colourHandle, TextureParameterName.TextureBorderColor, ptr);
 	}
-	
+	public unsafe void GetData(void* buffer, int bufferSize)
+	{
+		GL.GetTextureImage(colourHandle, 0, PixelFormat.Rgba, PixelType.UnsignedByte, bufferSize, buffer);
+	}
+
 }

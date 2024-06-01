@@ -58,6 +58,21 @@ public interface ITexture
 	/// <param name="b">The blue value(0-1 range. Go above for HDR)</param>
 	/// <param name="a">The alpha value(0-1 range. Go above for HDR)</param>
 	public void SetBorder(float r, float g, float b, float a = 1.0f);
+
+	public unsafe void GetData<T>(Span<T> buffer) where T : unmanaged
+	{
+		fixed (T* ptr = buffer)
+		{
+			GetData(ptr, sizeof(T) * buffer.Length);
+		}
+	}
+
+	public unsafe void GetData(byte* buffer, int bufferSize)
+	{
+		GetData((void*)buffer, bufferSize);
+	}
+
+	public unsafe void GetData(void* buffer, int bufferSize);
 }
 
 public enum TextureFiltering

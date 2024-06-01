@@ -180,4 +180,8 @@ public class GLTexture : ITexture2D
 		fixed(float* ptr = borderBuffer)
 			GL.TextureParameterfv(handle, TextureParameterName.TextureBorderColor, ptr);
 	}
+	public unsafe void GetData(void* buffer, int bufferSize)
+	{
+		GL.GetTextureImage(handle, 0, PixelFormat.Rgba, PixelType.UnsignedByte, bufferSize, buffer);
+	}
 }
