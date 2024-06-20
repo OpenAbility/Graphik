@@ -26,6 +26,7 @@ public partial class APILayer : IGraphikAPI
         public virtual IMesh CreateMesh() => (OpenAbility.Graphik.IMesh)Intercept("CreateMesh", Underlying.CreateMesh);
         public virtual IShader CreateShader() => (OpenAbility.Graphik.IShader)Intercept("CreateShader", Underlying.CreateShader);
         public virtual IRenderTexture CreateRenderTexture() => (OpenAbility.Graphik.IRenderTexture)Intercept("CreateRenderTexture", Underlying.CreateRenderTexture);
+        public virtual IRenderBuffer CreateRenderBuffer() => (OpenAbility.Graphik.IRenderBuffer)Intercept("CreateRenderBuffer", Underlying.CreateRenderBuffer);
         public virtual void ResetTarget() => Intercept("ResetTarget", Underlying.ResetTarget);
         public virtual void SetMouseState(MouseState state) => Intercept("SetMouseState", Underlying.SetMouseState, state);
         public virtual IShaderObject CreateShaderObject(ShaderType type) => (OpenAbility.Graphik.IShaderObject)Intercept("CreateShaderObject", Underlying.CreateShaderObject, type);
@@ -37,7 +38,7 @@ public partial class APILayer : IGraphikAPI
         public virtual OpenAbility.Graphik.ITexture2D FromNative(uint handle) => (OpenAbility.Graphik.ITexture2D)Intercept("FromNative", Underlying.FromNative, handle);
         public virtual void SetBlending(BlendMode blendMode) => Intercept("SetBlending", Underlying.SetBlending, blendMode);
         public virtual void SetBlendFunction(BlendFactor a, OpenAbility.Graphik.BlendFactor b) => Intercept("SetBlendFunction", Underlying.SetBlendFunction, a, b);
-        public virtual void SetDepthFunction(DepthFunction depthFunction) => Intercept("SetDepthFunction", Underlying.SetDepthFunction, depthFunction);
+        public virtual void SetDepthFunction(CompareFunction compareFunction) => Intercept("SetDepthFunction", Underlying.SetDepthFunction, compareFunction);
         public virtual IController GetController(int controllerID) => (OpenAbility.Graphik.IController)Intercept("GetController", Underlying.GetController, controllerID);
         public virtual void UnbindTextures() => Intercept("UnbindTextures", Underlying.UnbindTextures);
         public virtual Vector2 ContentScale() => (System.Numerics.Vector2)Intercept("ContentScale", Underlying.ContentScale);
@@ -45,7 +46,6 @@ public partial class APILayer : IGraphikAPI
         public virtual void PointSize(float size) => Intercept("PointSize", Underlying.PointSize, size);
         public virtual IShaderBuffer CreateShaderBuffer() => (OpenAbility.Graphik.IShaderBuffer)Intercept("CreateShaderBuffer", Underlying.CreateShaderBuffer);
         public virtual ICubemapTexture CreateCubemap() => (OpenAbility.Graphik.ICubemapTexture)Intercept("CreateCubemap", Underlying.CreateCubemap);
-        public virtual OpenAbility.Graphik.IRenderTexture GetBoundTarget() => (OpenAbility.Graphik.IRenderTexture)Intercept("GetBoundTarget", Underlying.GetBoundTarget);
         public virtual IShaderCompiler GetCompiler() => (OpenAbility.Graphik.IShaderCompiler)Intercept("GetCompiler", Underlying.GetCompiler);
         public virtual System.String[] GetSupportedLanguages() => (System.String[])Intercept("GetSupportedLanguages", Underlying.GetSupportedLanguages);
         public virtual bool IsExtensionSupported(System.String extension) => (bool)Intercept("IsExtensionSupported", Underlying.IsExtensionSupported, extension);
@@ -56,4 +56,7 @@ public partial class APILayer : IGraphikAPI
         public virtual System.String GetLibraryIdentifier() => (System.String)Intercept("GetLibraryIdentifier", Underlying.GetLibraryIdentifier);
         public virtual void LogMarker(System.String marker) => Intercept("LogMarker", Underlying.LogMarker, marker);
         public void ClearColour(float r, float g, float b, float a) => Intercept("ClearColour", Underlying.ClearColour, r, g, b, a);
+        public void SetStencilFunction(CullFace face, CompareFunction function, byte value, byte mask) => Intercept("SetStencilFunction", Underlying.SetStencilFunction, face, function, value, mask);
+        public void SetStencilMask(CullFace face, byte mask) => Intercept("SetStencilMask", Underlying.SetStencilMask, face, mask);
+        public void SetStencilOperation(CullFace face, StencilOperation stencilFail, StencilOperation depthFail, StencilOperation pass) => Intercept("SetStencilOperation", Underlying.SetStencilOperation, face, stencilFail, depthFail, pass);
 }

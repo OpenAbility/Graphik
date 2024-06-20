@@ -4,5 +4,6 @@ namespace OpenAbility.Graphik;
 public enum ClearFlags
 {
 	Depth,
-	Colour
+	Colour,
+	Stencil
 }

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OpenAbility.Graphik;
 
-public interface ITexture
+public interface ITexture : IDisposable
 {
 	/// <summary>
 	/// Bind the texture to a texture index shader-side
@@ -14,11 +14,6 @@ public interface ITexture
 	/// Prepare this texture for modification
 	/// </summary>
 	public void PrepareModifications();
-	
-	/// <summary>
-	/// Delete the texture
-	/// </summary>
-	public void Dispose();
 	
 	/// <summary>
 	/// Copy data from another texture

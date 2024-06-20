@@ -19,6 +19,7 @@ public class GLShaderObject : IShaderObject
 			ShaderType.FragmentShader => GLShaderType.FragmentShader,
 			ShaderType.VertexShader => GLShaderType.VertexShader,
 			ShaderType.GeometryShader => GLShaderType.GeometryShader,
+			ShaderType.CompleteShader => GLShaderType.FragmentShader,
 			_ => 0
 		});
 	}

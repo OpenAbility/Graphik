@@ -5,7 +5,7 @@ namespace OpenAbility.Graphik.OpenGL;
 
 public class GLTexture : ITexture2D
 {
-	private TextureHandle handle;
+	private readonly TextureHandle handle;
 	private InternalFormat internalFormat;
 
 	public GLTexture(uint handle)
@@ -18,13 +18,12 @@ public class GLTexture : ITexture2D
 	
 	public GLTexture()
 	{
-		handle = GL.GenTexture();
-		PrepareModifications();
+		handle = GL.CreateTexture(TextureTarget.Texture2d);
         
-		GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
-		GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-		GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-		GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+		GL.TextureParameteri(handle, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
+		GL.TextureParameteri(handle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+		GL.TextureParameteri(handle, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+		GL.TextureParameteri(handle, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 	}
 	public unsafe void SetData<T>(TextureFormat format, T[] imageData, int width, int height, int mipmapLevel = 0) where T : unmanaged
 	{
@@ -32,15 +31,20 @@ public class GLTexture : ITexture2D
 			SetData(format, p, width, height, mipmapLevel);
 	}
 
+	public unsafe void AllocateImage(TextureFormat format, int width, int height, int levels = 1)
+	{
+		GL.TextureStorage2D(handle, levels, GetSizedInternalFormat(format), width, height);
+		internalFormat = GetInternalFormat(format);
+	}
+
 	public unsafe void SetData<T>(TextureFormat format, T* imageData, int width, int height, int mipmapLevel = 0) where T : unmanaged
 	{
-		GL.TexImage2D(TextureTarget.Texture2d, mipmapLevel, GetInternalFormat(format), width, height, 0, GetPixelFormat(format), GetPixelType(format), imageData);
-		internalFormat = GetInternalFormat(format);
+		GL.TextureSubImage2D(handle, mipmapLevel, 0, 0, width, height, GetPixelFormat(format), GetPixelType(format), imageData);
 	}
 	public void GenerateMipMaps(int depth)
 	{
-		GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMaxLevel, depth);
-		GL.GenerateMipmap(TextureTarget.Texture2d);
+		GL.TextureParameteri(handle, TextureParameterName.TextureMaxLevel, depth);
+		GL.GenerateTextureMipmap(handle);
 	}
 
 	public static InternalFormat GetInternalFormat(TextureFormat textureFormat)
@@ -57,6 +61,30 @@ public class GLTexture : ITexture2D
 			TextureFormat.Rgba32 => InternalFormat.Rgba32i,
 			TextureFormat.Rgbaf => InternalFormat.Rgba32f,
 			TextureFormat.Bgr8 => InternalFormat.Rgb8,
+			TextureFormat.Depth => InternalFormat.DepthComponent32f,
+			TextureFormat.Stencil => InternalFormat.StencilIndex8,
+			TextureFormat.DepthStencil => InternalFormat.Depth32fStencil8,
+			_ => 0
+		};
+	}
+	
+	public static SizedInternalFormat GetSizedInternalFormat(TextureFormat textureFormat)
+	{
+		return textureFormat switch
+		{
+			TextureFormat.R8 => SizedInternalFormat.R8,
+			TextureFormat.R32 => SizedInternalFormat.R32i,
+			TextureFormat.Rf => SizedInternalFormat.R32f,
+			TextureFormat.Rgb8 => SizedInternalFormat.Rgb8,
+			TextureFormat.Rgb32 => SizedInternalFormat.Rgb32i,
+			TextureFormat.Rgbf => SizedInternalFormat.Rgb32f,
+			TextureFormat.Rgba8 => SizedInternalFormat.Rgba8,
+			TextureFormat.Rgba32 => SizedInternalFormat.Rgba32i,
+			TextureFormat.Rgbaf => SizedInternalFormat.Rgba32f,
+			TextureFormat.Bgr8 => SizedInternalFormat.Rgb8,
+			TextureFormat.Depth => SizedInternalFormat.DepthComponent24,
+			TextureFormat.Stencil => SizedInternalFormat.StencilIndex8,
+			TextureFormat.DepthStencil => SizedInternalFormat.Depth24Stencil8,
 			_ => 0
 		};
 	}
@@ -75,6 +103,9 @@ public class GLTexture : ITexture2D
 			TextureFormat.Rgba32 => PixelFormat.Rgba,
 			TextureFormat.Rgbaf => PixelFormat.Rgba,
 			TextureFormat.Bgr8 => PixelFormat.Bgr,
+			TextureFormat.Depth => PixelFormat.DepthComponent,
+			TextureFormat.Stencil => PixelFormat.StencilIndex,
+			TextureFormat.DepthStencil => PixelFormat.DepthStencil,
 			_ => 0
 		};
 	}
@@ -93,21 +124,21 @@ public class GLTexture : ITexture2D
 			TextureFormat.Rgba32 => PixelType.UnsignedInt,
 			TextureFormat.Rgbaf => PixelType.Float,
 			TextureFormat.Bgr8 => PixelType.UnsignedByte,
+			TextureFormat.Depth => PixelType.UnsignedInt248, // Is this correct? Stencil is Depth+Stencil but this?
+			TextureFormat.Stencil => PixelType.UnsignedInt248,
+			TextureFormat.DepthStencil => PixelType.UnsignedInt248,
 			_ => 0
 		};
 	}
 
 	public void PrepareModifications()
 	{
-		GL.BindTexture(TextureTarget.Texture2d, handle);
+		//GL.BindTexture(TextureTarget.Texture2d, handle);
 	}
 
 	public void Bind(int index = 0)
 	{
-		if (index > 31)
-			throw new IndexOutOfRangeException("Max texture index is 32!");
-		GL.ActiveTexture((TextureUnit)((int)TextureUnit.Texture0 + index));
-		GL.BindTexture(TextureTarget.Texture2d, handle);
+		GL.BindTextureUnit((uint)index, handle);
 	}
 	
 	public void Dispose()
@@ -135,20 +166,19 @@ public class GLTexture : ITexture2D
 	}
 	public void SetFiltering(TextureFiltering filtering)
 	{
-		PrepareModifications();
 		if (filtering == TextureFiltering.Linear)
 		{
-			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+			GL.TextureParameteri(handle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+			GL.TextureParameteri(handle, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 		} else if (filtering == TextureFiltering.Nearest)
 		{
-			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+			GL.TextureParameteri(handle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+			GL.TextureParameteri(handle, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 		}
 		else if (filtering == TextureFiltering.Trilinear)
 		{
-			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
-			GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+			GL.TextureParameteri(handle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+			GL.TextureParameteri(handle, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 		}
 	}
 	public void SetRepetition(TextureRepetition repetition)
@@ -161,8 +191,8 @@ public class GLTexture : ITexture2D
 			_ => 0
 		};
 
-        GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, repeat);
-        GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, repeat);
+        GL.TextureParameteri(handle, TextureParameterName.TextureWrapS, repeat);
+        GL.TextureParameteri(handle, TextureParameterName.TextureWrapT, repeat);
 		
 	}
 	public void SetName(string name)

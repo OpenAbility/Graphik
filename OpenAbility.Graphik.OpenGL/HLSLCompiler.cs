@@ -82,7 +82,7 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 		
 		GLSLResult glslResult = new GLSLResult(shader, type);
 		CompiledShader compiledShader = new GLSLCompiledShader(true, 
-			"", glslResult);
+			"", glslResult, Array.Empty<string>());
 
 		return compiledShader;
 	}
@@ -90,9 +90,10 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 	public CompiledShader LoadCache(byte[] cached)
 	{
 		string cache = Encoding.UTF8.GetString(cached);
-		string[] parts = cache.Split("@$;", 2);
+		string[] parts = cache.Split("@$;", 3);
+		string[] links = parts[1].Split("^");
 
-		return new GLSLCompiledShader(true, "", new GLSLResult(parts[1], Enum.Parse<ShaderType>(parts[0])));
+		return new GLSLCompiledShader(true, "", new GLSLResult(parts[2], Enum.Parse<ShaderType>(parts[0])), links);
 	}
 
 
@@ -114,10 +115,30 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 
 	public CompiledShader CompileHLSL(string shader, string filename, ShaderType type, string entry)
 	{
+		int stageMacro = type switch
+		{
+
+			ShaderType.CompleteShader => 0,
+			ShaderType.VertexShader => 1,
+			ShaderType.FragmentShader => 2,
+			ShaderType.GeometryShader => 3,
+			ShaderType.ComputeShader => 4,
+			_ => 5
+		};
+		AddMacro("SHADER_STAGE", stageMacro.ToString());
+		List<string> links = new List<string>();
 		
-		CallbackHandler.DebugCallback?
-			.Invoke("GRAPHIK WARNING", 
-				"HLSL is not fully supported(erroring file: " + filename + ")");
+		Regex linkTargetRegex = new Regex(@"^\s*#pragma\s+link\s+\""[^\""]*\""\s*$");
+
+		while (true)
+		{
+			Match match = linkTargetRegex.Match(shader);
+			if (!match.Success)
+				break;
+			links.Add(match.Groups[1].Value);
+			Regex replaceRegex = new Regex(Regex.Escape(match.Value));
+			shader = replaceRegex.Replace(shader, "");
+		}
 		
 		ShaderKind shaderKind = type switch
 		{
@@ -183,8 +204,9 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 				CompilerOption.GlslEnable420PackExtension, 1);
 			spirvCross.CompilerOptionsSetUint(compilerOptions, CompilerOption.GlslVersion, 450);
 			spirvCross.CompilerOptionsSetBool(compilerOptions, CompilerOption.EmitLineDirectives, 1);
-			spirvCross.CompilerOptionsSetBool(compilerOptions, 
+			spirvCross.CompilerOptionsSetBool(compilerOptions,
 				CompilerOption.GlslEmitUniformBufferAsPlainUniforms, 1);
+			spirvCross.CompilerOptionsSetBool(compilerOptions, CompilerOption.ForceZeroInitializedVariables, 1);
 			spirvCross.CompilerOptionsSetBool(compilerOptions, CompilerOption.GlslVulkanSemantics, 0);
 
 			ExecutionModel executionModel = type switch
@@ -282,7 +304,7 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 		spirv_done:
 		
 		
-		return new GLSLCompiledShader( success, message, new GLSLResult(glsl, type));
+		return new GLSLCompiledShader( success, message, new GLSLResult(glsl, type), links.ToArray());
 
 	}
 }
@@ -291,13 +313,13 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 internal class GLSLCompiledShader : CompiledShader
 {
 	private ShaderType shaderType;
-	public GLSLCompiledShader(bool success, string message, GLSLResult data) : base(success, message, data)
+	public GLSLCompiledShader(bool success, string message, GLSLResult data, string[] links) : base(success, message, data, links)
 	{
 	}
 
 	public override byte[] GetCache()
 	{
-		return Encoding.UTF8.GetBytes(((GLSLResult)Data).ShaderType + "@$;" + ((GLSLResult)Data).GLSL);
+		return Encoding.UTF8.GetBytes(((GLSLResult)Data).ShaderType + "@$;" + string.Join('^', Links ?? Array.Empty<string>()) + "@$;" + ((GLSLResult)Data).GLSL);
 	}
 
 	protected override void Free()

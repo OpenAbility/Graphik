@@ -98,10 +98,11 @@ byte[] imageData = imageResult.Data;
 
 ITexture2D texture = Graphik.CreateTexture();
 texture.PrepareModifications();
+texture.AllocateImage(TextureFormat.Rgba8, imageResult.Width, imageResult.Height);
 texture.SetData(TextureFormat.Rgba8, imageData, imageResult.Width, imageResult.Height);
 
 IRenderTexture renderTexture = Graphik.CreateRenderTexture();
-renderTexture.Build(512, 512);
+renderTexture.Build(512, 512, RenderTextureParts.Default);
 
 IShaderBuffer shaderBuffer = Graphik.CreateShaderBuffer();
 shaderBuffer.PushData<float>(new float[] { 0.5f });

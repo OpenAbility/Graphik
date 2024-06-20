@@ -1,6 +1,6 @@
 namespace OpenAbility.Graphik;
 
-public interface IShader
+public interface IShader : IDisposable
 {
 	public void Attach(IShaderObject shaderObject);
 	/// <summary>
@@ -52,7 +52,6 @@ public interface IShader
 	public void BindAttribute(string name, int index);
 	public void DispatchCompute(int x, int y, int z);
 	
-	public void Dispose();
 	/// <summary>
 	/// Get if a uniform exists
 	/// </summary>

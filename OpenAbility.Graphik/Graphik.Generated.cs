@@ -70,6 +70,13 @@ public static partial class Graphik
 	/// </summary>
 	/// <param name="clearFlags">What to clear</param>
 	public static void Clear(ClearFlags clearFlags) => api.Clear(clearFlags);
+	/// <summary>
+	/// Set the clear colour
+	/// </summary>
+	/// <param name="r">The red channel</param>
+	/// <param name="g">The green channel</param>
+	/// <param name="b">The blue channel</param>
+	/// <param name="a">The alpha channel</param>
 	public static void ClearColour(float r, float g, float b, float a = 1.0f) => api.ClearColour(r, g, b, a);
 	/// <summary>
 	/// Create a 2D texture
@@ -156,8 +163,8 @@ public static partial class Graphik
 	/// <summary>
 	/// Set the depth test function
 	/// </summary>
-	/// <param name="depthFunction">The depth test function</param>
-	public static void SetDepthFunction(DepthFunction depthFunction) => api.SetDepthFunction(depthFunction);
+	/// <param name="compareFunction">The depth test function</param>
+	public static void SetDepthFunction(CompareFunction compareFunction) => api.SetDepthFunction(compareFunction);
 	/// <summary>
 	/// Set the scroll callback
 	/// </summary>
@@ -198,13 +205,6 @@ public static partial class Graphik
 	/// </summary>
 	/// <returns>The cubemap texture object</returns>
 	public static ICubemapTexture CreateCubemap() => api.CreateCubemap();
-#nullable enable
-	/// <summary>
-	/// Get the currently bound render texutre
-	/// </summary>
-	/// <returns>The current render texture, or null if the screen buffer is bound</returns>
-	public static IRenderTexture? GetBoundTarget() => api.GetBoundTarget();
-#nullable disable
 	/// <summary>
 	/// Set the window icons if possible
 	/// </summary>
@@ -216,6 +216,7 @@ public static partial class Graphik
 	/// <param name="includeCallback">The include callback</param>
 	public static void SetIncludeCallback(IncludeCallback includeCallback) => api.SetIncludeCallback(includeCallback);
 
+#nullable enable
 	/// <summary>
 	/// Invoke a custom function specified within the API.
 	/// </summary>
@@ -224,8 +225,14 @@ public static partial class Graphik
 	public static object? InvokeLibraryFunction(string function, params object[] parameters) =>
 		api.InvokeLibraryFunction(function, parameters);
 	
+	/// <summary>
+	/// Get a value from the underlying API
+	/// </summary>
+	/// <param name="value">The value name</param>
+	/// <returns>The value object, if found</returns>
 	public static object? GetLibraryValue(string value) =>
 		api.GetLibraryValue(value);
+#nullable disable
 
 	/// <summary>
 	/// Get a string identifying the library
@@ -237,4 +244,35 @@ public static partial class Graphik
 	/// </summary>
 	/// <param name="marker">The marker text</param>
 	public static void LogMarker(string marker) => api.LogMarker(marker);
+	/// <summary>
+	/// Create a RenderBuffer
+	/// </summary>
+	/// <returns>The created RenderBuffer</returns>
+	public static IRenderBuffer CreateRenderBuffer() => api.CreateRenderBuffer();
+
+	/// <summary>
+	/// Set the stencil function
+	/// </summary>
+	/// <param name="face">The face to apply this to</param>
+	/// <param name="function">The function</param>
+	/// <param name="value">The stencil compare value(?)</param>
+	/// <param name="mask">The stencil mask(?)</param>
+	public static void SetStencilFunction(CullFace face, CompareFunction function, byte value, byte mask) =>
+		api.SetStencilFunction(face, function, value, mask);
+	
+	/// <summary>
+	/// Set the stencil mask
+	/// </summary>
+	/// <param name="face">The face to apply this to</param>
+	/// <param name="mask">The stencil mask</param>
+	public static void SetStencilMask(CullFace face, byte mask) => api.SetStencilMask(face, mask);
+	/// <summary>
+	/// Set the stencil operation
+	/// </summary>
+	/// <param name="face">The face to apply this to</param>
+	/// <param name="stencilFail">What to do if the stencil check fails</param>
+	/// <param name="depthFail">What to do if the depth check fails</param>
+	/// <param name="pass">What to do if the checks pass/param>
+	public static void SetStencilOperation(CullFace face, StencilOperation stencilFail, StencilOperation depthFail,
+		StencilOperation pass) => api.SetStencilOperation(face, stencilFail, depthFail, pass);
 }

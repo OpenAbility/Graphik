@@ -39,5 +39,9 @@ public enum Feature
 	/// <summary>
 	/// Should we print errors etc?
 	/// </summary>
-	DebugOutput
+	DebugOutput,
+	/// <summary>
+	/// Should we perform stencil testing?
+	/// </summary>
+	Stencil
 }

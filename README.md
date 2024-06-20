@@ -76,3 +76,6 @@ It is currently not under maintenance.
 Currently the only implementation of Graphik.Audio is for OpenAL, and it uses `AL_EXT_float32`, which only appears to 
 be available if you have OpenAL Soft installed.  
 This means that by default, it doesn't work on windows.
+
+
+Stencil buffers are also brokey(at least for FBO rendering). Good to know hehe.

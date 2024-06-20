@@ -46,5 +46,17 @@ public enum TextureFormat
 	/// <summary>
 	/// A blue, green and red channel with 1 byte each
 	/// </summary>
-	Bgr8
+	Bgr8,
+	/// <summary>
+	/// Implementation-specific depth format
+	/// </summary>
+	Depth,
+	/// <summary>
+	/// Implementation-specific stencil format
+	/// </summary>
+	Stencil,
+	/// <summary>
+	/// Implementation-specific combined depth-and-stencil format
+	/// </summary>
+	DepthStencil
 }

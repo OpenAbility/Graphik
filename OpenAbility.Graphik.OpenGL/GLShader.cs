@@ -46,6 +46,7 @@ public class GLShader : IShader
 		{
 			string name = GL.GetActiveUniform(handle, (uint)i, bufSize, ref length, ref size, ref type);
 			//Console.WriteLine($"| {name}: ID: {i}, Type: {type}, Size: {size}");
+			uniforms[name] = GL.GetUniformLocation(handle, name);
 		}
 		
 		return !String.IsNullOrEmpty(log) ? log : String.Empty;

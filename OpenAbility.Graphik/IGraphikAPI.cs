@@ -23,6 +23,7 @@ public interface IGraphikAPI
 	IMesh CreateMesh();
 	IShader CreateShader();
 	IRenderTexture CreateRenderTexture();
+	IRenderBuffer CreateRenderBuffer();
 	void ResetTarget();
 	void SetMouseState(MouseState state);
 	IShaderObject CreateShaderObject(ShaderType type);
@@ -34,7 +35,7 @@ public interface IGraphikAPI
 	ITexture2D FromNative(uint handle);
 	void SetBlending(BlendMode blendMode);
 	void SetBlendFunction(BlendFactor a, BlendFactor b);
-	void SetDepthFunction(DepthFunction depthFunction);
+	void SetDepthFunction(CompareFunction compareFunction);
 	IController GetController(int controllerID);
 	void UnbindTextures();
 	Vector2 ContentScale();
@@ -42,7 +43,6 @@ public interface IGraphikAPI
 	void PointSize(float size);
 	IShaderBuffer CreateShaderBuffer();
 	ICubemapTexture CreateCubemap();
-	IRenderTexture? GetBoundTarget();
 	IShaderCompiler GetCompiler();
 	string[] GetSupportedLanguages();
 	bool IsExtensionSupported(string extension);
@@ -53,5 +53,7 @@ public interface IGraphikAPI
 	string GetLibraryIdentifier();
 	void LogMarker(string marker);
 	void ClearColour(float r, float g, float b, float a);
-	
+	void SetStencilFunction(CullFace face, CompareFunction function, byte value, byte mask);
+	void SetStencilMask(CullFace face, byte mask);
+	void SetStencilOperation(CullFace face, StencilOperation stencilFail, StencilOperation depthFail, StencilOperation pass);
 }

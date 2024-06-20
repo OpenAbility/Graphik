@@ -9,45 +9,50 @@ public class GLCubemap : ICubemapTexture
 
 	public GLCubemap()
 	{
-		handle = GL.GenTexture();
+		handle = GL.CreateTexture(TextureTarget.TextureCubeMapArray);
 		PrepareModification();
 		
-		GL.TexParameteri(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
-		GL.TexParameteri(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-		GL.TexParameteri(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-		GL.TexParameteri(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-		GL.TexParameteri(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
+		GL.TextureParameteri(handle, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
+		GL.TextureParameteri(handle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+		GL.TextureParameteri(handle, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+		GL.TextureParameteri(handle, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+		GL.TextureParameteri(handle, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
 	}
 
 	public void PrepareModification()
 	{
-		GL.BindTexture(TextureTarget.TextureCubeMap, handle);
+		//GL.BindTexture(TextureTarget.TextureCubeMap, handle);
 	}
-	
+
+	private bool allocated = false;
 	public unsafe void SetFaceData<T>(CubemapFace face, TextureFormat format, T* imageData, int width, int height, int mipmapLevel = 0) where T : unmanaged
 	{
 
-		TextureTarget target = face switch
+		int faceID = face switch
 		{
-			CubemapFace.PositiveX => TextureTarget.TextureCubeMapPositiveX,
-			CubemapFace.NegativeX => TextureTarget.TextureCubeMapNegativeX,
+			CubemapFace.PositiveX => 0,
+			CubemapFace.NegativeX => 1,
 
-			CubemapFace.PositiveY => TextureTarget.TextureCubeMapPositiveY,
-			CubemapFace.NegativeY => TextureTarget.TextureCubeMapNegativeY,
+			CubemapFace.PositiveY => 2,
+			CubemapFace.NegativeY => 3,
 
-			CubemapFace.PositiveZ => TextureTarget.TextureCubeMapPositiveZ,
-			CubemapFace.NegativeZ => TextureTarget.TextureCubeMapNegativeZ,
+			CubemapFace.PositiveZ => 4,
+			CubemapFace.NegativeZ => 5,
 			_ => 0
 		};
+
+		if (!allocated)
+		{
+			GL.TextureStorage3D(handle, mipmapLevel + 1, GLTexture.GetSizedInternalFormat(format), width, height, 6);
+			allocated = true;
+		}
 		
-		GL.TexImage2D(target, mipmapLevel, GLTexture.GetInternalFormat(format), width, height, 0, 
-			GLTexture.GetPixelFormat(format), GLTexture.GetPixelType(format), imageData);
+		GL.TextureSubImage3D(handle, mipmapLevel, 0, 0, faceID, width, height, 0, GLTexture.GetPixelFormat(format), GLTexture.GetPixelType(format), imageData);
 	}
 	
 	public void Bind(int slot = 0)
 	{
-		GL.BindTexture(TextureTarget.TextureCubeMap, handle);
-		GL.ActiveTexture((TextureUnit)((int)TextureUnit.Texture0 + slot));
+		GL.BindTextureUnit((uint)slot, handle);
 	}
 	
 	public void Dispose()

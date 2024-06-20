@@ -37,12 +37,14 @@ public abstract class CompiledShader
 	public readonly object Data;
 	public readonly bool Success;
 	public readonly string Message;
+	public readonly string[]? Links;
 	
-	public CompiledShader(bool success, string message, object data)
+	public CompiledShader(bool success, string message, object data, string[]? links = null)
 	{
 		Success = success;
 		Message = message;
 		Data = data;
+		Links = links;
 	}
 
 	public override string ToString()

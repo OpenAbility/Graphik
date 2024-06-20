@@ -125,7 +125,10 @@ public unsafe class GLAPI : IGraphikAPI
 			clearBufferMask |= ClearBufferMask.ColorBufferBit;
 		
 		if (clearFlags.HasFlag(ClearFlags.Depth))
-			clearBufferMask |= ClearBufferMask.DepthBufferBit;
+			clearBufferMask |= ClearBufferMask.DepthBufferBit;		
+		
+		if (clearFlags.HasFlag(ClearFlags.Stencil))
+			clearBufferMask |= ClearBufferMask.StencilBufferBit;
 		
 		GL.Clear(clearBufferMask);
 	}
@@ -145,14 +148,17 @@ public unsafe class GLAPI : IGraphikAPI
 
 	public IRenderTexture CreateRenderTexture()
 	{
-		return new GLRenderTexture();
+		return new RenderBufferRndTexture();
+	}
+	public IRenderBuffer CreateRenderBuffer()
+	{
+		return new GLRenderBuffer();
 	}
 
 	public void ResetTarget()
 	{
 		GL.BindFramebuffer(FramebufferTarget.Framebuffer, FramebufferHandle.Zero);
 		GL.Viewport(0, 0, Width, Height);
-		GLRenderTexture.Bound = null;
 	}
 
 	public void SetMouseState(MouseState mouseState)
@@ -238,6 +244,7 @@ public unsafe class GLAPI : IGraphikAPI
 			Feature.DepthTesting => EnableCap.DepthTest,
 			Feature.HDR => EnableCap.FramebufferSrgb,
 			Feature.Scissor => EnableCap.ScissorTest,
+			Feature.Stencil => EnableCap.StencilTest,
 			_ => 0
 		};
 	}
@@ -287,14 +294,18 @@ public unsafe class GLAPI : IGraphikAPI
 	{
 		GL.BlendFunc(GetBlendingFactor(a), GetBlendingFactor(b));
 	}
-	public void SetDepthFunction(DepthFunction depthFunction)
+	public void SetDepthFunction(CompareFunction compareFunction)
 	{
-		GL.DepthFunc(depthFunction switch
+		GL.DepthFunc(compareFunction switch
 		{
-			DepthFunction.Greater => OpenTK.Graphics.OpenGL.DepthFunction.Greater,
-			DepthFunction.Less => OpenTK.Graphics.OpenGL.DepthFunction.Less,
-			DepthFunction.GrEqual => OpenTK.Graphics.OpenGL.DepthFunction.Gequal,
-			DepthFunction.LEqual => OpenTK.Graphics.OpenGL.DepthFunction.Lequal,
+			CompareFunction.GrEqual => DepthFunction.Gequal,
+			CompareFunction.Less => DepthFunction.Less,
+			CompareFunction.Greater => DepthFunction.Greater,
+			CompareFunction.LessEqual => DepthFunction.Lequal,
+			CompareFunction.Always => DepthFunction.Always,
+			CompareFunction.Equal => DepthFunction.Equal,
+			CompareFunction.Never => DepthFunction.Never,
+			CompareFunction.NotEqual => DepthFunction.Notequal,
 			_ => 0
 		});
 	}
@@ -362,10 +373,6 @@ public unsafe class GLAPI : IGraphikAPI
 	public ICubemapTexture CreateCubemap()
 	{
 		return new GLCubemap();
-	}
-	public IRenderTexture? GetBoundTarget()
-	{
-		return GLRenderTexture.Bound;
 	}
 	public IShaderCompiler GetCompiler()
 	{
@@ -514,5 +521,78 @@ public unsafe class GLAPI : IGraphikAPI
 	public void ClearColour(float r, float g, float b, float a)
 	{
 		GL.ClearColor(r, g, b, a);
+	}
+	
+	private StencilOp GetOp(StencilOperation operation)
+	{
+		return operation switch
+		{
+
+			StencilOperation.Keep => StencilOp.Keep,
+			StencilOperation.Zero => StencilOp.Zero,
+			StencilOperation.Increment => StencilOp.Incr,
+			StencilOperation.Decrement => StencilOp.Decr,
+			StencilOperation.Invert => StencilOp.Invert,
+			StencilOperation.Replace => StencilOp.Replace,
+			StencilOperation.IncrementWarp => StencilOp.IncrWrap,
+			StencilOperation.DecrementWarp => StencilOp.DecrWrap,
+			_ => 0
+		};
+	}
+
+	public void SetStencilOperation(CullFace face, StencilOperation stencilFail, StencilOperation depthFail, StencilOperation pass)
+	{
+		TriangleFace triangleFace = face switch
+		{
+
+			CullFace.Front => TriangleFace.Front,
+			CullFace.Back => TriangleFace.Back,
+			CullFace.Both => TriangleFace.FrontAndBack,
+			_ => TriangleFace.FrontAndBack
+		};
+		
+		GL.StencilOpSeparate(triangleFace, GetOp(stencilFail), GetOp(depthFail), GetOp(pass));
+	}
+
+	public void SetStencilMask(CullFace face, byte mask)
+	{
+		TriangleFace triangleFace = face switch
+		{
+
+			CullFace.Front => TriangleFace.Front,
+			CullFace.Back => TriangleFace.Back,
+			CullFace.Both => TriangleFace.FrontAndBack,
+			_ => TriangleFace.FrontAndBack
+		};
+		
+		GL.StencilMaskSeparate(triangleFace, mask);
+	}
+    
+	public void SetStencilFunction(CullFace face, CompareFunction function, byte compareValue, byte mask = 0xFF)
+	{
+
+		TriangleFace triangleFace = face switch
+		{
+
+			CullFace.Front => TriangleFace.Front,
+			CullFace.Back => TriangleFace.Back,
+			CullFace.Both => TriangleFace.FrontAndBack,
+			_ => TriangleFace.FrontAndBack
+		};
+
+		StencilFunction stencilFunction = function switch
+		{
+			CompareFunction.GrEqual => StencilFunction.Gequal,
+			CompareFunction.Less => StencilFunction.Less,
+			CompareFunction.Greater => StencilFunction.Greater,
+			CompareFunction.LessEqual => StencilFunction.Lequal,
+			CompareFunction.Always => StencilFunction.Always,
+			CompareFunction.Equal => StencilFunction.Equal,
+			CompareFunction.Never => StencilFunction.Never,
+			CompareFunction.NotEqual => StencilFunction.Notequal,
+			_ => 0
+		};
+		
+		GL.StencilFuncSeparate(triangleFace, stencilFunction, compareValue, mask);
 	}
 }
