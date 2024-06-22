@@ -126,6 +126,7 @@ internal static unsafe class CallbackHandler
 		glapi = api;
 		GL.DebugMessageCallback(DebugProc, IntPtr.Zero);
 		GL.Enable(EnableCap.DebugOutput);
+		GL.Enable(EnableCap.DebugOutputSynchronous); // Why wasn't this here already
 		
 		GLFW.SetWindowSizeCallback(window, GLFWWindowSizeCallback);
 		GLFW.SetKeyCallback(window, GLFWKeyCallback);

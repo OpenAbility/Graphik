@@ -27,6 +27,11 @@ Graphik.InitializeWindow("Hello, World Graphik!", 1280, 720);
 
 Graphik.SetFeature(Feature.Culling, false);
 
+
+// FBO test
+Console.WriteLine("FBO Test: " + Graphik.InvokeLibraryFunction("__fbo_test"));
+
+
 float[] vertices =
 {
 	// x, y, z, u, v

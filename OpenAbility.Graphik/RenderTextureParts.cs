@@ -4,13 +4,16 @@ namespace OpenAbility.Graphik;
 
 public struct RenderTextureParts
 {
+
+	public const int ColourLength = 32;
+	
 	public PartState DepthStencil;
 
-	public readonly PartState[] Colours = new PartState[32];
+	public readonly PartState[] Colours = new PartState[ColourLength];
 	
 	public RenderTextureParts()
 	{
-		for (int i = 0; i < 32; i++)
+		for (int i = 0; i < ColourLength; i++)
 		{
 			Colours[i] = PartState.Disabled;
 		}
@@ -20,14 +23,14 @@ public struct RenderTextureParts
 
 	public RenderTextureParts ClearColours()
 	{
-		for (int i = 0; i < 32; i++)
+		for (int i = 0; i < ColourLength; i++)
 		{
 			Colours[i] = PartState.Disabled;
 		}
 		return this;
 	}
 	
-	public RenderTextureParts SetColour([Range(0, 32)] int colour, PartState state)
+	public RenderTextureParts SetColour([Range(0, ColourLength)] int colour, PartState state)
 	{
 		Colours[colour] = state;
 		return this;

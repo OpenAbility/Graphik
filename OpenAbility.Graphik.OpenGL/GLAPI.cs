@@ -462,8 +462,46 @@ public unsafe class GLAPI : IGraphikAPI
 		} else if (function == "finish_processing")
 		{
 			GL.Finish();
+		} else if (function == "__fbo_test")
+		{
+			return TestFBO();
 		}
 		return null;
+	}
+
+	private string TestFBO()
+	{
+
+		const int Width = 800;
+		const int Height = 600;
+		
+		FramebufferHandle handle = GL.CreateFramebuffer();
+
+		TextureHandle colourTexture0 = GL.CreateTexture(TextureTarget.Texture2d);
+		TextureHandle colourTexture1 = GL.CreateTexture(TextureTarget.Texture2d);
+		TextureHandle dsTexture = GL.CreateTexture(TextureTarget.Texture2d);
+		
+		SetTextureDefaults(colourTexture0);
+		GL.TextureStorage2D(colourTexture0, 1, SizedInternalFormat.Rgba8, Width, Height);
+		
+		SetTextureDefaults(colourTexture1);
+		GL.TextureStorage2D(colourTexture1, 1, SizedInternalFormat.Rgba8, Width, Height);
+		
+		SetTextureDefaults(dsTexture);
+		GL.TextureStorage2D(dsTexture, 1, SizedInternalFormat.Depth24Stencil8, Width, Height);
+		
+		GL.NamedFramebufferTexture(handle, FramebufferAttachment.ColorAttachment0, colourTexture0, 0);
+		GL.NamedFramebufferTexture(handle, FramebufferAttachment.ColorAttachment1, colourTexture1, 0);
+		GL.NamedFramebufferTexture(handle, FramebufferAttachment.DepthStencilAttachment, dsTexture, 0);
+		
+		GL.NamedFramebufferDrawBuffers(handle, new [] { ColorBuffer.ColorAttachment0, ColorBuffer.ColorAttachment1 });
+		
+		return GL.CheckNamedFramebufferStatus(handle, FramebufferTarget.Framebuffer).ToString();
+	}
+
+	private void SetTextureDefaults(TextureHandle handle)
+	{
+		
 	}
 	
 	public object? GetLibraryValue(string value)

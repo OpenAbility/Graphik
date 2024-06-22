@@ -91,7 +91,10 @@ public class GLRenderBuffer : IRenderBuffer
 		ColorBuffer[] bufferArray = new ColorBuffer[buffers.Length];
 		for (int i = 0; i < buffers.Length; i++)
 		{
-			bufferArray[i] = (ColorBuffer)((int)ColorBuffer.ColorAttachment0 + buffers[i]);
+			if (buffers[i] == -1)
+				bufferArray[i] = ColorBuffer.None;
+			else
+				bufferArray[i] = (ColorBuffer)((int)ColorBuffer.ColorAttachment0 + buffers[i]);
 		}
 		GL.NamedFramebufferDrawBuffers(handle, bufferArray);
 	}

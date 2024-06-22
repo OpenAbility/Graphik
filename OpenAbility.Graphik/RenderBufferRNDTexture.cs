@@ -4,7 +4,7 @@ public class RenderBufferRndTexture : IRenderTexture
 {
 
 	private IRenderBuffer renderBuffer;
-	private ITexture2D?[] colours = new ITexture2D?[32];
+	private ITexture2D?[] colours = new ITexture2D?[RenderTextureParts.ColourLength];
 	private ITexture2D? depthStencil;
 	private ITexture2D? firstColour;
 	private int width;
@@ -48,16 +48,68 @@ public class RenderBufferRndTexture : IRenderTexture
 		GetTexture(component)?.Bind(index);
 	}
 
+	private unsafe void Build2(int width, int height, RenderTextureParts parts)
+	{
+		// Alright different "flow" but same build.
+		this.width = width;
+		this.height = height;
+		
+		for (int i = 0; i < RenderTextureParts.ColourLength; i++)
+		{
+			if (parts.Colours[i] == PartState.Disabled)
+			{
+				colours[i] = null;
+				continue;
+			}
+
+			ITexture2D texture = Graphik.CreateTexture();
+			texture.AllocateImage(TextureFormat.Rgbaf, width, height);
+			colours[i] = texture;
+		}
+
+		if (parts.DepthStencil != PartState.Disabled)
+		{
+			depthStencil = Graphik.CreateTexture();
+			depthStencil.AllocateImage(TextureFormat.DepthStencil, width, height);
+			depthStencil.SetBorder(1, 1, 1);
+		}
+		
+		renderBuffer = Graphik.CreateRenderBuffer();
+		List<int> drawTargets = new List<int>();
+		
+		for (int i = 0; i < RenderTextureParts.ColourLength; i++)
+		{
+			if (colours[i] == null)
+				continue;
+			renderBuffer.BindColorTexture(i, colours[i]!);
+			drawTargets.Add(i);
+		}
+
+		if (depthStencil != null)
+		{
+			renderBuffer.BindDepthStencilTexture(depthStencil);
+		}
+		
+		renderBuffer.MarkDraw(drawTargets.ToArray());
+		
+		renderBuffer.Validate();
+	}
+
 	public unsafe void Build(int width, int height, RenderTextureParts parts)
 	{
+		// For testing
+		Build2(width, height, parts);
+		return;
+		
 		this.width = width;
 		this.height = height;
 		renderBuffer = Graphik.CreateRenderBuffer();
 		List<int> buf = new List<int>();
 
-		for (int i = 0; i < 16; i++)
+		for (int i = 0; i < RenderTextureParts.ColourLength; i++)
 		{
-			if (parts.Colours[i] == PartState.Texture)
+			// Texture or nothin' as requested by deccer
+			if (parts.Colours[i] != PartState.Disabled)
 			{
 				ITexture2D texture = Graphik.CreateTexture();
 				colours[i] = texture;
@@ -74,7 +126,8 @@ public class RenderBufferRndTexture : IRenderTexture
 			}
 		}
 
-		if (parts.DepthStencil == PartState.Texture)
+		// Same tex or non thing here
+		if (parts.DepthStencil != PartState.Disabled)
 		{
 			depthStencil = Graphik.CreateTexture();
 			depthStencil.AllocateImage(TextureFormat.DepthStencil, width, height);
@@ -88,7 +141,10 @@ public class RenderBufferRndTexture : IRenderTexture
 			renderBuffer.BindDepthStencilBuffer(width, height);
 		}
 		
-		renderBuffer.MarkDraw(buf.ToArray());
+		if(buf.Any())
+			renderBuffer.MarkDraw(buf.ToArray());
+		else
+			renderBuffer.MarkDraw(-1);
 		
 		renderBuffer.Validate();
 	}

@@ -51,7 +51,8 @@ public interface IRenderBuffer : IDisposable
 	/// <summary>
 	/// Mark the color buffers to use when drawing
 	/// </summary>
-	/// <param name="buffers">The buffers to use</param>
+	/// <param name="buffers">The buffers to use, "-1" would be null/GL_NONE/whatever</param>
+	/// <remarks>Leaving "buffers" empty is the same as passing in "-1". Good to know.</remarks>
 	public void MarkDraw(params int[] buffers);
 	
 	/// <summary>
