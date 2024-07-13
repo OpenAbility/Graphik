@@ -1,8 +1,16 @@
 ﻿using OpenAbility.Graphik;
 using OpenAbility.Graphik.OpenGL;
+using OpenAbility.Graphik.Selection;
 using StbImageSharp;
 
-Graphik.SetAPI(new GLAPI());
+GLAPI.LoadAssembly();
+
+APIRequest apiRequest = new APIRequest();
+
+apiRequest.Platform = TargetPlatform.Desktop;
+apiRequest.PerformancePriority = PerformancePriority.Stability;
+
+Graphik.SetAPI(GraphikAPISelector.CreateSelection(apiRequest));
 Graphik.InitializeSystems();
 
 Graphik.SetErrorCallback((id, message) =>
@@ -27,6 +35,8 @@ Graphik.InitializeWindow("Hello, World Graphik!", 1280, 720);
 
 Graphik.SetFeature(Feature.Culling, false);
 
+Console.WriteLine("Vendor: " + Graphik.InvokeLibraryFunction("get_vendor"));
+Console.WriteLine("Renderer: " + Graphik.InvokeLibraryFunction("get_renderer"));
 
 // FBO test
 Console.WriteLine("FBO Test: " + Graphik.InvokeLibraryFunction("__fbo_test"));
@@ -56,7 +66,7 @@ IShaderObject fragment = Graphik.CreateShaderObject(ShaderType.FragmentShader);
 var vertexResult = ShaderCompiler.Compile(File.ReadAllText("assets/test.hlsl"), "test.hlsl", 
 	ShaderType.VertexShader, "vertex");
 
-Console.WriteLine(vertexResult);
+//Console.WriteLine(vertexResult);
 
 if (!vertexResult.Success)
 {
@@ -67,7 +77,7 @@ if (!vertexResult.Success)
 var fragmentResult = ShaderCompiler.Compile(File.ReadAllText("assets/test.hlsl"), "test.hlsl", 
 	ShaderType.FragmentShader, "fragment");
 
-Console.WriteLine(fragmentResult);
+//Console.WriteLine(fragmentResult);
 
 if (!fragmentResult.Success)
 {

@@ -3,15 +3,24 @@ using OpenTK.Graphics.OpenGL;
 
 namespace OpenAbility.Graphik.OpenGL;
 
+// TODO: DSA-ify this shit.
+// It's a bit more complex.
 public class GLMesh : IMesh
 {
-	private readonly BufferHandle vbo = GL.GenBuffer();
-	private readonly BufferHandle ebo = GL.GenBuffer();
-	private readonly VertexArrayHandle vao = GL.GenVertexArray();
+	private readonly BufferHandle vbo;
+	private readonly BufferHandle ebo;
+	private readonly VertexArrayHandle vao;
 	private DrawElementsType indexType = DrawElementsType.UnsignedInt;
 
 	private int eboSize;
 	private int vboSize;
+
+	public GLMesh()
+	{
+		vbo = GL.CreateBuffer();
+		ebo = GL.CreateBuffer();
+		vao = GL.CreateVertexArray();
+	}
 
 	public void PrepareModifications()
 	{

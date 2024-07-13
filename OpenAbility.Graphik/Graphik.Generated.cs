@@ -275,4 +275,6 @@ public static partial class Graphik
 	/// <param name="pass">What to do if the checks pass/param>
 	public static void SetStencilOperation(CullFace face, StencilOperation stencilFail, StencilOperation depthFail,
 		StencilOperation pass) => api.SetStencilOperation(face, stencilFail, depthFail, pass);
+
+	public static bool Supports(SupportCap cap) => api.Supports(cap);
 }

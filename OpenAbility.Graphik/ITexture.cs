@@ -45,6 +45,12 @@ public interface ITexture : IDisposable
 	/// <param name="name">The name to use</param>
 	public void SetName(string name);
 
+	public void SetDepthStencilMode(DepthStencilMode depthStencilMode);
+
+	public ulong GetPointer();
+	public void MakeResident();
+	public void FreeResidency();
+
 	/// <summary>
 	/// Set the border colour of this texture
 	/// </summary>
@@ -84,4 +90,10 @@ public enum TextureRepetition
 	ClampToBorder,
 	ClampToEdge,
 	Repeat
+}
+
+public enum DepthStencilMode
+{
+	Depth,
+	Stencil
 }

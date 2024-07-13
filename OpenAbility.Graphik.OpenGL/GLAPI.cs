@@ -4,6 +4,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Silk.NET.Shaderc;
 using System.Numerics;
+using System.Reflection;
 
 namespace OpenAbility.Graphik.OpenGL;
 
@@ -12,12 +13,24 @@ public unsafe class GLAPI : IGraphikAPI
 {
 	private Window* window;
 	private HLSLCompiler compiler = new HLSLCompiler();
+	private string[] extensions;
+	private bool hasBindless;
 	
 	public int Width;
 	public int Height;
 	public void InitializeSystems()
 	{
 		GLFW.Init();
+		if (InvokeLibraryFunction("__func_check", Array.Empty<object>()) is not true)
+		{
+			throw new Exception("Could not load library functions!");
+		}
+	}
+
+	[LibraryFunction("__func_check")]
+	bool NullLibFunc()
+	{
+		return true;
 	}
 	
 	public IGraphikWindow InitializeWindow(string title, int width, int height)
@@ -30,7 +43,8 @@ public unsafe class GLAPI : IGraphikAPI
 		GLFW.WindowHint(WindowHintBool.Visible, true);
 		GLFW.WindowHint(WindowHintInt.ContextVersionMajor, 4);
 		GLFW.WindowHint(WindowHintInt.ContextVersionMinor, 6);
-		GLFW.WindowHint(WindowHintOpenGlProfile.OpenGlProfile, OpenGlProfile.Compat);
+		GLFW.WindowHint(WindowHintBool.OpenGLForwardCompat, true); // If we somehow run on Mac, this is needed.
+		GLFW.WindowHint(WindowHintOpenGlProfile.OpenGlProfile, OpenGlProfile.Core);
 		
 #if DEBUG
 		GLFW.WindowHint(WindowHintBool.OpenGLDebugContext, true);
@@ -51,7 +65,24 @@ public unsafe class GLAPI : IGraphikAPI
 		GL.Enable(EnableCap.PolygonSmooth);
 		GL.Hint(HintTarget.PolygonSmoothHint, HintMode.DontCare);
 		GL.Hint(HintTarget.LineSmoothHint, HintMode.DontCare);
+		
+		int extensionCount = 0;
+		GL.GetInteger(GetPName.NumExtensions, ref extensionCount);
+		CallbackHandler.DebugCallback?.Invoke("GLInfo", "Found " + extensionCount + " extensions!");
+		extensions = new string[extensionCount];
 
+		for (uint i = 0; i < extensionCount; i++)
+		{
+			extensions[i] = GL.GetStringi(StringName.Extensions, i) ?? "null";
+			CallbackHandler.DebugCallback?.Invoke("GLInfo", "Found " + extensions[i]);
+
+			if (extensions[i] == "GL_ARB_bindless_texture")
+				hasBindless = true;
+			if (extensions[i] == "GL_NV_bindless_texture")
+				hasBindless = true;
+		}
+		CallbackHandler.DebugCallback?.Invoke("GLInfo", "Bindless: " + hasBindless);
+		
 		return new GLWindow()
 		{
 			handle = window
@@ -450,25 +481,91 @@ public unsafe class GLAPI : IGraphikAPI
 
 		};
 	}
+
+
+	private static readonly Dictionary<string, MethodInfo> libraryFunctions = new Dictionary<string, MethodInfo>();
+	private static bool searchedFunctions;
+
+	private static MethodInfo? GetLibraryFunction(string name)
+	{
+		if (!searchedFunctions)
+		{
+			searchedFunctions = true;
+			foreach (var method in typeof(GLAPI).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static))
+			{
+				LibraryFunctionAttribute? lfa = method.GetCustomAttribute<LibraryFunctionAttribute>();
+				if (lfa != null)
+				{
+					libraryFunctions.Add(lfa.Name, method);
+				}
+			}
+		}
+
+		return libraryFunctions.GetValueOrDefault(name);
+	}
+
+	private static bool CheckArgs(MethodInfo info, object[] parameters)
+	{
+		if (info.GetParameters().Length != parameters.Length)
+			return false;
+
+		for (int i = 0; i < parameters.Length; i++)
+		{
+			if (!info.GetParameters()[i].ParameterType.IsInstanceOfType(parameters[i]))
+				return false;
+		}
+		return true;
+	}
 	
 	public object? InvokeLibraryFunction(string function, object[] parameters)
 	{
-		if (function == "set_clipboard_str")
-		{
-			GLFW.SetClipboardString(window, (string)parameters[0]);
-		} else if (function == "get_clipboard_str")
-		{
-			return GLFW.GetClipboardString(window);
-		} else if (function == "finish_processing")
-		{
-			GL.Finish();
-		} else if (function == "__fbo_test")
-		{
-			return TestFBO();
-		}
-		return null;
+
+		MethodInfo? methodInfo = GetLibraryFunction(function);
+
+		if (methodInfo == null)
+			return null;
+
+		if (!CheckArgs(methodInfo, parameters))
+			return null;
+
+		if (methodInfo.IsStatic)
+			return methodInfo.Invoke(null, parameters);
+		
+		return methodInfo.Invoke(this, parameters);
 	}
 
+	[LibraryFunction(LibraryFunctions.SetClipboardString)]
+	private void SetClipboardString(string str)
+	{
+		GLFW.SetClipboardString(window, str);
+	}
+	
+	[LibraryFunction(LibraryFunctions.GetClipboardString)]
+	private string GetClipboardString()
+	{
+		return GLFW.GetClipboardString(window);
+	}
+
+	[LibraryFunction(LibraryFunctions.FinishProcessing)]
+	private void FinishProcessing()
+	{
+		GL.Finish();
+	}
+
+	[LibraryFunction("get_vendor")]
+	private string GetVendor()
+	{
+		return GL.GetString(StringName.Vendor) ?? "NULL";
+	}
+	
+	[LibraryFunction("get_renderer")]
+	private string GetRenderer()
+	{
+		return GL.GetString(StringName.Renderer) ?? "NULL";
+	}
+
+		
+	[LibraryFunction("__fbo_test")]
 	private string TestFBO()
 	{
 
@@ -490,18 +587,30 @@ public unsafe class GLAPI : IGraphikAPI
 		SetTextureDefaults(dsTexture);
 		GL.TextureStorage2D(dsTexture, 1, SizedInternalFormat.Depth24Stencil8, Width, Height);
 		
+		
 		GL.NamedFramebufferTexture(handle, FramebufferAttachment.ColorAttachment0, colourTexture0, 0);
 		GL.NamedFramebufferTexture(handle, FramebufferAttachment.ColorAttachment1, colourTexture1, 0);
+		
 		GL.NamedFramebufferTexture(handle, FramebufferAttachment.DepthStencilAttachment, dsTexture, 0);
 		
+		/*
+		GL.BindFramebuffer(FramebufferTarget.Framebuffer, handle);
+		GL.BindTexture(TextureTarget.Texture2d, dsTexture);
+		GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, TextureTarget.Texture2d, dsTexture, 0);
+		*/
 		GL.NamedFramebufferDrawBuffers(handle, new [] { ColorBuffer.ColorAttachment0, ColorBuffer.ColorAttachment1 });
 		
-		return GL.CheckNamedFramebufferStatus(handle, FramebufferTarget.Framebuffer).ToString();
+		string res = GL.CheckNamedFramebufferStatus(handle, FramebufferTarget.Framebuffer).ToString();
+		GL.BindFramebuffer(FramebufferTarget.Framebuffer, FramebufferHandle.Zero);
+		return res;
 	}
 
 	private void SetTextureDefaults(TextureHandle handle)
 	{
-		
+		GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
+		GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+		GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+		GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 	}
 	
 	public object? GetLibraryValue(string value)
@@ -590,6 +699,12 @@ public unsafe class GLAPI : IGraphikAPI
 		};
 		
 		GL.StencilOpSeparate(triangleFace, GetOp(stencilFail), GetOp(depthFail), GetOp(pass));
+	}
+	public bool Supports(SupportCap cap)
+	{
+		if (cap == SupportCap.SeparateStencil)
+			return false;
+		return true; // We assume we support it haha
 	}
 
 	public void SetStencilMask(CullFace face, byte mask)

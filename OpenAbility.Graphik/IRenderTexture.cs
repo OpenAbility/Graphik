@@ -5,7 +5,8 @@ public interface IRenderTexture  : ITexture
 	public void Target();
 	public void Bind(RenderTextureComponent component, int index = 0);
 	public void Build(int width, int height, RenderTextureParts parts);
-
+	public void SetDefaultComponent(RenderTextureComponent component);
+	
 	/// <summary>
 	/// Copy data from another texture
 	/// </summary>
@@ -20,6 +21,10 @@ public interface IRenderTexture  : ITexture
 	/// <param name="targetChannel">The component to copy to</param>
 	/// <param name="other">The other texture to copy data from</param>
 	public void CopyChannelFrom(RenderTextureComponent sourceChannel, RenderTextureComponent targetChannel, IRenderTexture other);
+
+	public ulong GetPointer(RenderTextureComponent component);
+	public void MakeResident(RenderTextureComponent component);
+	public void FreeResidency(RenderTextureComponent component);
 }
 
 
@@ -60,8 +65,8 @@ public enum RenderTextureComponent
 	
 	DepthStencil = 32,
 	
-	Depth = DepthStencil,
-	Stencil = DepthStencil,
+	Depth = 33,
+	Stencil = 34,
 	Colour = Colour0,
 	Normal = Colour1,
 

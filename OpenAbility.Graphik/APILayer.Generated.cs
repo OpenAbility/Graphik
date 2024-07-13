@@ -59,4 +59,5 @@ public partial class APILayer : IGraphikAPI
         public void SetStencilFunction(CullFace face, CompareFunction function, byte value, byte mask) => Intercept("SetStencilFunction", Underlying.SetStencilFunction, face, function, value, mask);
         public void SetStencilMask(CullFace face, byte mask) => Intercept("SetStencilMask", Underlying.SetStencilMask, face, mask);
         public void SetStencilOperation(CullFace face, StencilOperation stencilFail, StencilOperation depthFail, StencilOperation pass) => Intercept("SetStencilOperation", Underlying.SetStencilOperation, face, stencilFail, depthFail, pass);
+        public bool Supports(SupportCap cap) => (bool)Intercept("Supports", Underlying.Supports, cap);
 }

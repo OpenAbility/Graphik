@@ -199,6 +199,35 @@ public class GLTexture : ITexture2D
 	{
 		GLAPI.SetLabel(ObjectIdentifier.Texture, handle.Handle, name);
 	}
+	
+	public void SetDepthStencilMode(DepthStencilMode depthStencilMode)
+	{
+		DepthStencilTextureMode mode = depthStencilMode switch
+		{
+			DepthStencilMode.Depth => DepthStencilTextureMode.DepthComponent,
+			DepthStencilMode.Stencil => DepthStencilTextureMode.StencilIndex,
+			_ => 0
+		};
+		GL.TextureParameteri(handle, TextureParameterName.DepthStencilTextureMode, (int)mode);
+	}
+	public ulong GetPointer()
+	{
+		if (!Graphik.Supports(SupportCap.TexturePointer))
+			throw new Exception("TexturePointer functionality is unsupported!");
+		return GL.ARB.GetTextureHandleARB(handle);
+	}
+	public void MakeResident()
+	{
+		if (!Graphik.Supports(SupportCap.TexturePointer))
+			throw new Exception("TexturePointer functionality is unsupported!");
+		GL.ARB.MakeTextureHandleResidentARB(GetPointer());
+	}
+	public void FreeResidency()
+	{
+		if (!Graphik.Supports(SupportCap.TexturePointer))
+			throw new Exception("TexturePointer functionality is unsupported!");
+		GL.ARB.MakeTextureHandleNonResidentARB(GetPointer());
+	}
 
 	private static readonly float[] borderBuffer = new float[4];
 	public unsafe void SetBorder(float r, float g, float b, float a = 1)

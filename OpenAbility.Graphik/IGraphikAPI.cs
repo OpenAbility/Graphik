@@ -56,4 +56,5 @@ public interface IGraphikAPI
 	void SetStencilFunction(CullFace face, CompareFunction function, byte value, byte mask);
 	void SetStencilMask(CullFace face, byte mask);
 	void SetStencilOperation(CullFace face, StencilOperation stencilFail, StencilOperation depthFail, StencilOperation pass);
+	bool Supports(SupportCap cap);
 }
