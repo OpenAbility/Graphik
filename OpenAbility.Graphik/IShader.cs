@@ -67,4 +67,38 @@ public interface IShader : IDisposable
 	public UniformType GetUniformType(int id);
 	public int GetUniformCount();
 	public string GetUniformName(int id);
+
+	public UniformData GetUniform(int id)
+	{
+		return new UniformData()
+		{
+			Type = GetUniformType(id), ID = id, Name = GetUniformName(id)
+		};
+	}
+
+	public UniformData[] GetUniforms()
+	{
+		UniformData[] array = new UniformData[GetUniformCount()];
+		for (int i = 0; i < array.Length; i++)
+		{
+			array[i] = GetUniform(i);
+		}
+		return array;
+	}
+	
+	public IEnumerable<UniformData> EnumerateUniforms()
+	{
+		int count = GetUniformCount();
+		for (int i = 0; i < count; i++)
+		{
+			yield return GetUniform(i);
+		}
+	}
+}
+
+public struct UniformData
+{
+	public UniformType Type;
+	public string Name;
+	public int ID;
 }
