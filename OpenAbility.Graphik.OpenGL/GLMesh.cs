@@ -120,6 +120,7 @@ public class GLMesh : IMesh
 			VertexAttribType.Float => VertexAttribPointerType.Float,
 			VertexAttribType.Int => VertexAttribPointerType.Int,
 			VertexAttribType.UnsignedByte => VertexAttribPointerType.UnsignedByte,
+			VertexAttribType.UnsignedInt => VertexAttribPointerType.UnsignedInt,
 			_ => 0
 		};
 
