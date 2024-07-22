@@ -62,4 +62,9 @@ public interface IShader : IDisposable
 		return true;
 	}
 	public void SetName(string name);
+
+	public int ShaderBufferLocation(string name);
+	public UniformType GetUniformType(int id);
+	public int GetUniformCount();
+	public string GetUniformName(int id);
 }

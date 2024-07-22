@@ -40,7 +40,7 @@ public class GLShader : IShader
 		int bufSize = 64;
 		int length = 0;
 		int size = 0;
-		UniformType type = 0;
+		OpenTK.Graphics.OpenGL.UniformType type = 0;
 
 		for (int i = 0; i < activeCount; i++)
 		{
@@ -73,10 +73,48 @@ public class GLShader : IShader
 	{
 		return GetUniformLocation(name) != -1;
 	}
+	
 	public void SetName(string name)
 	{
 		GLAPI.SetLabel(ObjectIdentifier.Program, handle.Handle, name);
 	}
+	
+	public int ShaderBufferLocation(string name)
+	{
+		return GL.GetProgramResourceLocation(handle, ProgramInterface.ShaderStorageBlock, name);
+	}
+	
+	public UniformType GetUniformType(int id)
+	{
+		int bufSize = 64;
+		int length = 0;
+		int size = 0;
+		OpenTK.Graphics.OpenGL.UniformType type = 0;
+
+		string name = GL.GetActiveUniform(handle, (uint)id, bufSize, ref length, ref size, ref type);
+
+		return GetUniformType(type);
+	}
+	
+	public int GetUniformCount()
+	{
+		int activeCount = 0;
+		GL.GetProgrami(handle, ProgramPropertyARB.ActiveUniforms, ref activeCount);
+		return activeCount;
+	}
+	
+	public string GetUniformName(int id)
+	{
+		int bufSize = 64;
+		int length = 0;
+		int size = 0;
+		OpenTK.Graphics.OpenGL.UniformType type = 0;
+
+		string name = GL.GetActiveUniform(handle, (uint)id, bufSize, ref length, ref size, ref type);
+
+		return name;
+	}
+	
 	public void BindUInt(string name, uint value) => GL.ProgramUniform1ui(handle, GetUniformLocation(name), value);
 	public void BindInt(string name, int value) => GL.ProgramUniform1i(handle, GetUniformLocation(name), value);
 	public void BindInt2(string name, int x, int y) => GL.ProgramUniform2i(handle, GetUniformLocation(name), x, y);
@@ -115,6 +153,61 @@ public class GLShader : IShader
 	public void BindAttribute(string name, int index)
 	{
 		GL.BindAttribLocation(handle, (uint)index, name);
+	}
+
+
+	private static UniformType GetUniformType(OpenTK.Graphics.OpenGL.UniformType uniformType)
+	{
+		return uniformType switch
+		{
+
+			OpenTK.Graphics.OpenGL.UniformType.Int => UniformType.Int,
+			OpenTK.Graphics.OpenGL.UniformType.UnsignedInt => UniformType.UInt,
+			OpenTK.Graphics.OpenGL.UniformType.Float => UniformType.Float,
+			OpenTK.Graphics.OpenGL.UniformType.Double => UniformType.Double,
+			OpenTK.Graphics.OpenGL.UniformType.FloatVec2 => UniformType.Vector2,
+			OpenTK.Graphics.OpenGL.UniformType.FloatVec3 => UniformType.Vector3,
+			OpenTK.Graphics.OpenGL.UniformType.FloatVec4 => UniformType.Vector4,
+			OpenTK.Graphics.OpenGL.UniformType.IntVec2 => UniformType.Vector2Int,
+			OpenTK.Graphics.OpenGL.UniformType.IntVec3 => UniformType.Vector3Int,
+			OpenTK.Graphics.OpenGL.UniformType.IntVec4 => UniformType.Vector4Int,
+			OpenTK.Graphics.OpenGL.UniformType.Bool => UniformType.Bool,
+			OpenTK.Graphics.OpenGL.UniformType.BoolVec2 => UniformType.Vector2Bool,
+			OpenTK.Graphics.OpenGL.UniformType.BoolVec3 => UniformType.Vector3Bool,
+			OpenTK.Graphics.OpenGL.UniformType.BoolVec4 => UniformType.Vector4Bool,
+			OpenTK.Graphics.OpenGL.UniformType.FloatMat2 => UniformType.Matrix2x2,
+			OpenTK.Graphics.OpenGL.UniformType.FloatMat3 => UniformType.Matrix3x3,
+			OpenTK.Graphics.OpenGL.UniformType.FloatMat4 => UniformType.Matrix4x4,
+			OpenTK.Graphics.OpenGL.UniformType.Sampler1d => UniformType.Texture1D,
+			OpenTK.Graphics.OpenGL.UniformType.Sampler2d => UniformType.Texture2D,
+			OpenTK.Graphics.OpenGL.UniformType.Sampler3d => UniformType.Texture3D,
+			OpenTK.Graphics.OpenGL.UniformType.SamplerCube => UniformType.Cubemap,
+			OpenTK.Graphics.OpenGL.UniformType.FloatMat2x3 => UniformType.Matrix2x3,
+			OpenTK.Graphics.OpenGL.UniformType.FloatMat2x4 => UniformType.Matrix2x4,
+			OpenTK.Graphics.OpenGL.UniformType.FloatMat3x2 => UniformType.Matrix3x2,
+			OpenTK.Graphics.OpenGL.UniformType.FloatMat3x4 => UniformType.Matrix3x4,
+			OpenTK.Graphics.OpenGL.UniformType.FloatMat4x2 => UniformType.Matrix4x2,
+			OpenTK.Graphics.OpenGL.UniformType.FloatMat4x3 => UniformType.Matrix4x3,
+			OpenTK.Graphics.OpenGL.UniformType.Sampler1dArray => UniformType.Texture1DArray,
+			OpenTK.Graphics.OpenGL.UniformType.Sampler2dArray => UniformType.Texture2DArray,
+			OpenTK.Graphics.OpenGL.UniformType.SamplerCubeMapArray => UniformType.CubemapArray,
+			OpenTK.Graphics.OpenGL.UniformType.UnsignedIntVec2 => UniformType.Vector2Uint,
+			OpenTK.Graphics.OpenGL.UniformType.UnsignedIntVec3 => UniformType.Vector3Uint,
+			OpenTK.Graphics.OpenGL.UniformType.UnsignedIntVec4 => UniformType.Vector4Uint,
+			OpenTK.Graphics.OpenGL.UniformType.DoubleVec2 => UniformType.Vector2Double,
+			OpenTK.Graphics.OpenGL.UniformType.DoubleVec3 => UniformType.Vector3Double,
+			OpenTK.Graphics.OpenGL.UniformType.DoubleVec4 => UniformType.Vector4Double,
+			OpenTK.Graphics.OpenGL.UniformType.DoubleMat2 => UniformType.Matrix2x2Double,
+			OpenTK.Graphics.OpenGL.UniformType.DoubleMat3 => UniformType.Matrix3x3Double,
+			OpenTK.Graphics.OpenGL.UniformType.DoubleMat4 => UniformType.Matrix4x4Double,
+			OpenTK.Graphics.OpenGL.UniformType.DoubleMat2x3 => UniformType.Matrix2x3Double,
+			OpenTK.Graphics.OpenGL.UniformType.DoubleMat2x4 => UniformType.Matrix2x4Double,
+			OpenTK.Graphics.OpenGL.UniformType.DoubleMat3x2 => UniformType.Matrix3x2Double,
+			OpenTK.Graphics.OpenGL.UniformType.DoubleMat3x4 => UniformType.Matrix3x4Double,
+			OpenTK.Graphics.OpenGL.UniformType.DoubleMat4x2 => UniformType.Matrix4x2Double,
+			OpenTK.Graphics.OpenGL.UniformType.DoubleMat4x3 => UniformType.Matrix4x3Double,
+			_ => UniformType.Unknown
+		};
 	}
 		
 }
