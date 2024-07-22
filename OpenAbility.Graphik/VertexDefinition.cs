@@ -60,6 +60,8 @@ public class VertexDefinition
 			return sizeof(float) * attrib.Size;
 		if (attrib.VertexAttribType == VertexAttribType.Int)
 			return sizeof(int) * attrib.Size;
+		if (attrib.VertexAttribType == VertexAttribType.UnsignedInt)
+			return sizeof(uint) * attrib.Size;
 		if (attrib.VertexAttribType == VertexAttribType.Double)
 			return sizeof(double) * attrib.Size;
 		return 0;
