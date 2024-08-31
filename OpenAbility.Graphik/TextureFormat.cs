@@ -58,5 +58,9 @@ public enum TextureFormat
 	/// <summary>
 	/// Implementation-specific combined depth-and-stencil format
 	/// </summary>
-	DepthStencil
+	DepthStencil,
+	/// <summary>
+	/// <see cref="Rgb8"/>, but it will be compressed by the driver/graphik.
+	/// </summary>
+	CompressedRgba8
 }

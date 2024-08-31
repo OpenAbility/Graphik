@@ -5,8 +5,10 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Silk.NET.Shaderc;
 using System.Numerics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace OpenAbility.Graphik.OpenGL;
+
 
 [Serializable]
 public unsafe class GLAPI : IGraphikAPI
@@ -628,18 +630,7 @@ public unsafe class GLAPI : IGraphikAPI
 		return "OpenAbility.Graphik.OpenGL";
 	}
 
-	private static bool loaded = false;
-	
-	public static void LoadAssembly()
-	{
-		if (loaded)
-			return;
-		loaded = true;
-		Console.WriteLine("Loaded the Graphik OpenGL backend");
-		GraphikAPIProvider graphikAPIProvider = new GraphikAPIProvider(Create, Rate, Specifier, 20);
-		GraphikAPISelector.RegisterProvider(graphikAPIProvider);
-	}
-	private static APISpecification Specifier()
+	internal static APISpecification Specifier()
 	{
 		Dictionary<string, string> spec = new Dictionary<string, string>();
 
@@ -652,13 +643,13 @@ public unsafe class GLAPI : IGraphikAPI
 		
 		return new APISpecification(spec);
 	}
-	
-	private static ulong Rate(APIRequest request)
+
+	internal static ulong Rate(APIRequest request)
 	{
 		return 1;
 	}
 
-	private static IGraphikAPI Create() => new GLAPI();
+	internal static IGraphikAPI Create() => new GLAPI();
 
 	private static uint MarkerID = 0;
 	public void LogMarker(string marker)

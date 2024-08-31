@@ -1,4 +1,5 @@
 using OpenAbility.Graphik.Selection;
+using System.Reflection;
 
 namespace OpenAbility.Graphik
 {
@@ -26,6 +27,8 @@ namespace OpenAbility.Graphik
 		/// <returns>The API, or null if none could be found</returns>
 		public static IGraphikAPI? CreateSelection(APIRequest request)
 		{
+			LoadAssemblies();
+
 			/*
 			 * The provider is chosen as follows:
 			 * - We check each provider
@@ -71,6 +74,8 @@ namespace OpenAbility.Graphik
 		/// <returns>The preferred Graphik backend, if any is available</returns>
 		public static IGraphikAPI? Select(APISelector selector)
 		{
+			LoadAssemblies();
+			
 			APICreator? bestCreator = null;
 			ulong bestAPIRating = 0;
 
@@ -86,6 +91,25 @@ namespace OpenAbility.Graphik
 			}
 
 			return bestCreator?.Invoke();
+		}
+
+		private static bool loaded;
+		private static void LoadAssemblies()
+		{
+			if (loaded)
+				return;
+			loaded = true;
+
+
+			foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
+			{
+				foreach (AssemblyAPIAttribute api in a.GetCustomAttributes<AssemblyAPIAttribute>())
+				{
+					Type t = api.API;
+					IAssemblyAPI apiObject = (IAssemblyAPI)Activator.CreateInstance(t)!;
+					RegisterProvider(apiObject.Build());
+				}
+			}
 		}
 	}
 }

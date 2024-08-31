@@ -64,6 +64,7 @@ public class GLTexture : ITexture2D
 			TextureFormat.Depth => InternalFormat.DepthComponent32f,
 			TextureFormat.Stencil => InternalFormat.StencilIndex8,
 			TextureFormat.DepthStencil => InternalFormat.Depth32fStencil8,
+			TextureFormat.CompressedRgba8 => InternalFormat.CompressedRgbaS3tcDxt5Ext,
 			_ => 0
 		};
 	}
@@ -85,6 +86,7 @@ public class GLTexture : ITexture2D
 			TextureFormat.Depth => SizedInternalFormat.DepthComponent24,
 			TextureFormat.Stencil => SizedInternalFormat.StencilIndex8,
 			TextureFormat.DepthStencil => SizedInternalFormat.Depth24Stencil8,
+			TextureFormat.CompressedRgba8 => SizedInternalFormat.CompressedRgbaS3tcDxt5Ext,
 			_ => 0
 		};
 	}
@@ -106,6 +108,7 @@ public class GLTexture : ITexture2D
 			TextureFormat.Depth => PixelFormat.DepthComponent,
 			TextureFormat.Stencil => PixelFormat.StencilIndex,
 			TextureFormat.DepthStencil => PixelFormat.DepthStencil,
+			TextureFormat.CompressedRgba8 => PixelFormat.Rgba,
 			_ => 0
 		};
 	}
@@ -127,6 +130,7 @@ public class GLTexture : ITexture2D
 			TextureFormat.Depth => PixelType.UnsignedInt248, // Is this correct? Stencil is Depth+Stencil but this?
 			TextureFormat.Stencil => PixelType.UnsignedInt248,
 			TextureFormat.DepthStencil => PixelType.UnsignedInt248,
+			TextureFormat.CompressedRgba8 => PixelType.UnsignedByte,
 			_ => 0
 		};
 	}
@@ -175,7 +179,7 @@ public class GLTexture : ITexture2D
 			GL.TextureParameteri(handle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
 			GL.TextureParameteri(handle, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 		}
-		else if (filtering == TextureFiltering.Trilinear)
+		else if (filtering == TextureFiltering.LinearMipmaps)
 		{
 			GL.TextureParameteri(handle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
 			GL.TextureParameteri(handle, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);

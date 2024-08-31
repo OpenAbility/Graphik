@@ -3,7 +3,6 @@ using OpenAbility.Graphik.OpenGL;
 using OpenAbility.Graphik.Selection;
 using StbImageSharp;
 
-GLAPI.LoadAssembly();
 
 APIRequest apiRequest = new APIRequest();
 

@@ -207,7 +207,7 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 			spirvCross.CompilerOptionsSetBool(compilerOptions,
 				CompilerOption.GlslEmitUniformBufferAsPlainUniforms, 1);
 			spirvCross.CompilerOptionsSetBool(compilerOptions, CompilerOption.ForceZeroInitializedVariables, 1);
-			spirvCross.CompilerOptionsSetBool(compilerOptions, CompilerOption.GlslVulkanSemantics, 0);
+			spirvCross.CompilerOptionsSetBool(compilerOptions, CompilerOption.GlslVulkanSemantics, 1);
 
 			ExecutionModel executionModel = type switch
 			{

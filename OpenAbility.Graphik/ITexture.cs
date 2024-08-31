@@ -80,9 +80,7 @@ public enum TextureFiltering
 {
 	Nearest,
 	Linear,
-	[Obsolete("Trilinear filtering is not fully implemented and tested on the GL branch yet!")]
-	// TODO: look through the GL-side implementation for this shit
-	Trilinear
+	LinearMipmaps
 }
 
 public enum TextureRepetition

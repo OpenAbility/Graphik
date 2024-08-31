@@ -70,6 +70,7 @@ public struct RenderTextureParts
 
 
 	public static readonly RenderTextureParts Default = new RenderTextureParts();
+	public static readonly RenderTextureParts SingleColour = new RenderTextureParts().SetDepthStencil(PartState.Disabled);
 	public static readonly RenderTextureParts DefaultSeparated = new RenderTextureParts().SeparateDepthStencil();
 	public static readonly RenderTextureParts DepthStencilOnly = new RenderTextureParts().ClearColours().SeparateDepthStencil();
 	public static readonly RenderTextureParts ShadowMap = new RenderTextureParts().ClearColours().SetDepth(PartState.Texture).SetStencil(PartState.Disabled);
