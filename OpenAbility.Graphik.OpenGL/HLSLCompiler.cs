@@ -55,6 +55,7 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 		
 		AddMacro("BACKEND", "OPENGL");
 		AddMacro("OPENGL", "true");
+		AddMacro("GRAPHIK", "true");
 
 		spirvCross = Cross.GetApi();
 		spirvCross.ContextCreate(ref spirvContext);
@@ -74,10 +75,12 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 		shaderc.Dispose();
 	}
 
-	public CompiledShader Compile(string language, string shader, string filename, ShaderType type, string entry)
+	public CompiledShader Compile(string language, string shader, string filename, ShaderType type, string entry, Dictionary<string, string>? defines = null)
 	{
+		defines ??= new Dictionary<string, string>();
+		
 		if (language == "hlsl")
-			return CompileHLSL(shader, filename, type, entry);
+			return CompileHLSL(shader, filename, type, entry, defines);
 		
 		
 		GLSLResult glslResult = new GLSLResult(shader, type);
@@ -113,7 +116,7 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 	}
 	
 
-	public CompiledShader CompileHLSL(string shader, string filename, ShaderType type, string entry)
+	public CompiledShader CompileHLSL(string shader, string filename, ShaderType type, string entry, Dictionary<string, string> defines)
 	{
 		int stageMacro = type switch
 		{
@@ -126,6 +129,12 @@ internal unsafe class HLSLCompiler : IShaderCompiler
 			_ => 5
 		};
 		AddMacro("SHADER_STAGE", stageMacro.ToString());
+
+		foreach (var define in defines)
+		{
+			AddMacro(define.Key, define.Value);
+		}
+		
 		List<string> links = new List<string>();
 		
 		Regex linkTargetRegex = new Regex(@"^\s*#pragma\s+link\s+\""[^\""]*\""\s*$");

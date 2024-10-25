@@ -15,7 +15,7 @@ public static partial class Graphik
 	/// <param name="title">The title of the window</param>
 	/// <param name="width">The (client) width</param>
 	/// <param name="height">The (client) height</param>
-	public static void InitializeWindow(string title, int width, int height) => api.InitializeWindow(title, width, height);
+	public static IGraphikWindow InitializeWindow(string title, int width, int height) => api.InitializeWindow(title, width, height);
 	/// <summary>
 	/// Set the error message callback
 	/// </summary>
@@ -277,4 +277,10 @@ public static partial class Graphik
 		StencilOperation pass) => api.SetStencilOperation(face, stencilFail, depthFail, pass);
 
 	public static bool Supports(SupportCap cap) => api.Supports(cap);
+	/// <summary>
+	/// Sets if the window should be shown or hidden.
+	/// <br/>
+	/// Can be used pre-creation.
+	/// </summary>
+	public static void ShowWindow(bool shown) => api.ShowWindow(shown);
 }

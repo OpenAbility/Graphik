@@ -17,6 +17,7 @@ public unsafe class GLAPI : IGraphikAPI
 	private HLSLCompiler compiler = new HLSLCompiler();
 	private string[] extensions;
 	private bool hasBindless;
+	private bool showWindow = true;
 	
 	public int Width;
 	public int Height;
@@ -47,6 +48,7 @@ public unsafe class GLAPI : IGraphikAPI
 		GLFW.WindowHint(WindowHintInt.ContextVersionMinor, 6);
 		GLFW.WindowHint(WindowHintBool.OpenGLForwardCompat, true); // If we somehow run on Mac, this is needed.
 		GLFW.WindowHint(WindowHintOpenGlProfile.OpenGlProfile, OpenGlProfile.Core);
+		GLFW.WindowHint(WindowHintBool.Visible, showWindow);
 		
 #if DEBUG
 		GLFW.WindowHint(WindowHintBool.OpenGLDebugContext, true);
@@ -94,6 +96,18 @@ public unsafe class GLAPI : IGraphikAPI
 	{
 		this.window = ((GLWindow)window).handle;
 		GLFW.MakeContextCurrent(this.window);
+	}
+
+	public void ShowWindow(bool shown)
+	{
+		if (window != null)
+		{
+			if(shown)
+				GLFW.ShowWindow(window);
+			else
+				GLFW.HideWindow(window);
+		}
+		showWindow = shown;
 	}
 
 	#region Callback Functions
